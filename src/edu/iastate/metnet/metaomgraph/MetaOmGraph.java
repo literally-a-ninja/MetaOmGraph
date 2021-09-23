@@ -83,6 +83,8 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.ColorUIResource;
+
+import com.l2fprod.common.swing.JTipOfTheDay;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -94,15 +96,12 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 //import org.biomage.examples.GetToDataExample;
 import org.jdom.JDOMException;
 
-
-import com.apple.eawt.Application;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.FlatArcDarkOrangeIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDeepOceanContrastIJTheme;
-import com.l2fprod.common.swing.JTipOfTheDay;
 
 
 //import com.l2fprod.common.swing.*;
@@ -969,12 +968,7 @@ public class MetaOmGraph implements ActionListener {
 
 		try {
 			myIcon = ImageIO.read(myself.getClass().getResourceAsStream("/resource/MetaOmicon.png"));
-			if (getOsName().indexOf("Mac") >= 0) {
-				Application application = Application.getApplication();
-				application.setDockIconImage(myIcon);
-			} else {
-				mainWindow.setIconImage(myIcon);
-			}
+			mainWindow.setIconImage(myIcon);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

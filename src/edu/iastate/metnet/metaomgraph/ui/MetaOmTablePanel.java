@@ -16,10 +16,6 @@ import edu.iastate.metnet.metaomgraph.throbber.MetaOmThrobber;
 import edu.iastate.metnet.metaomgraph.throbber.MultiFrameImageThrobber;
 import edu.iastate.metnet.metaomgraph.throbber.Throbber;
 import edu.iastate.metnet.metaomgraph.utils.Utils;
-import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.BrowserLauncherRunner;
-import edu.stanford.ejalbert.exceptionhandler.BrowserLauncherDefaultErrorHandler;
-import edu.stanford.ejalbert.exceptionhandler.BrowserLauncherErrorHandler;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -1168,12 +1164,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 		} catch (Exception e) {
 			try {
-				BrowserLauncher launcher = new BrowserLauncher(null);
-				BrowserLauncherErrorHandler errorHandler = new BrowserLauncherDefaultErrorHandler();
-				launcher.openURLinBrowser(urlString);
-				BrowserLauncherRunner runner = new BrowserLauncherRunner(launcher, urlString, errorHandler);
-				Thread launcherThread = new Thread(runner);
-				launcherThread.start();
+				if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+					Desktop.getDesktop().browse(new URI(urlString));
+				}
 
 				resultLog.put("result", "OK");
 				ActionProperties launchExternalSiteAction = new ActionProperties(site, actionMap, dataMap, resultLog,
@@ -1237,12 +1230,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			launchTairAction.logActionProperties();
 		} catch (Exception e) {
 			try {
-				BrowserLauncher launcher = new BrowserLauncher(null);
-				BrowserLauncherErrorHandler errorHandler = new BrowserLauncherDefaultErrorHandler();
-				launcher.openURLinBrowser(urlString);
-				BrowserLauncherRunner runner = new BrowserLauncherRunner(launcher, urlString, errorHandler);
-				Thread launcherThread = new Thread(runner);
-				launcherThread.start();
+				if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+					Desktop.getDesktop().browse(new URI(urlString));
+				}
 				resultLog.put("result", "OK");
 				ActionProperties launchTairAction = new ActionProperties("launch-tair", actionMap, dataMap, resultLog,
 						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
