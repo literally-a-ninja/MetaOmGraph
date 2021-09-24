@@ -153,6 +153,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 	// urmi
 	private JButton metabutton;
 	private JMenuItem viewCorrStats;
+	private JButton expFilterButton;
 	private JButton advFilterButton;
 
 	private JMenuItem atgsItem;
@@ -736,7 +737,15 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		dataToolbar.add(new Separator());
 		dataToolbar.add(searchPanel);
 		dataToolbar.add(listFromFilterButton);
-		
+
+		// add advance filter button
+		// s
+		expFilterButton = new JButton("Expression filter");
+		expFilterButton.setActionCommand("expressionfilter");
+		expFilterButton.addActionListener(this);
+		expFilterButton.setToolTipText("Filter the table with a range of expression values");
+		dataToolbar.add(expFilterButton);
+
 		// add advance filter button
 		// s
 		advFilterButton = new JButton("Advance filter");
@@ -2944,6 +2953,92 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 		if ("ExportToText".equals(e.getActionCommand())) {
 			Utils.saveJTabletofile(listDisplay, "Feature Metadata");
+			return;
+		}
+
+		if ("expressionfilter".equals(e.getActionCommand())) {
+			// Harsha - reproducibility log
+			HashMap<String, Object> dataMap = new HashMap<String, Object>();
+			HashMap<String, Object> result = new HashMap<String, Object>();
+			result.put("result", "OK");
+
+			final JFrame window = new JFrame("Expression Filter");
+			final JTextField min = new JTextField("Minimum value");
+			min.setBounds(100, 75, 500, 40);
+			final JTextField max = new JTextField("Maximum value");
+			max.setBounds(100, 125, 500, 40);
+			final JButton filter = new JButton("Filter");
+			filter.setBounds(250, 200, 75, 30);
+			final JButton cancel = new JButton("Cancel");
+			cancel.setBounds(400, 200, 75, 30);
+
+			window.add(min);
+			window.add(max);
+			window.add(filter);
+			window.add(cancel);
+			window.getContentPane().setLayout(null);
+			window.setSize(700, 325);
+			window.setVisible(true);
+			/*
+			// show advance filter options
+			final TreeSearchQueryConstructionPanel tsp = new TreeSearchQueryConstructionPanel(
+					MetaOmGraph.getActiveProject(), true);
+			final MetadataQuery[] queries;
+			queries = tsp.showSearchDialog();
+			// boolean matchCase=tsp.matchCase();
+			boolean matchAll = tsp.matchAll();
+			if (tsp.getQueryCount() <= 0) {
+				// System.out.println("Search dialog cancelled");
+				// User didn't enter any queries
+				return;
+			}
+
+			String[] headers = myProject.getInfoColumnNames();
+			List<String> headersList = Arrays.asList(headers);
+
+			// JOptionPane.showMessageDialog(null, "h:"+headersList);
+
+			// convert queries to filter string
+			String allFilter = "";
+			for (int i = 0; i < queries.length; i++) {
+
+				String thisFilter = "";
+				String thisField = queries[i].getField();
+				boolean thismatchCase = queries[i].isCaseSensitive();
+				String searchQueryTerm = "";
+				SearchMatchType matchType = queries[i].getMatchType();
+				if(matchType == SearchMatchType.NOT) {
+					searchQueryTerm += "!=";
+				} else if(matchType == SearchMatchType.DOES_NOT_CONTAIN) {
+					searchQueryTerm += "!";
+				} else if(matchType == SearchMatchType.IS) {
+					searchQueryTerm += "=";
+				}
+				searchQueryTerm += queries[i].getTerm();
+				// JOptionPane.showMessageDialog(null,"F:" + queries[i].getField() + " T:" +
+				// queries[i].getTerm() + " isE:" + queries[i].isExact()+ "mC:"+thismatchCase);
+				if (thismatchCase) {
+					searchQueryTerm += "--C";
+				}
+				if (thisField.equals("Any Field")){
+					thisFilter = searchQueryTerm + ":::" + "ANY";
+				} else if(thisField.equals("All Fields")){
+					thisFilter = searchQueryTerm + ":::" + "ALL";
+				} else {
+					int thisCol = headersList.indexOf(thisField);
+					thisFilter = searchQueryTerm + ":::" + String.valueOf(thisCol);
+				}
+				allFilter += thisFilter + ";";
+			}
+
+			dataMap.put("allFilters", allFilter);
+			filterField.setText(allFilter);
+
+			// ActionProperties advancedFilterAction = new
+			// ActionProperties("advanced-filter",null,dataMap,result,new
+			// SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+			// advancedFilterAction.logActionProperties();
+*/
 			return;
 		}
 
