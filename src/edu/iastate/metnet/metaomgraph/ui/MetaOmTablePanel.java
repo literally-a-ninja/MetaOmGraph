@@ -16,10 +16,6 @@ import edu.iastate.metnet.metaomgraph.throbber.MetaOmThrobber;
 import edu.iastate.metnet.metaomgraph.throbber.MultiFrameImageThrobber;
 import edu.iastate.metnet.metaomgraph.throbber.Throbber;
 import edu.iastate.metnet.metaomgraph.utils.Utils;
-import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.BrowserLauncherRunner;
-import edu.stanford.ejalbert.exceptionhandler.BrowserLauncherDefaultErrorHandler;
-import edu.stanford.ejalbert.exceptionhandler.BrowserLauncherErrorHandler;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -28,21 +24,20 @@ import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.event.*;
 import javax.swing.plaf.ColorUIResource;
+
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,8 +47,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class MetaOmTablePanel extends JPanel implements ActionListener, ListSelectionListener, ChangeListener {
 
@@ -722,6 +715,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			}
 		});
 		filterField.getDocument().addDocumentListener(new FilterFieldListener());
+		filterField.setToolTipText("Prefix search text with '=' for \"is\", '!' for \"does not contain\", and '!=' for \"is not\".");
 		filterField.setDefaultText("Use semicolon (;) for multiple filters");
 		filterField.setColumns(20);
 		searchPanel.add(filterField, "Center");
@@ -873,6 +867,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		int[] oldWidths = new int[listDisplay.getColumnCount()];
 		for (int x = 0; x < oldWidths.length; x++)
 			oldWidths[x] = listDisplay.getColumnModel().getColumn(x).getPreferredWidth();
+		
 		try {
 			mainModel = new NoneditableTableModel(
 					myProject.getGeneListRowNames(geneLists.getSelectedValue().toString()),
@@ -882,15 +877,14 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		}
 		filterModel = new FilterableTableModel(mainModel);
 		sorter = new TableSorter(filterModel);
-		if(listDisplay != null && listDisplay.getMetadata() != null) {
-			listDisplay = new StripedTable(sorter,listDisplay.getMetadata());
-		}
-		else {
-			listDisplay = new StripedTable(sorter);
-		}
+		
+		listDisplay = new StripedTable(sorter);
+
 		
 		listDisplay.hideColumns();
 		listDisplay.setAutoResizeMode(0);
+		
+		
 		sorter.setTableHeader(listDisplay.getTableHeader());
 
 		/*
@@ -1170,12 +1164,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 		} catch (Exception e) {
 			try {
-				BrowserLauncher launcher = new BrowserLauncher(null);
-				BrowserLauncherErrorHandler errorHandler = new BrowserLauncherDefaultErrorHandler();
-				launcher.openURLinBrowser(urlString);
-				BrowserLauncherRunner runner = new BrowserLauncherRunner(launcher, urlString, errorHandler);
-				Thread launcherThread = new Thread(runner);
-				launcherThread.start();
+				if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+					Desktop.getDesktop().browse(new URI(urlString));
+				}
 
 				resultLog.put("result", "OK");
 				ActionProperties launchExternalSiteAction = new ActionProperties(site, actionMap, dataMap, resultLog,
@@ -1239,12 +1230,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			launchTairAction.logActionProperties();
 		} catch (Exception e) {
 			try {
-				BrowserLauncher launcher = new BrowserLauncher(null);
-				BrowserLauncherErrorHandler errorHandler = new BrowserLauncherDefaultErrorHandler();
-				launcher.openURLinBrowser(urlString);
-				BrowserLauncherRunner runner = new BrowserLauncherRunner(launcher, urlString, errorHandler);
-				Thread launcherThread = new Thread(runner);
-				launcherThread.start();
+				if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+					Desktop.getDesktop().browse(new URI(urlString));
+				}
 				resultLog.put("result", "OK");
 				ActionProperties launchTairAction = new ActionProperties("launch-tair", actionMap, dataMap, resultLog,
 						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
@@ -1382,6 +1370,77 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		UIManager.put("InternalFrame.titleFont", oldFont);
 	}
 	
+	
+	/**
+	 * This is the playback method for heat-map action. It takes the selected
+	 * row ids, and produces the heat-map, mimicking the historically produced
+	 * heat-map. Before triggering the plot, the MOGs samples are temporarily
+	 * reset to the included samples of the historical action.
+	 */
+	public void plotHeatMap(int[] selected) {
+
+		ColorUIResource oldActiveTitleBackground = (ColorUIResource) UIManager.get("InternalFrame.activeTitleBackground");
+		ColorUIResource oldInactiveTitleBackground = (ColorUIResource) UIManager.get("InternalFrame.inactiveTitleBackground");
+		Font oldFont = UIManager.getFont("InternalFrame.titleFont");
+		
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {// get data for selected rows
+					String[] rowNames = myProject.getDefaultRowNames(selected);
+					String[] columnNames = myProject.getIncludedDataColumnHeaders();
+					
+					double[][] heatMapData = new double[selected.length][];
+					int rowIndex = 0;
+					for(int selectedIndex : selected) {
+						try {
+							double[] rowData = myProject.getIncludedData(selectedIndex);
+							heatMapData[rowIndex++] = rowData;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}	
+					}
+					
+					HeatMapChart f = new HeatMapChart(heatMapData, rowNames, columnNames, false);
+
+					UIManager.put("InternalFrame.activeTitleBackground", new ColorUIResource(new Color(240, 128, 128)));
+					UIManager.put("InternalFrame.inactiveTitleBackground",
+							new ColorUIResource(new Color(240, 128, 128)));
+					UIManager.put("InternalFrame.titleFont", new Font("SansSerif", Font.BOLD, 12));
+
+					javax.swing.plaf.basic.BasicInternalFrameUI ui = new javax.swing.plaf.basic.BasicInternalFrameUI(f);
+
+					f.setUI(ui);
+
+					MetaOmGraph.getDesktop().add(f);
+					f.setDefaultCloseOperation(2);
+					f.setClosable(true);
+					f.setResizable(true);
+					f.pack();
+					f.setSize(1000, 700);
+					f.setVisible(true);
+					f.toFront();
+					
+					UIManager.put("InternalFrame.activeTitleBackground", oldActiveTitleBackground);
+					UIManager.put("InternalFrame.inactiveTitleBackground", oldInactiveTitleBackground);
+					UIManager.put("InternalFrame.titleFont", oldFont);
+
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Error occured while reading data!!!", "Error",
+							JOptionPane.ERROR_MESSAGE);
+					UIManager.put("InternalFrame.activeTitleBackground", oldActiveTitleBackground);
+					UIManager.put("InternalFrame.inactiveTitleBackground", oldInactiveTitleBackground);
+					UIManager.put("InternalFrame.titleFont", oldFont);
+					
+					e.printStackTrace();
+					return;
+				}
+			}
+		});
+
+		return;
+	}
+	
 	// HeatMap
 	private void createHeatMap() {
 		int[] selected = getSelectedRowsInList();
@@ -1398,6 +1457,31 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 				e.printStackTrace();
 			}	
 		}
+		
+		HashMap<String, Object> actionMap = new HashMap<String, Object>();
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		HashMap<String, Object> result = new HashMap<String, Object>();
+
+		try {
+			actionMap.put("parent", MetaOmGraph.getCurrentProjectActionId());
+			actionMap.put("section", "Feature Metadata");
+
+			String selList = geneLists.getSelectedValue().toString();
+			dataMap.put("Selected List", selList);
+			dataMap.put("Selected Features", getSelectedRowsInList());
+			dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+			dataMap.put("Chart Title", "Heat Map");
+
+			result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+			result.put("Playable", "true");
+			result.put("result", "OK");
+		} catch (Exception e1) {
+
+		}
+		ActionProperties heatMapAction = new ActionProperties("heat map", actionMap, dataMap, result,
+				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+		
+		
 		HeatMapChart heatMapChart = new HeatMapChart(heatMapData, rowNames, columnNames, false);
 		MetaOmGraph.getDesktop().add(heatMapChart);
 		heatMapChart.setDefaultCloseOperation(2);
@@ -1407,6 +1491,12 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		heatMapChart.setSize(1000, 700);
 		heatMapChart.setVisible(true);
 		heatMapChart.toFront();
+		
+		try {
+			heatMapAction.logActionProperties();
+		} catch (Exception e1) {
+
+		}
 	}
 
 	public void createHistogram() {
@@ -2892,11 +2982,11 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 				String searchQueryTerm = "";
 				SearchMatchType matchType = queries[i].getMatchType();
 				if(matchType == SearchMatchType.NOT) {
-					searchQueryTerm += "!";
+					searchQueryTerm += "!=";
 				} else if(matchType == SearchMatchType.DOES_NOT_CONTAIN) {
-					searchQueryTerm += "~!";
-				} else if(matchType == SearchMatchType.CONTAINS) {
-					searchQueryTerm += "~";
+					searchQueryTerm += "!";
+				} else if(matchType == SearchMatchType.IS) {
+					searchQueryTerm += "=";
 				}
 				searchQueryTerm += queries[i].getTerm();
 				// JOptionPane.showMessageDialog(null,"F:" + queries[i].getField() + " T:" +
@@ -3186,6 +3276,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 										break;
 
 								} while (!progress.isCanceled());
+								
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
 
 							} catch (IOException ioe) {
 								JOptionPane.showMessageDialog(MetaOmGraph.getMainWindow(), "Error reading project data",
@@ -3339,6 +3440,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 									if (j >= entries.length)
 										break;
 								} while (!progress.isCanceled());
+								
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
 
 							} catch (IOException ioe) {
 								JOptionPane.showMessageDialog(MetaOmGraph.getMainWindow(), "Error reading project data",
@@ -3451,6 +3563,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 									if (j >= entries.length)
 										break;
 								} while (!progress.isCanceled());
+								
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
 
 							} catch (IOException ioe) {
 								JOptionPane.showMessageDialog(MetaOmGraph.getMainWindow(), "Error reading project data",
@@ -3575,6 +3698,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 									if (j >= entries.length)
 										break;
 								} while (!progress.isCanceled());
+								
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
 
 								// following code runs out of memory as it stores all the double matrices
 								// after getting all wtMat compute Entropies execute in parallel
@@ -3780,6 +3914,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 										break;
 								} while (!progress.isCanceled());
 
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
+								
 							} catch (IOException ioe) {
 								JOptionPane.showMessageDialog(MetaOmGraph.getMainWindow(), "Error reading project data",
 										"IOException", 0);
@@ -3990,6 +4135,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 										break;
 								} while (!progress.isCanceled());
 
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
+								
 							} catch (IOException ioe) {
 								JOptionPane.showMessageDialog(MetaOmGraph.getMainWindow(), "Error reading project data",
 										"IOException", 0);
@@ -4134,6 +4290,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 									if (j >= entries.length)
 										break;
 								} while (!progress.isCanceled());
+								
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
 
 							} catch (IOException ioe) {
 								JOptionPane.showMessageDialog(MetaOmGraph.getMainWindow(), "Error reading project data",
@@ -4253,6 +4420,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 										break;
 								} while (!progress.isCanceled());
 
+								if (MetaOmGraph.getActiveProject().getShowWarning()) {
+									String message = "Found missing/non-number values in data file. This may affect the analysis. Please check the data file";
+									if (MetaOmGraph.getActiveProject().getBlankValue() != null) {
+										message += "\n\n Treating missing value as " + MetaOmGraph.getActiveProject().getBlankValue();
+									}
+									JOptionPane.showMessageDialog(null, message, "Found missing/non-number values",
+											JOptionPane.WARNING_MESSAGE);
+									
+									MetaOmGraph.getActiveProject().setShowWarning(false);
+								}
+								
 							} catch (IOException ioe) {
 								JOptionPane.showMessageDialog(MetaOmGraph.getMainWindow(), "Error reading project data",
 										"IOException", 0);
