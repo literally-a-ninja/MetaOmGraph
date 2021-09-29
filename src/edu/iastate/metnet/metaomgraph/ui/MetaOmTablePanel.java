@@ -2961,7 +2961,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			HashMap<String, Object> dataMap = new HashMap<String, Object>();
 			HashMap<String, Object> result = new HashMap<String, Object>();
 			result.put("result", "OK");
-
+			System.out.println("here");
 			final ExpressionFilterConstructionPanel efc =
 					new ExpressionFilterConstructionPanel(MetaOmGraph.getActiveProject());
 

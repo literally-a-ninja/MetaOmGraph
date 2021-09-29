@@ -11,32 +11,37 @@ public class ExpressionFilterConstructionPanel extends JPanel
         implements ActionListener {
 
     private JFrame window = new JFrame("Expression Filter");
+    private JPanel queryViewport;
     private JTextField max;
     private JLabel maxDesc;
     private JTextField min;
     private JLabel minDesc;
-    private JPanel queryPanel;
+    private JPanel maxPanel;
+    private JPanel minPanel;
     private JButton filter;
     private JButton cancel;
+    private JPanel buttonPanel;
 
     private MetaOmProject project;
 
     public ExpressionFilterConstructionPanel(MetaOmProject project) {
         this.project = project;
-        setLayout(new BorderLayout());
-        queryPanel = new JPanel();
-        queryPanel.setLayout(new BoxLayout(queryPanel, 1));
-        JPanel queryButtonPanel = new JPanel();
 
         max = new JTextField();
+        max.setBounds(150, 25, 200, 30);
         maxDesc = new JLabel("Maximum Value:", SwingConstants.RIGHT);
+        maxDesc.setBounds(25, 25, 100, 30);
         min = new JTextField();
+        min.setBounds(150, 75, 200, 30);
         minDesc = new JLabel("Minimum Value:", SwingConstants.RIGHT);
+        minDesc.setBounds(25, 75, 100, 30);
         filter = new JButton("Filter");
+        filter.setBounds(125, 130, 75, 50);
         filter.setEnabled(false);
         filter.setActionCommand("filter");
         filter.addActionListener(this);
         cancel = new JButton("Cancel");
+        cancel.setBounds(225, 130, 75, 50);
         cancel.setActionCommand("cancel");
         cancel.addActionListener(this);
 
@@ -47,7 +52,7 @@ public class ExpressionFilterConstructionPanel extends JPanel
         window.add(filter);
         window.add(cancel);
         window.getContentPane().setLayout(null);
-        window.setSize(450, 250);
+        window.setSize(450, 225);
         window.setVisible(true);
     }
 
