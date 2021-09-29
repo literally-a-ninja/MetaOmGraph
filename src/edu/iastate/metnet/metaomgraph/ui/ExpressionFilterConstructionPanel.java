@@ -1,5 +1,6 @@
 package edu.iastate.metnet.metaomgraph.ui;
 
+import edu.iastate.metnet.metaomgraph.MetaOmGraph;
 import edu.iastate.metnet.metaomgraph.MetaOmProject;
 
 import javax.swing.*;
@@ -30,24 +31,65 @@ public class ExpressionFilterConstructionPanel extends JPanel
 
     public ExpressionFilterConstructionPanel(MetaOmProject project) {
         this.project = project;
+        Container mypane = window.getContentPane();
+        window.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.CENTER;
 
+        // Align Labels
+        JPanel entryPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints c2 = new GridBagConstraints();
+        c2.insets = new Insets(0,0,10,0);
+        setMyConstraints(c2,0,0,GridBagConstraints.EAST);
+        maxDesc = new JLabel("Maximum Value: ");
+        maxDesc.setPreferredSize(new Dimension(100, 30));
+        entryPanel.add(maxDesc,c2);
+
+        c2.insets = new Insets(0,0,10,0);
+        setMyConstraints(c2,1,0,GridBagConstraints.WEST);
         max = new JTextField();
-        max.setBounds(150, 25, 200, 30);
-        maxDesc = new JLabel("Maximum Value:", SwingConstants.RIGHT);
-        maxDesc.setBounds(25, 25, 100, 30);
+        max.setPreferredSize(new Dimension(200, 30));
+        entryPanel.add(max,c2);
+
+        setMyConstraints(c2,0,1,GridBagConstraints.EAST);
+        minDesc = new JLabel("Minimum Value: ");
+        minDesc.setPreferredSize(new Dimension(100, 30));
+        entryPanel.add(minDesc, c2);
+
+        setMyConstraints(c2,1,1,GridBagConstraints.WEST);
         min = new JTextField();
-        min.setBounds(150, 75, 200, 30);
-        minDesc = new JLabel("Minimum Value:", SwingConstants.RIGHT);
-        minDesc.setBounds(25, 75, 100, 30);
+        min.setPreferredSize(new Dimension(200, 30));
+        entryPanel.add(min,c2);
+
+        mypane.add(entryPanel, c);
+
+        // Align Buttons
+        buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints c3 = new GridBagConstraints();
+
+        c3.insets = new Insets(0,0,0,5);
+        setMyConstraints(c3,0,0,GridBagConstraints.EAST);
         filter = new JButton("Filter");
-        filter.setBounds(125, 130, 75, 50);
         filter.setEnabled(false);
         filter.setActionCommand("filter");
         filter.addActionListener(this);
+        filter.setPreferredSize(new Dimension(90,50));
+        buttonPanel.add(filter,c3);
+
+        setMyConstraints(c3,1,0,GridBagConstraints.WEST);
         cancel = new JButton("Cancel");
-        cancel.setBounds(225, 130, 75, 50);
         cancel.setActionCommand("cancel");
+        cancel.setPreferredSize(new Dimension(90,50));
         cancel.addActionListener(this);
+        buttonPanel.add(cancel,c3);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.insets = new Insets(10, 0,0,0);
+        c.anchor = GridBagConstraints.CENTER;
+        mypane.add(buttonPanel, c);
 
         max.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
@@ -100,15 +142,18 @@ public class ExpressionFilterConstructionPanel extends JPanel
             }
         });
 
-        window.add(max);
-        window.add(maxDesc);
-        window.add(min);
-        window.add(minDesc);
-        window.add(filter);
-        window.add(cancel);
-        window.getContentPane().setLayout(null);
+        // Align Frame
         window.setSize(450, 225);
+        int width = MetaOmGraph.getMainWindow().getWidth();
+        int height = MetaOmGraph.getMainWindow().getHeight();
+        // align window to the middle of the screen
+        window.setLocation((width - window.getWidth()) / 2, (height - window.getHeight()) / 2);
         window.setVisible(true);
+    }
+    private static void setMyConstraints(GridBagConstraints c, int gridx, int gridy, int anchor) {
+        c.gridx = gridx;
+        c.gridy = gridy;
+        c.anchor = anchor;
     }
 
     @Override
