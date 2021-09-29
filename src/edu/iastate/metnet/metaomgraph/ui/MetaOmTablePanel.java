@@ -2962,23 +2962,11 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			HashMap<String, Object> result = new HashMap<String, Object>();
 			result.put("result", "OK");
 
-			final JFrame window = new JFrame("Expression Filter");
-			final JTextField min = new JTextField("Minimum value");
-			min.setBounds(100, 75, 500, 40);
-			final JTextField max = new JTextField("Maximum value");
-			max.setBounds(100, 125, 500, 40);
-			final JButton filter = new JButton("Filter");
-			filter.setBounds(250, 200, 75, 30);
-			final JButton cancel = new JButton("Cancel");
-			cancel.setBounds(400, 200, 75, 30);
+			final ExpressionFilterConstructionPanel efc =
+					new ExpressionFilterConstructionPanel(MetaOmGraph.getActiveProject());
 
-			window.add(min);
-			window.add(max);
-			window.add(filter);
-			window.add(cancel);
-			window.getContentPane().setLayout(null);
-			window.setSize(700, 325);
-			window.setVisible(true);
+			return;
+		}
 			/*
 			// show advance filter options
 			final TreeSearchQueryConstructionPanel tsp = new TreeSearchQueryConstructionPanel(
@@ -3039,9 +3027,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			// SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 			// advancedFilterAction.logActionProperties();
 */
-			return;
-		}
-
 		if ("advancefilter".equals(e.getActionCommand())) {
 
 			// Harsha - reproducibility log
