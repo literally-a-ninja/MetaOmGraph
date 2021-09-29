@@ -3,6 +3,8 @@ package edu.iastate.metnet.metaomgraph.ui;
 import edu.iastate.metnet.metaomgraph.MetaOmProject;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +23,8 @@ public class ExpressionFilterConstructionPanel extends JPanel
     private JButton filter;
     private JButton cancel;
     private JPanel buttonPanel;
+    private boolean minPopulated = false;
+    private boolean maxPopulated = false;
 
     private MetaOmProject project;
 
@@ -45,6 +49,57 @@ public class ExpressionFilterConstructionPanel extends JPanel
         cancel.setActionCommand("cancel");
         cancel.addActionListener(this);
 
+        max.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                changed();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                changed();
+            }
+            public void insertUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            public void changed() {
+                if (!max.getText().equals("")) {
+                    maxPopulated = true;
+                    if (minPopulated) {
+                        filter.setEnabled(true);
+                    }
+                }
+                else {
+                    maxPopulated = false;
+                    filter.setEnabled(false);
+                }
+            }
+        });
+
+        min.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                changed();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                changed();
+            }
+            public void insertUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            public void changed() {
+                if (!min.getText().equals("")) {
+                    minPopulated = true;
+                    if (maxPopulated) {
+                        filter.setEnabled(true);
+                    }
+                }
+                else {
+                    minPopulated = false;
+                    filter.setEnabled(false);
+                }
+
+            }
+        });
+
         window.add(max);
         window.add(maxDesc);
         window.add(min);
@@ -58,16 +113,30 @@ public class ExpressionFilterConstructionPanel extends JPanel
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        boolean maxError = false;
+        boolean minError = false;
         if ("filter".equals(e.getActionCommand())) {
             try {
                 Double maxValue = Double.parseDouble(max.getText());
             } catch (NumberFormatException ne) {
-                JOptionPane.showMessageDialog(window, "Maximum field must be a number");
+                maxError = true;
+
             }
             try {
                 Double minValue = Double.parseDouble(min.getText());
             } catch (NumberFormatException ne) {
-                JOptionPane.showMessageDialog(window, "Minimum field must be a number");
+                minError = true;
+
+            }
+            String errorMsg = "";
+            if (maxError) {
+                errorMsg += "Maximum field must be a number\n";
+            }
+            if (minError) {
+                errorMsg += "Minimum field must be a number";
+            }
+            if (maxError || minError) {
+                JOptionPane.showMessageDialog(window, errorMsg);
             }
             //filterWithExpressionBounds(maxValue, minValue);
             return;
