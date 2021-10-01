@@ -2956,77 +2956,26 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			return;
 		}
 
+		//TODO finish filter
 		if ("expressionfilter".equals(e.getActionCommand())) {
 			// Harsha - reproducibility log
 			HashMap<String, Object> dataMap = new HashMap<String, Object>();
 			HashMap<String, Object> result = new HashMap<String, Object>();
 			result.put("result", "OK");
-			System.out.println("here");
-			final ExpressionFilterConstructionPanel efc =
-					new ExpressionFilterConstructionPanel(MetaOmGraph.getActiveProject());
 
+			MetaOmProject project = MetaOmGraph.getActiveProject();
+			final ExpressionFilterConstructionPanel efc =
+					new ExpressionFilterConstructionPanel(project);
+			MetadataQuery query = efc.showQuery();
+			String filter = "";
+			if (query != null) {
+				filter = query.getField();
+			}
+			filterField.setText(filter);
+			dataMap.put("exprFilter", filter);
 			return;
 		}
-			/*
-			// show advance filter options
-			final TreeSearchQueryConstructionPanel tsp = new TreeSearchQueryConstructionPanel(
-					MetaOmGraph.getActiveProject(), true);
-			final MetadataQuery[] queries;
-			queries = tsp.showSearchDialog();
-			// boolean matchCase=tsp.matchCase();
-			boolean matchAll = tsp.matchAll();
-			if (tsp.getQueryCount() <= 0) {
-				// System.out.println("Search dialog cancelled");
-				// User didn't enter any queries
-				return;
-			}
 
-			String[] headers = myProject.getInfoColumnNames();
-			List<String> headersList = Arrays.asList(headers);
-
-			// JOptionPane.showMessageDialog(null, "h:"+headersList);
-
-			// convert queries to filter string
-			String allFilter = "";
-			for (int i = 0; i < queries.length; i++) {
-
-				String thisFilter = "";
-				String thisField = queries[i].getField();
-				boolean thismatchCase = queries[i].isCaseSensitive();
-				String searchQueryTerm = "";
-				SearchMatchType matchType = queries[i].getMatchType();
-				if(matchType == SearchMatchType.NOT) {
-					searchQueryTerm += "!=";
-				} else if(matchType == SearchMatchType.DOES_NOT_CONTAIN) {
-					searchQueryTerm += "!";
-				} else if(matchType == SearchMatchType.IS) {
-					searchQueryTerm += "=";
-				}
-				searchQueryTerm += queries[i].getTerm();
-				// JOptionPane.showMessageDialog(null,"F:" + queries[i].getField() + " T:" +
-				// queries[i].getTerm() + " isE:" + queries[i].isExact()+ "mC:"+thismatchCase);
-				if (thismatchCase) {
-					searchQueryTerm += "--C";
-				}
-				if (thisField.equals("Any Field")){
-					thisFilter = searchQueryTerm + ":::" + "ANY";
-				} else if(thisField.equals("All Fields")){
-					thisFilter = searchQueryTerm + ":::" + "ALL";
-				} else {
-					int thisCol = headersList.indexOf(thisField);
-					thisFilter = searchQueryTerm + ":::" + String.valueOf(thisCol);
-				}
-				allFilter += thisFilter + ";";
-			}
-
-			dataMap.put("allFilters", allFilter);
-			filterField.setText(allFilter);
-
-			// ActionProperties advancedFilterAction = new
-			// ActionProperties("advanced-filter",null,dataMap,result,new
-			// SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-			// advancedFilterAction.logActionProperties();
-*/
 		if ("advancefilter".equals(e.getActionCommand())) {
 
 			// Harsha - reproducibility log
