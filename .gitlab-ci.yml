@@ -1,4 +1,4 @@
-image: debian
+image: openjdk:17-bullseye
 
 stages:
     - build
