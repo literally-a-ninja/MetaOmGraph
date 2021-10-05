@@ -9,6 +9,7 @@ if [[ ! -f /usr/bin/mvn ]]; then
   if [[ -f /usr/bin/apt ]]; then
     important "Maven build system is a requirement of this project."
     echo "> apt-get install maven"
+    apt-get update
     apt-get install maven
 
     ok "Installed Maven build system. Re-run the script."
