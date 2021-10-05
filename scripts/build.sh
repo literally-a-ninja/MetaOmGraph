@@ -8,8 +8,8 @@ source scripts/helpers.sh
 if [[ ! -f /usr/bin/mvn ]]; then
   if [[ -f /usr/bin/apt ]]; then
     important "Maven build system is a requirement of this project."
-    echo "> sudo apt-get install maven"
-    sudo apt-get install maven
+    echo "> apt-get install maven"
+    apt-get install maven
 
     ok "Installed Maven build system. Re-run the script."
   else
