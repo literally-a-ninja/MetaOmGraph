@@ -314,9 +314,13 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 					} else if(allCols) {
 						hits.addAll(applyAllColsFilter(findMe, isNotFlag, doesNotFlag, isFlag));
 					} else if (rangeFlag) {
-						Double min = Double.parseDouble(findMe.split(delim)[1]);
-						Double max = Double.parseDouble(findMe.split(delim)[2]);
-						hits.addAll(applyRangeFilter(min, max));
+						try {
+							Double min = Double.parseDouble(findMe.split(delim)[1]);
+							Double max = Double.parseDouble(findMe.split(delim)[2]);
+							hits.addAll(applyRangeFilter(min, max));
+						} catch (NumberFormatException e) {
+							// if one of the search terms is invalid handle silently
+						}
 					}
 				}
 			}
