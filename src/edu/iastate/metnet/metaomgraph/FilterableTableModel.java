@@ -7,16 +7,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import java.util.*;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
@@ -173,17 +165,22 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 
 	public TreeSet<Integer> applyRangeFilter(Double min, Double max) {
 		TreeSet<Integer> hits = new TreeSet();
-		for (int row = 0; row < model.getRowCount(); row++) {
-			for (int col = 0; col < model.getColumnCount(); col++) {
-				String thisValue = model.getValueAt(row, col) + "";
-				try {
-					Double curr = Double.parseDouble(thisValue);
-					if (curr >= min && curr <= max) {
-						hits.add(Integer.valueOf(row));
+		MetaOmProject myProject = MetaOmGraph.getActiveProject();
+
+		for(int i = 0; i < myProject.getRowCount(); i++) {
+			try {
+				double[] rowData = myProject.getIncludedData(i);
+				for (double curr : rowData) {
+					try {
+						if (curr >= min && curr <= max) {
+							hits.add(Integer.valueOf(i));
+						}
+					} catch (NumberFormatException e) {
+						continue;
 					}
-				} catch (NumberFormatException e) {
-					continue;
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		return hits;
