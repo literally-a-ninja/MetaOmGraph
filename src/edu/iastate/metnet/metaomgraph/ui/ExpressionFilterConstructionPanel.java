@@ -49,27 +49,28 @@ public class ExpressionFilterConstructionPanel extends JPanel
         // Align Labels
         JPanel entryPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c2 = new GridBagConstraints();
-        c2.insets = new Insets(0,0,10,0);
-        setMyConstraints(c2,0,0,GridBagConstraints.EAST);
-        maxDesc = new JLabel("Maximum Value: ", SwingConstants.RIGHT);
-        maxDesc.setPreferredSize(new Dimension(110, 30));
-        entryPanel.add(maxDesc,c2);
 
         c2.insets = new Insets(0,0,10,0);
-        setMyConstraints(c2,1,0,GridBagConstraints.WEST);
-        max = new JTextField();
-        max.setPreferredSize(new Dimension(200, 30));
-        entryPanel.add(max,c2);
-
         setMyConstraints(c2,0,1,GridBagConstraints.EAST);
         minDesc = new JLabel("Minimum Value: ", SwingConstants.RIGHT);
         minDesc.setPreferredSize(new Dimension(110, 30));
         entryPanel.add(minDesc, c2);
 
+        c2.insets = new Insets(0,0,10,0);
         setMyConstraints(c2,1,1,GridBagConstraints.WEST);
         min = new JTextField();
         min.setPreferredSize(new Dimension(200, 30));
         entryPanel.add(min,c2);
+
+        setMyConstraints(c2,0,0,GridBagConstraints.EAST);
+        maxDesc = new JLabel("Maximum Value: ", SwingConstants.RIGHT);
+        maxDesc.setPreferredSize(new Dimension(110, 30));
+        entryPanel.add(maxDesc,c2);
+
+        setMyConstraints(c2,1,0,GridBagConstraints.WEST);
+        max = new JTextField();
+        max.setPreferredSize(new Dimension(200, 30));
+        entryPanel.add(max,c2);
 
         mypane.add(entryPanel, c);
 
