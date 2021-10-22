@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source scripts/helpers.sh
+# Bash framework
+source "$(realpath "$(dirname "$0")")/bootstrap.sh"
 
 debug "---------------------------------------------------"
 debug "                   BEGIN TESTING                   "
