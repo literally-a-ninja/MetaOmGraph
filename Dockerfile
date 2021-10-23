@@ -7,11 +7,11 @@ RUN apt update && apt install -y sudo
 WORKDIR /opt/mog
 COPY ./pom.xml ./pom.xml
 COPY ./scripts ./scripts
-RUN ./scripts/bootstrap.sh \
+RUN bash ./scripts/bootstrap.sh \
 	&& mvn dependency:go-offline -B
 
 COPY ./src ./src
-RUN ./scripts/build.sh \
+RUN bash ./scripts/build.sh \
 	&& cp ./target/metaomgraph4*.jar ./mog-applet.jar
 
 
