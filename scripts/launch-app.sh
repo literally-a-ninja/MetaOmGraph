@@ -1,10 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export BUILD_MODE=1
 
 # Bash framework
+# -------------------------------
 source "$(realpath "$(dirname "$0")")/bootstrap.sh"
 
+# Build docker image
+# -------------------------------
 docker image inspect iastate/mog-app &>/dev/null
 if [[ "$?" > 0 ]]; then
 	important "Starting docker build...."
@@ -12,6 +15,8 @@ if [[ "$?" > 0 ]]; then
 	ok "Finished build."
 fi
 
+# Run docker container
+# -------------------------------
 ok "Launching application!"
 docker inspect localbuild-mog &>/dev/null
 if [[ "$?" > 0 ]]; then

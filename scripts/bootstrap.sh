@@ -52,6 +52,7 @@ cd "$DIR_SCRIPT/.."
 
 
 if [[ $BUILD_MODE > $MODE_MIN ]]; then
+	source "${DIR_BOOT}/libraries.sh"
 	ok "Build system is READY, building in three seconds."
 	sleep 3
 fi
