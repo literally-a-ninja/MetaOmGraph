@@ -21,8 +21,10 @@ ok "Launching application!"
 docker inspect localbuild-mog &>/dev/null
 if [[ "$?" > 0 ]]; then
 	docker container run -ti --name localbuild-mog \
-		-e DISPLAY=$DISPLAY \
- 		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		--net=host \
+		--env="DISPLAY" \
+		--volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
+ 		--volume /tmp/.X11-unix:/tmp/.X11-unix \
  		iastate/mog-app
 else
 	docker container start localbuild-mog
