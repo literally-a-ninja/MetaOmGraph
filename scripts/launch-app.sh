@@ -6,6 +6,10 @@ export BUILD_MODE=1
 # -------------------------------
 source "$(realpath "$(dirname "$0")")/bootstrap.sh"
 
+# Hotfixes
+# -------------------------------
+source "$DIR_SCRIPT/hotfixes/linux.sh"
+
 # Build docker image
 # -------------------------------
 docker image inspect iastate/mog-app &>/dev/null

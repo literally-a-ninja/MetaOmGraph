@@ -39,7 +39,7 @@ error() {
 
 warn() {
 	echo
-	echo "⚠️${YELLOW} WARN${RESET}: ${1}"
+	echo "⚠️${YELLOW}  WARN${RESET}: ${1}"
 	echo
 }
 
