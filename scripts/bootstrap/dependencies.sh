@@ -23,7 +23,6 @@ apt() {
 
 		$ex "install" "-y" $1
 
-		ok "Installed all dependenices! Continuing..."
 		return 0
 	else
 		error "Failed to locate required dependencies ($1). Aborting build."
