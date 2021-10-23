@@ -7,15 +7,11 @@ stages:
 build-script:
     stage: build
     before_script: 
-    - apt update
-    - apt install -y sudo
-    - chmod u+x scripts/build.sh
+    - apt update && apt install -y sudo file
     script: bash scripts/build.sh
 
 test-script:
     stage: test
     before_script: 
-    - apt update
-    - apt install -y sudo
-    - chmod u+x scripts/test.sh
+    - apt update && apt install -y sudo file
     script: bash scripts/test.sh
