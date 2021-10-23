@@ -37,8 +37,8 @@ case "$BUILD_MODE" in
 		locs=("/usr/bin/docker")
 	;;
 	"$MODE_FULL")
-		deps=("maven" "unzip" "wget")
-		locs=("/usr/bin/mvn" "/usr/bin/unzip" "/usr/bin/wget")
+		deps=("maven" "unzip" "wget" "file")
+		locs=("/usr/bin/mvn" "/usr/bin/unzip" "/usr/bin/wget" "/usr/bin/file")
 	;;
 esac
 
