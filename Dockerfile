@@ -24,4 +24,4 @@ RUN apt update \
 	&& apt install -y libxext6 libxrender1 libxtst6
 #WORKDIR /opt/mog
 #COPY --from=build /opt/mog/mog-applet.jar .
-ENTRYPOINT ["java", "-jar", "./mog-applet.jar"]
+ENTRYPOINT ["java", "-jar", "-Djava.awt.headless=true", "./mog-applet.jar"]
