@@ -9,6 +9,15 @@ function rel_pwd() {
 	return 0;
 }
 
+# Build system modes:
+# 1. Minimum mode (helpers + dependencies ONLY)
+# 2. Building mode (everything)
+if [[ ! -v BUILD_MODE ]]; then
+	export BUILD_MODE=1
+fi
+export MODE_MIN=1
+export MODE_FULL=2
+
 export DIR_PROJECT="$(rel_pwd "/../src")"
 export DIR_SCRIPT="$(rel_pwd "/.")"
 export DIR_BOOT="$(rel_pwd "/bootstrap")"
@@ -19,10 +28,12 @@ source "${DIR_BOOT}/cli.sh"
 
 # Pre-flight
 # -------------------------------
-JAVA_VERSION=$(java --version | head -n1 | awk -F '[^0-9]*' '$0=$2')
-if [[ -z ${OJAVA_VERSION+z} && ${JAVA_VERSION} < 17 ]]; then
-	error "Using $(link_man $(which java)) (JDK ${JAVA_VERSION}); build requires ${BOLD}JDK 17${NORMAL} or higher.";
-	exit 1;
+if [[ $BUILD_MODE > $MODE_MIN ]]; then
+	JAVA_VERSION=$(java --version | head -n1 | awk -F '[^0-9]*' '$0=$2')
+	if [[ -z ${OJAVA_VERSION+z} && ${JAVA_VERSION} < 17 ]]; then
+		error "Using $(link_man $(which java)) (JDK ${JAVA_VERSION}); build requires ${BOLD}JDK 17${NORMAL} or higher.";
+		exit 1;
+	fi
 fi
 
 
@@ -32,43 +43,15 @@ important "Checking build sys dependencies..."
 source "${DIR_BOOT}/dependencies.sh"
 ok "All dependencies are OK."
 
-# Saved for later
-# -------------------------------
-# docker-gui() {
-# 	xhost +si:localuser:root;
-# 	docker run -it --rm -e DISPLAY \
-# 		-v /tmp/.X11-unix:/tmp/.X11-unix \
-# 		--tmpfs /dev/shm \
-# 		"${@}"
-# 
-# 	return 0;
-# }
-
-# Libraries
-# -------------------------------
-
-source "${DIR_BOOT}/lib.sh"
-important "Checking libraries..."
-
-info "Processing l2fprod-common library..."
-download_lib "http://www.java2s.com/Code/JarDownload/l2fprod/l2fprod-common-all.jar.zip" "l2fprod-common-all.jar" \
-  && mvn install:install-file \
-  -Dfile="$DIR_PROJECT/lib/l2fprod-common-all.jar" -Dpackaging=jar -DgeneratePom=true \
-  -DgroupId='com.l2fprod' -DartifactId='l2fprod-common-all' -Dversion='0.1'
-
-info "Processing CustomBrowserLauncher library..."
-mvn install:install-file \
-  -Dfile="$DIR_PROJECT/lib/CustomBrowserLauncher.jar" -Dpackaging=jar -DgeneratePom=true \
-  -DgroupId='edu.iastate.metnet' -DartifactId='custombrowserlauncher' -Dversion='0.0.1'
-
-ok "All libraries are OK."
 
 # Done.
 # -------------------------------
 
 # Make sure our pwd is in project root.
-cd "$DIR_PROJECT/.."
+cd "$DIR_SCRIPT/.."
 
 
-ok "Build system is READY, building in three seconds."
-sleep 3
+if [[ $BUILD_MODE > $MODE_MIN ]]; then
+	ok "Build system is READY, building in three seconds."
+	sleep 3
+fi
