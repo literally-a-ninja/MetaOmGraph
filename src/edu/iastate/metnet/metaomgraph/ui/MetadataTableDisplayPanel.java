@@ -552,6 +552,30 @@ public class MetadataTableDisplayPanel extends JPanel implements ActionListener,
 		});
 		mnByRow.add(mntmFilterLastSearched);
 
+		JMenuItem expressionFilter = new JMenuItem("Expression Filter");
+		expressionFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							MetadataFilter frame = new MetadataFilter(obj);
+							FrameModel fm = new FrameModel("Metadata Filter","Metadata Filter",31);
+							frame.setModel(fm);
+							MetaOmGraph.getDesktop().add(frame);
+							frame.setVisible(true);
+							frame.show();
+							frame.moveToFront();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		});
+		mnByRow.add(expressionFilter);
+
 		JMenuItem mntmAdvanceFilter = new JMenuItem("Advance filter");
 		mntmAdvanceFilter.addActionListener(new ActionListener() {
 			@Override

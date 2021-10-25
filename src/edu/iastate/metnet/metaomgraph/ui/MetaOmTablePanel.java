@@ -153,6 +153,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 	// urmi
 	private JButton metabutton;
 	private JMenuItem viewCorrStats;
+	private JButton expFilterButton;
 	private JButton advFilterButton;
 
 	private JMenuItem atgsItem;
@@ -736,7 +737,15 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		dataToolbar.add(new Separator());
 		dataToolbar.add(searchPanel);
 		dataToolbar.add(listFromFilterButton);
-		
+
+		// add advance filter button
+		// s
+		expFilterButton = new JButton("Expression filter");
+		expFilterButton.setActionCommand("expressionfilter");
+		expFilterButton.addActionListener(this);
+		expFilterButton.setToolTipText("Filter the table with a range of expression values");
+		dataToolbar.add(expFilterButton);
+
 		// add advance filter button
 		// s
 		advFilterButton = new JButton("Advance filter");
@@ -1259,7 +1268,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		JPanel optionPanel = new JPanel();
 		JSpinner spinner = new JSpinner();
 		spinner.setValue(Integer.valueOf(100));
-		JFormattedTextField valueField = new JFormattedTextField(new Double(100.0D));
+		JFormattedTextField valueField = new JFormattedTextField(100.0D);
 		valueField.setColumns(7);
 		JLabel label = new JLabel("Find all chips with expression level over:");
 		optionPanel.add(label);
@@ -2944,6 +2953,26 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 		if ("ExportToText".equals(e.getActionCommand())) {
 			Utils.saveJTabletofile(listDisplay, "Feature Metadata");
+			return;
+		}
+
+		//TODO finish filter
+		if ("expressionfilter".equals(e.getActionCommand())) {
+			// Harsha - reproducibility log
+			HashMap<String, Object> dataMap = new HashMap<String, Object>();
+			HashMap<String, Object> result = new HashMap<String, Object>();
+			result.put("result", "OK");
+
+			MetaOmProject project = MetaOmGraph.getActiveProject();
+			final ExpressionFilterConstructionPanel efc =
+					new ExpressionFilterConstructionPanel(project);
+			MetadataQuery query = efc.showQuery();
+			String filter = "";
+			if (query != null) {
+				filter = query.getField();
+			}
+			filterField.setText(filter);
+			dataMap.put("exprFilter", filter);
 			return;
 		}
 

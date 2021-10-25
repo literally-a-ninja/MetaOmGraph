@@ -757,7 +757,7 @@ public class Utils {
 					if (Character.toLowerCase(s1[i].charValue()) == Character.toLowerCase(s2.charAt(i))) {
 						matches += 1.0D;
 					}
-				} else if (s1[i].equals(new Character(s2.charAt(i)))) {
+				} else if (s1[i].equals(s2.charAt(i))) {
 					matches += 1.0D;
 				}
 			}

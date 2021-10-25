@@ -1841,7 +1841,7 @@ public class MetaOmGraph implements ActionListener {
 
 				out.writeObject(showTips);
 				if (tipper != null) {
-					out.writeObject(new Integer(tipper.getCurrentTip()));
+					out.writeObject(tipper.getCurrentTip());
 				} else if (currentTip != null) {
 					out.writeObject(currentTip);
 				}

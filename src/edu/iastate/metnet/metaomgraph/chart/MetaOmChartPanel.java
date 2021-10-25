@@ -1349,7 +1349,7 @@ public class MetaOmChartPanel extends JPanel implements ChartChangeListener, Cha
 		// Construct the table
 		for (int i = 0; i < isVisible.length; i++) {
 			columnInfo[i][0] = myProject.getDataColumnHeader(i);
-			columnInfo[i][1] = new Boolean(isVisible[i]);
+			columnInfo[i][1] = isVisible[i];
 		}
 		String[] headers = { "Column", "Visible" };
 		NoneditableTableModel model = new NoneditableTableModel(columnInfo, headers);
