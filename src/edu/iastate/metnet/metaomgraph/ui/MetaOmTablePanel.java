@@ -1268,7 +1268,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		JPanel optionPanel = new JPanel();
 		JSpinner spinner = new JSpinner();
 		spinner.setValue(Integer.valueOf(100));
-		JFormattedTextField valueField = new JFormattedTextField(new Double(100.0D));
+		JFormattedTextField valueField = new JFormattedTextField(100.0D);
 		valueField.setColumns(7);
 		JLabel label = new JLabel("Find all chips with expression level over:");
 		optionPanel.add(label);
