@@ -7,16 +7,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import java.util.*;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
@@ -171,6 +163,29 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 		return hits;
 	}
 
+	public TreeSet<Integer> applyRangeFilter(Double min, Double max) {
+		TreeSet<Integer> hits = new TreeSet();
+		MetaOmProject myProject = MetaOmGraph.getActiveProject();
+
+		for(int i = 0; i < myProject.getRowCount(); i++) {
+			try {
+				double[] rowData = myProject.getIncludedData(i);
+				for (double curr : rowData) {
+					try {
+						if (curr >= min && curr <= max) {
+							hits.add(Integer.valueOf(i));
+						}
+					} catch (NumberFormatException e) {
+						continue;
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return hits;
+	}
+
 	/**
 	 * @author urmi modified urmi add columns to query for better searching
 	 * @param values
@@ -180,6 +195,7 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 		// query contating column info is like "searchterm":::"colnumber" where
 		// colnumber starts from zero
 		String delim = ":::";
+
 		// if query ends with --C: means case sensitive
 		String caseFlag = "--C";
 		caseSensitive = false;
@@ -189,6 +205,13 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 				boolean isNotFlag = false;
 				boolean doesNotFlag = false;
 				boolean isFlag = false;
+				boolean rangeFlag = false;
+				if (findMe.length() >= 5 && findMe.contains("RANGE")) {
+					rangeFlag = true;
+					findMe = findMe.replace("EXPR", "");
+					findMe = findMe.replace("{", "");
+					findMe = findMe.replace("}", "");
+				}
 				if(findMe.length() > 1) {
 					if(findMe.substring(0, 2).contentEquals("!=")) {
 						isNotFlag = true;
@@ -207,7 +230,14 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 				boolean anyCol = true;
 				// delim should be present and should have values on both sides
 				if (findMe.indexOf(delim) > -1 && findMe.indexOf(delim) < findMe.length() - delim.length()) {
-					String col = findMe.split(delim)[1];
+					String col = "";
+					if (rangeFlag) {
+						col = findMe.split(delim)[0];
+						anyCol = false;
+						allCols = false;
+					} else {
+						col = findMe.split(delim)[1];
+					}
 					if(col.contentEquals("ALL")) {
 						allCols = true;
 						anyCol = false;
@@ -239,6 +269,7 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 				if (colFlag) {
 					// search only specified column
 					findMe = findMe.split(delim)[0];
+
 					// JOptionPane.showMessageDialog(null, "searching:" + findMe + " col:" +
 					// colInt);
 
@@ -246,7 +277,7 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 						caseSensitive = true;
 						findMe = findMe.split(caseFlag)[0];
 					}
-					
+
 					for (int row = 0; row < model.getRowCount(); row++) {
 						// for (int col = 0; col <= colInt; col++) {
 						String thisValue = model.getValueAt(row, colInt) + "";
@@ -266,8 +297,7 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 							if (thisValue.contentEquals(findMe)) {
 								hits.add(Integer.valueOf(row));
 							}
-						}
-						else if(thisValue.contains(findMe)) {
+						} else if(thisValue.contains(findMe)) {
 							hits.add(Integer.valueOf(row));
 						}
 					}
@@ -280,6 +310,14 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 						hits.addAll(applyAnyColFilter(findMe, isNotFlag, doesNotFlag, isFlag));
 					} else if(allCols) {
 						hits.addAll(applyAllColsFilter(findMe, isNotFlag, doesNotFlag, isFlag));
+					} else if (rangeFlag) {
+						try {
+							Double min = Double.parseDouble(findMe.split(delim)[1]);
+							Double max = Double.parseDouble(findMe.split(delim)[2]);
+							hits.addAll(applyRangeFilter(min, max));
+						} catch (NumberFormatException e) {
+							// if one of the search terms is invalid handle silently
+						}
 					}
 				}
 			}
@@ -310,7 +348,6 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 		catch(Exception e) {
 
 		}
-
 	}
 
 	public synchronized void filterToRows(int[] rows) {
@@ -438,14 +475,14 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 			return selectedRows;
 		int[] result = new int[selectedRows.length];
 		for (int x = 0; x < result.length; x++)
-			result[x] = rowMap.get(new Integer(x)).intValue();
+			result[x] = rowMap.get(Integer.valueOf(x));
 		return result;
 	}
 
 	public int getUnfilteredRow(int selectedRow) {
 		if (rowMap == null)
 			return selectedRow;
-		return rowMap.get(new Integer(selectedRow)).intValue();
+		return rowMap.get(Integer.valueOf(selectedRow));
 	}
 
 	public static void main(String[] args) {
