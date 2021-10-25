@@ -149,6 +149,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 	private static JMenuItem logChange;
 	private static JMenuItem loadDiffExpResults;
 	private static JMenuItem removeDiffExpResults;
+
+	// Fahmi
+	private JMenuItem limma;
 	
 	// urmi
 	private JButton metabutton;
@@ -392,7 +395,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		JMenu diffcorrMenu = new JMenu("Differntial Correlation");
 		JMenu informationMenu = new JMenu("Mutual Information");
 		diffExpMenu = new JMenu("Differential Expression Analysis");
-		
+
 		JMenu distMenu = new JMenu("Distance");
 
 		//////////////////////////
@@ -559,10 +562,17 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		diffExpMenu.add(logChange);
 		diffExpMenu.add(loadDiffExpResults);
 		diffExpMenu.add(removeDiffExpResults);
+
+		// fahmi - Limma analysis
+		limma = new JMenuItem("Limma Analysis");
+		limma.setActionCommand("limma");
+		limma.addActionListener(this);
+		limma.setToolTipText("Perform differential expressiontial with microarray datasets");
 		
 		analyzePopupMenu.add(diffExpMenu);
 		
 		analyzePopupMenu.add(distMenu);
+		analyzePopupMenu.add(limma);
 
 		analyzePopupMenu.addSeparator();
 		analyzePopupMenu.add(viewCorrStats);
@@ -5387,6 +5397,20 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 		}
 
+		if ("limma".equals(e.getActionCommand())) {
+			if (MetaOmGraph.getActiveProject().getMetadataHybrid() == null) {
+				JOptionPane.showMessageDialog(null, "No metadata read", "No metadata", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			LimmaFrame lframe = new LimmaFrame();
+			lframe.setSize(lframe.getWidth(), MetaOmGraph.getMainWindow().getHeight() / 2);
+
+			MetaOmGraph.getDesktop().add(lframe);
+			lframe.setVisible(true);
+
+			return;
+		}
 	}
 
 	private Map<String, Collection<Integer>> createSplitIndex() {
