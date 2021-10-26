@@ -166,18 +166,45 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 	public TreeSet<Integer> applyRangeFilter(Double min, Double max) {
 		TreeSet<Integer> hits = new TreeSet();
 		MetaOmProject myProject = MetaOmGraph.getActiveProject();
+		Boolean shouldAdd;
 
 		for(int i = 0; i < myProject.getRowCount(); i++) {
+			shouldAdd = true;
 			try {
 				double[] rowData = myProject.getIncludedData(i);
 				for (double curr : rowData) {
-					try {
-						if (curr >= min && curr <= max) {
-							hits.add(Integer.valueOf(i));
-						}
-					} catch (NumberFormatException e) {
-						continue;
+					if (!(curr >= min && curr <= max)) {
+						shouldAdd = false;
 					}
+				}
+				if (shouldAdd) {
+					hits.add(Integer.valueOf(i));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return hits;
+	}
+
+	public TreeSet<Integer> applyMeanFilter(Double min, Double max) {
+		TreeSet<Integer> hits = new TreeSet();
+		MetaOmProject myProject = MetaOmGraph.getActiveProject();
+		double mean;
+
+		for(int i = 0; i < myProject.getRowCount(); i++) {
+			try {
+				mean = 0;
+				double[] rowData = myProject.getIncludedData(i);
+				if (rowData.length == 0) { // prevent divide by zero
+					continue;
+				}
+				for (double curr : rowData) {
+					mean += curr;
+				}
+				mean = mean / rowData.length;
+				if (mean >= min && mean <= max) {
+					hits.add(Integer.valueOf(i));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -206,11 +233,21 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 				boolean doesNotFlag = false;
 				boolean isFlag = false;
 				boolean rangeFlag = false;
-				if (findMe.length() >= 5 && findMe.contains("RANGE")) {
-					rangeFlag = true;
-					findMe = findMe.replace("EXPR", "");
-					findMe = findMe.replace("{", "");
-					findMe = findMe.replace("}", "");
+				boolean meanFlag = false;
+				if (findMe.length() >= 4) {
+					if (findMe.contains("EXPR")) {
+						rangeFlag = true;
+
+						findMe = findMe.replace("EXPR", "");
+						findMe = findMe.replace("{", "");
+						findMe = findMe.replace("}", "");
+					} else if (findMe.contains("MEAN")) {
+						meanFlag = true;
+
+						findMe = findMe.replace("MEAN", "");
+						findMe = findMe.replace("{", "");
+						findMe = findMe.replace("}", "");
+					}
 				}
 				if(findMe.length() > 1) {
 					if(findMe.substring(0, 2).contentEquals("!=")) {
@@ -231,7 +268,7 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 				// delim should be present and should have values on both sides
 				if (findMe.indexOf(delim) > -1 && findMe.indexOf(delim) < findMe.length() - delim.length()) {
 					String col = "";
-					if (rangeFlag) {
+					if (rangeFlag || meanFlag) {
 						col = findMe.split(delim)[0];
 						anyCol = false;
 						allCols = false;
@@ -315,6 +352,14 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 							Double min = Double.parseDouble(findMe.split(delim)[1]);
 							Double max = Double.parseDouble(findMe.split(delim)[2]);
 							hits.addAll(applyRangeFilter(min, max));
+						} catch (NumberFormatException e) {
+							// if one of the search terms is invalid handle silently
+						}
+					} else if (meanFlag) {
+						try {
+							Double min = Double.parseDouble(findMe.split(delim)[1]);
+							Double max = Double.parseDouble(findMe.split(delim)[2]);
+							hits.addAll(applyMeanFilter(min, max));
 						} catch (NumberFormatException e) {
 							// if one of the search terms is invalid handle silently
 						}
