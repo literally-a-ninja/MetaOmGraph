@@ -951,13 +951,12 @@ public class MetaOmGraph implements ActionListener {
 		desktop = new JDesktopPane();
 		desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
-		final Taskbar macTaskBar = Taskbar.getTaskbar();
-
 		try {
 			myIcon = ImageIO.read(myself.getClass().getResourceAsStream("/resource/MetaOmicon.png"));
 			mainWindow.setIconImage(myIcon);
 
 			// macOS taskbar icon
+			Taskbar macTaskBar = Taskbar.getTaskbar();
 			macTaskBar.setIconImage(myIcon);
 		} catch (final UnsupportedOperationException e) {
 			System.out.println("macOS does not support 'taskbar.setIconImage'");
