@@ -175,10 +175,13 @@ public class LimmaFrame extends TaskbarInternalFrame {
                     }
                 }
 
-                // warning message is size is less than 30
-                if (grp1.size() < 30 || grp2.size() < 30) {
+                /**
+                 * TODO
+                 * If samples in each group exceed 100, or the total number of samples exceed 1000, then throw a warning message
+                 */
+                if (grp1.size() > 100 || grp2.size() > 100) {
                     JOptionPane.showMessageDialog(null,
-                            "Smaller group size will have lower statistical power. Group size > 30 is recommended",
+                            "Larger group size is not useful for Limma analysis. Group size < 100 is recommended",
                             "Small groups", JOptionPane.WARNING_MESSAGE);
                 }
 
@@ -186,6 +189,11 @@ public class LimmaFrame extends TaskbarInternalFrame {
 
                 // measure time
                 // long startTime = System.nanoTime();
+
+                LimmaLowExpGeneFrame lframe = new LimmaLowExpGeneFrame();
+                lframe.setSize(lframe.getWidth(), MetaOmGraph.getMainWindow().getHeight() / 2);
+                MetaOmGraph.getDesktop().add(lframe);
+                lframe.setVisible(true);
 
                 CalculateLogFC ob = new CalculateLogFC(selectedFeatureList, grp1, grp2, txtGroup1.getText(),
                         txtGroup2.getText(), myProject, comboBox_1.getSelectedIndex());
