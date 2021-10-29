@@ -1,9 +1,11 @@
 package edu.iastate.metnet.metaomgraph;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -17,17 +19,25 @@ public class MetaOmGraphLauncher implements ActionListener {
 
     //JFrame
     private JFrame frame;
-    private JCheckBox extraMemoryCheckBox;
+    private JLabel mogLogo;
+    private JRadioButton defaultMemoryRadio;
+    private JRadioButton extraMemoryRadio;
+    private ButtonGroup memoryGroup;
+    private JTextArea minMemoryBox;
+    private JTextArea maxMemoryBox;
     private JScrollPane messagePane;
     private JTextArea messageLog;
     private JButton runButton;
 
     //commands
-    private final String HEAP_MEMORY = "switch heap memory";
+    private final String EXTRA_MEMORY = "extra memory";
+    private final String DEFAULT_MEMORY = "default memory";
     private final String RUN = "run";
 
     //launch variables
-    private static boolean extraMemory;
+    private boolean extraMemory;
+    private int minMemory;
+    private int maxMemory;
 
     private MetaOmGraphLauncher () {
         // build window
@@ -44,13 +54,50 @@ public class MetaOmGraphLauncher implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
+        // logo
+        try {
+            BufferedImage image = ImageIO.read(new File("/resource/MetaOmicon.png"));
+            mogLogo = new JLabel(new ImageIcon(image));
+            frame.add(mogLogo, gbc);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log(e.getMessage());
+        }
 
-        // extra heap memory checkbox
-        extraMemoryCheckBox = new JCheckBox("Run with higher heap memory");
-        extraMemoryCheckBox.setActionCommand(HEAP_MEMORY);
-        extraMemoryCheckBox.addActionListener(this);
-        gbc.weighty = 1;
-        frame.add(extraMemoryCheckBox, gbc);
+        // default memory radio button
+        defaultMemoryRadio = new JRadioButton("Use Default Memory");
+        defaultMemoryRadio.setActionCommand(DEFAULT_MEMORY);
+        defaultMemoryRadio.addActionListener(this);
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        frame.add(defaultMemoryRadio, gbc);
+
+        // extra memory radio button
+        extraMemoryRadio = new JRadioButton("Use Extra Memory");
+        extraMemoryRadio.setActionCommand(EXTRA_MEMORY);
+        extraMemoryRadio.addActionListener(this);
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        frame.add(extraMemoryRadio, gbc);
+
+        // group buttons
+        memoryGroup = new ButtonGroup();
+        memoryGroup.add(defaultMemoryRadio);
+        memoryGroup.add(extraMemoryRadio);
+
+        // min memory
+        minMemoryBox = new JTextArea("Min", 1, 5);
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.NORTH;
+        frame.add(minMemoryBox, gbc);
+
+        // max memory
+        maxMemoryBox = new JTextArea("Max", 1, 5);
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.NORTH;
+        frame.add(maxMemoryBox, gbc);
 
         // message log
         messageLog = new JTextArea("=== Message Log ===");
@@ -66,6 +113,8 @@ public class MetaOmGraphLauncher implements ActionListener {
         runButton.setActionCommand(RUN);
         runButton.addActionListener(this);
         gbc.weighty = 0;
+        gbc.gridx = 1;
+        gbc.gridwidth = 1;
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.SOUTHWEST;
         frame.add(runButton, gbc);
@@ -78,12 +127,14 @@ public class MetaOmGraphLauncher implements ActionListener {
     }
 
     private void initVariables() {
-        checkExtraHeapMemory();
+        defaultMemory();
+        minMemory = 0;
+        maxMemory = 0;
     }
 
     // start the program
     private void init() {
-        frame.setSize(800, 600);
+        frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
@@ -93,9 +144,14 @@ public class MetaOmGraphLauncher implements ActionListener {
         String com = e.getActionCommand();
 
         switch (com) {
-            case HEAP_MEMORY:
+            case DEFAULT_MEMORY:
             {
-                checkExtraHeapMemory();
+                defaultMemory();
+                break;
+            }
+            case EXTRA_MEMORY:
+            {
+                extraMemory();
                 break;
             }
             case RUN:
@@ -110,14 +166,12 @@ public class MetaOmGraphLauncher implements ActionListener {
         }
     }
 
+    private void defaultMemory() {
+        extraMemory = false;
+    }
 
-    private void checkExtraHeapMemory() {
-        if (extraMemoryCheckBox.isSelected()) {
-            extraMemory = true;
-        } else {
-            extraMemory = false;
-        }
-        log("extra heap memory: " + Boolean.toString(extraMemory));
+    private void extraMemory() {
+        extraMemory = true;
     }
 
     // method which launches MOG
