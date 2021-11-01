@@ -1,10 +1,12 @@
 package edu.iastate.metnet.metaomgraph;
 
-import org.renjin.script.RenjinScriptEngine;
+import org.objenesis.ObjenesisException;
 import org.renjin.script.RenjinScriptEngineFactory;
 
 import javax.script.ScriptEngine;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +24,14 @@ public class ComputeLimma {
     private RenjinScriptEngineFactory factory;
     private ScriptEngine engine;
 
+    private List<String> featureNames;
+    Collection<Collection<Integer>> grpInds;
+    Collection<String> grpName;
+
+    public List<String> getFeatureNames() {
+        return this.featureNames;
+    }
+
     public ComputeLimma(String selectedList, String grpID, MetaOmProject myProject, boolean tflag, int filterLowExpGene) {
         this.selectedList = selectedList;
         this.grpID = grpID;
@@ -32,9 +42,22 @@ public class ComputeLimma {
 
         factory = new RenjinScriptEngineFactory();
         engine = factory.getScriptEngine();
+    }
 
-        // Start of Limma analysis
+    public void doCalc() throws IOException {
 
+        int[] selected = myProject.getGeneListRowNumbers(this.selectedList);
+
+        for (int i : selected) {
+            double[] thisDataRaw = null; // untransformed data
+            double[] thisData = null;
+
+            thisDataRaw = myProject.getAllData(i, true);
+            featureNames.add(myProject.getDefaultRowNames(i));
+        }
+
+
+            // Start of Limma analysis
         try {
             // Preprocessing
             engine.eval("counts <- read.delim(\"all_counts.txt\", row.names = 1)");
@@ -56,6 +79,5 @@ public class ComputeLimma {
         } catch (Exception ignored) {
 
         }
-
     }
 }
