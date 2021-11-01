@@ -1,21 +1,6 @@
 package edu.iastate.metnet.metaomgraph;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Event;
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
-import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -175,7 +160,7 @@ public class MetaOmGraph implements ActionListener {
 	private static StatisticalResultsFrame DCResultsFrame;
 	private static JButton plbbutton;
 	private static JPanel playbackForMac;
-	
+
 	private enum DownloadSampleProject{
 		Metabolomics,
 		MicroArray,
@@ -969,6 +954,14 @@ public class MetaOmGraph implements ActionListener {
 		try {
 			myIcon = ImageIO.read(myself.getClass().getResourceAsStream("/resource/MetaOmicon.png"));
 			mainWindow.setIconImage(myIcon);
+
+			// macOS taskbar icon
+			Taskbar macTaskBar = Taskbar.getTaskbar();
+			macTaskBar.setIconImage(myIcon);
+		} catch (final UnsupportedOperationException e) {
+			System.out.println("macOS does not support 'taskbar.setIconImage'");
+		} catch (final SecurityException e) {
+			System.out.println("macOS security exception for 'taskbar.setIconImage'");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -1841,7 +1834,7 @@ public class MetaOmGraph implements ActionListener {
 
 				out.writeObject(showTips);
 				if (tipper != null) {
-					out.writeObject(new Integer(tipper.getCurrentTip()));
+					out.writeObject(tipper.getCurrentTip());
 				} else if (currentTip != null) {
 					out.writeObject(currentTip);
 				}

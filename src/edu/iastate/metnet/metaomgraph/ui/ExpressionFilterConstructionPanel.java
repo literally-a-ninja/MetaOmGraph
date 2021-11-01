@@ -31,8 +31,13 @@ public class ExpressionFilterConstructionPanel extends JPanel
     private JButton filter;
     private JButton cancel;
     private JPanel buttonPanel;
+    private JRadioButton normalFilter;
+    private JRadioButton meanFilter;
+    private ButtonGroup bg;
     private boolean minPopulated = false;
     private boolean maxPopulated = false;
+    private boolean isNormalFilter = false;
+    private boolean isMeanFilter = false;
     private boolean queryReady;
 
     private MetaOmProject project;
@@ -51,17 +56,32 @@ public class ExpressionFilterConstructionPanel extends JPanel
         GridBagConstraints c2 = new GridBagConstraints();
 
         c2.insets = new Insets(0,0,10,0);
+        setMyConstraints(c2,0,0,GridBagConstraints.NORTH);
+        normalFilter = new JRadioButton("By Expression Range");
+        entryPanel.add(normalFilter, c2);
+
+        c2.insets = new Insets(0,0,10,0);
+        setMyConstraints(c2,1,0,GridBagConstraints.NORTH);
+        meanFilter = new JRadioButton("By Mean Value");
+        entryPanel.add(meanFilter, c2);
+
+        bg = new ButtonGroup();
+        bg.add(normalFilter);
+        bg.add(meanFilter);
+
+        c2.insets = new Insets(30,0,10,0);
         setMyConstraints(c2,0,0,GridBagConstraints.EAST);
         minDesc = new JLabel("Minimum Value: ", SwingConstants.RIGHT);
         minDesc.setSize(new Dimension(100, 70));
         entryPanel.add(minDesc, c2);
 
-        c2.insets = new Insets(0,0,10,0);
+        c2.insets = new Insets(30,0,10,0);
         setMyConstraints(c2,1,0,GridBagConstraints.WEST);
         min = new JTextField();
         min.setPreferredSize(new Dimension(200, 30));
         entryPanel.add(min,c2);
 
+        c2.insets = new Insets(0,0,10,0);
         setMyConstraints(c2,0,1,GridBagConstraints.EAST);
         maxDesc = new JLabel("Maximum Value: ", SwingConstants.RIGHT);
         maxDesc.setSize(new Dimension(100, 70));
@@ -151,6 +171,22 @@ public class ExpressionFilterConstructionPanel extends JPanel
             }
         });
 
+        normalFilter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                isNormalFilter = true;
+                isMeanFilter = false;
+            }
+        });
+
+        meanFilter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                isMeanFilter = true;
+                isNormalFilter = false;
+            }
+        });
+
         // Align Frame
         window.setSize(450, 225);
         int width = MetaOmGraph.getMainWindow().getWidth();
@@ -211,7 +247,13 @@ public class ExpressionFilterConstructionPanel extends JPanel
         Metadata.MetadataQuery result = new Metadata.MetadataQuery();
         if (queryReady) {
             //Expression range query in format 'EXPR{RANGE:::minValue:::maxValue};'
-            result.setField("EXPR{RANGE:::" + getMin() + ":::" + getMax() + "};");
+            String type = "";
+            if (isNormalFilter) {
+                type = "EXPR";
+            } else if (isMeanFilter) {
+                type = "MEAN";
+            }
+            result.setField(type + "{RANGE:::" + getMin() + ":::" + getMax() + "};");
             return result;
         }
         return null;
