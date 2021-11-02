@@ -2956,7 +2956,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			return;
 		}
 
-		//TODO finish filter
 		if ("expressionfilter".equals(e.getActionCommand())) {
 			// Harsha - reproducibility log
 			HashMap<String, Object> dataMap = new HashMap<String, Object>();

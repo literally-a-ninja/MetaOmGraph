@@ -19,7 +19,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -39,5 +38,3 @@ bin/
 #MOG specific for now
 #src/edu/iastate/metnet/metaomgraph/utils/ExceptionHandler.java
 src/resource/config.properties
-*.jar
-src/lib/
