@@ -19,6 +19,7 @@ export MODE_MIN=1
 export MODE_FULL=2
 
 export DIR_PROJECT="$(rel_pwd "/../src")"
+export DIR_ROOT="$(rel_pwd "/../")"
 export DIR_SCRIPT="$(rel_pwd "/.")"
 export DIR_BOOT="$(rel_pwd "/bootstrap")"
 

@@ -12,10 +12,9 @@ source "$DIR_SCRIPT/hotfixes/linux.sh"
 
 # Build docker image
 # -------------------------------
-docker image inspect iastate/mog-app &>/dev/null
-if [[ "$?" > 0 ]]; then
+if [[ -z "$(docker image inspect iastate/mog-app:latest 2>&1 | grep "Error")" ]]; then
 	important "Starting docker build...."
-	docker build -t iastate/mog-app .
+	docker build --tag iastate/mog-app:latest --file "$DIR_ROOT/Dockerfile" $DIR_ROOT
 	ok "Finished build."
 fi
 
