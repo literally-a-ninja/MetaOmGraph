@@ -67,11 +67,6 @@
 			<url>https://jitpack.io</url>
 		</repository>
 		<repository>
-			<id>freehep</id>
-			<name>ICM Repository</name>
-			<url>http://java.freehep.org/maven2/</url>
-		</repository>
-		<repository>
 			<id>bedatadriven</id>
 			<name>bedatadriven public repo</name>
 			<url>https://nexus.bedatadriven.com/content/groups/public/</url>
@@ -175,6 +170,8 @@
 			<groupId>com.l2fprod</groupId>
 			<artifactId>l2fprod-common-all</artifactId>
 			<version>6.9.1</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/src/lib/l2fprod-common-all.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.formdev</groupId>
