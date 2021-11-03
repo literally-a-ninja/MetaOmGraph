@@ -166,7 +166,7 @@
 			<artifactId>l2fprod-common-all</artifactId>
 			<version>6.9.1</version>
 			<scope>system</scope>
-			<systemPath>${pom.basedir}/src/lib/l2fprod-common-all-6.9.1.jar</systemPath>
+			<systemPath>${pom.basedir}/src/lib/l2fprod-common-all.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.formdev</groupId>
