@@ -16,6 +16,7 @@ public class MetaOmGraphLauncher implements ActionListener {
 
     // launcher variables
     private final String jarPath = "metaomgraph4-1.8.2beta.jar"; // replace with jar for current version of MOG
+    private final String logoPath = "/resource/MetaOmicon.png";
 
     //JFrame
     private JFrame frame;
@@ -23,12 +24,12 @@ public class MetaOmGraphLauncher implements ActionListener {
     private JRadioButton defaultMemoryRadio;
     private JRadioButton extraMemoryRadio;
     private ButtonGroup memoryGroup;
-    private JTextArea minMemoryBox;
-    private JTextArea maxMemoryBox;
-    private JCheckBox extraMemoryCheckBox;
+    private JTextField minMemoryBox;
+    private JTextField maxMemoryBox;
     private JScrollPane messagePane;
     private JTextArea messageLog;
     private JButton runButton;
+    private JLabel text;
 
     //commands
     private final String EXTRA_MEMORY = "extra memory";
@@ -40,6 +41,9 @@ public class MetaOmGraphLauncher implements ActionListener {
     private int minMemory;
     private int maxMemory;
 
+    //debugger log on/off
+    private boolean loggerOn = false;
+
     private MetaOmGraphLauncher () {
         // build window
         frame = new JFrame("MetaOmGraph Launcher");
@@ -47,23 +51,31 @@ public class MetaOmGraphLauncher implements ActionListener {
 
         // gridbag formatting
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0; // x pos
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1;
+        gbc.weightx = 1;
+
+        //logo constraints
+        gbc.gridx = 3; // x pos
         gbc.gridy = 0; // y pos
-        gbc.weightx = 0.5; // how much extra space in the x dir should be given
-        gbc.weighty = 0; // how much extra space in the y dir should be given
-        gbc.gridwidth = 2; // number of grids to fill horizontally
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.gridwidth = 1; // number of grids to fill horizontally
+        gbc.anchor = GridBagConstraints.CENTER;
 
         // logo
         try {
-            BufferedImage image = ImageIO.read(new File("/resource/MetaOmicon.png"));
+            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream(logoPath));
             mogLogo = new JLabel(new ImageIcon(image));
             frame.add(mogLogo, gbc);
         } catch (IOException e) {
             e.printStackTrace();
             log(e.getMessage());
         }
+        // Logo Text
+        text = new JLabel("MetaOmGraph");
+        gbc.gridy++;
+        gbc.gridx = 3;
+        gbc.gridwidth = 1;
+        frame.add(text, gbc);
 
         // default memory radio button
         defaultMemoryRadio = new JRadioButton("Use Default Memory");
@@ -71,6 +83,7 @@ public class MetaOmGraphLauncher implements ActionListener {
         defaultMemoryRadio.addActionListener(this);
         gbc.gridy++;
         gbc.gridx = 0;
+        gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         frame.add(defaultMemoryRadio, gbc);
 
@@ -80,6 +93,7 @@ public class MetaOmGraphLauncher implements ActionListener {
         extraMemoryRadio.addActionListener(this);
         gbc.gridy++;
         gbc.gridx = 0;
+        gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         frame.add(extraMemoryRadio, gbc);
 
@@ -88,36 +102,62 @@ public class MetaOmGraphLauncher implements ActionListener {
         memoryGroup.add(defaultMemoryRadio);
         memoryGroup.add(extraMemoryRadio);
 
+        // min label
+        text = new JLabel("Min:");
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        frame.add(text, gbc);
         // min memory
-        minMemoryBox = new JTextArea("Min", 1, 5);
-        gbc.gridy++;
-        gbc.anchor = GridBagConstraints.NORTH;
+        minMemoryBox = new JTextField(5);
+        minMemoryBox.setHorizontalAlignment(JTextField.CENTER);
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.CENTER;
         frame.add(minMemoryBox, gbc);
+        // min label GB
+        text = new JLabel("GB");
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.WEST;
+        frame.add(text, gbc);
 
+        // max label
+        text = new JLabel("Max:");
+        gbc.gridx = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        frame.add(text, gbc);
         // max memory
-        maxMemoryBox = new JTextArea("Max", 1, 5);
-        gbc.gridy++;
-        gbc.anchor = GridBagConstraints.NORTH;
+        maxMemoryBox = new JTextField(5);
+        maxMemoryBox.setHorizontalAlignment(JTextField.CENTER);
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.CENTER;
         frame.add(maxMemoryBox, gbc);
+        // mac label GB
+        text = new JLabel("GB");
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.EAST;
+        frame.add(text, gbc);
 
         // message log
-        messageLog = new JTextArea("=== Message Log ===");
-        messageLog.setRows(5);
-        messagePane = new JScrollPane(messageLog);
-        gbc.weighty = 0;
-        gbc.gridy++;
-        gbc.anchor = GridBagConstraints.SOUTHWEST;
-        frame.add(messagePane, gbc);
+        if (loggerOn) {
+            messageLog = new JTextArea("=== Message Log ===");
+            messageLog.setRows(5);
+            messagePane = new JScrollPane(messageLog);
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 6;
+            gbc.anchor = GridBagConstraints.CENTER;
+            frame.add(messagePane, gbc);
+        }
 
         // run program button
         runButton = new JButton("Run");
         runButton.setActionCommand(RUN);
         runButton.addActionListener(this);
-        gbc.weighty = 0;
-        gbc.gridx = 1;
-        gbc.gridwidth = 1;
         gbc.gridy++;
-        gbc.anchor = GridBagConstraints.SOUTHWEST;
+        gbc.gridx = 3;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
         frame.add(runButton, gbc);
 
         // init launch variables
@@ -128,15 +168,16 @@ public class MetaOmGraphLauncher implements ActionListener {
     }
 
     private void initVariables() {
-        defaultMemory();
+        extraMemory = false;
         minMemory = 0;
         maxMemory = 0;
+        defaultMemoryRadio.setSelected(true);
+        defaultMemory();
     }
 
     // start the program
     private void init() {
         frame.setSize(400, 300);
-        frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
@@ -169,20 +210,21 @@ public class MetaOmGraphLauncher implements ActionListener {
 
     private void defaultMemory() {
         extraMemory = false;
+        minMemoryBox.setEnabled(false);
+        maxMemoryBox.setEnabled(false);
+        minMemory = 0;
+        maxMemory = 0;
+        minMemoryBox.setText(Integer.toString(minMemory));
+        maxMemoryBox.setText(Integer.toString(maxMemory));
         log("extra heap memory: " + Boolean.toString(extraMemory));
     }
 
     private void extraMemory() {
         extraMemory = true;
-        log("extra heap memory: " + Boolean.toString(extraMemory));
-    }
-
-    private void checkExtraHeapMemory() {
-        if (extraMemoryCheckBox.isSelected()) {
-            extraMemory = true;
-        } else {
-            extraMemory = false;
-        }
+        minMemoryBox.setEnabled(true);
+        maxMemoryBox.setEnabled(true);
+        minMemoryBox.setText(Integer.toString(minMemory));
+        maxMemoryBox.setText(Integer.toString(maxMemory));
         log("extra heap memory: " + Boolean.toString(extraMemory));
     }
 
@@ -225,10 +267,12 @@ public class MetaOmGraphLauncher implements ActionListener {
 
     // log messages in launcher
     private void log(String message) {
-        this.messageLog.append("\n" + message);
+        if (loggerOn) {
+            this.messageLog.append("\n" + message);
 
-        // scroll to the bottom of the pane
-        messageLog.setCaretPosition(messageLog.getDocument().getLength());
+            // scroll to the bottom of the pane
+            messageLog.setCaretPosition(messageLog.getDocument().getLength());
+        }
     }
 
     // main method
