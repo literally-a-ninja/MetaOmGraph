@@ -44,7 +44,7 @@ public class MetaOmGraphLauncher implements ActionListener {
     private int maxMemory;
 
     //debugger log on/off
-    private boolean loggerOn = false;
+    private boolean loggerOn = true;
 
     private MetaOmGraphLauncher () {
         // build window
@@ -226,8 +226,8 @@ public class MetaOmGraphLauncher implements ActionListener {
         extraMemory = false;
         minMemoryBox.setEnabled(false);
         maxMemoryBox.setEnabled(false);
-        minMemory = 0;
-        maxMemory = 0;
+        minMemory = 2;
+        maxMemory = 6;
         minMemoryBox.setText(Integer.toString(minMemory));
         maxMemoryBox.setText(Integer.toString(maxMemory));
         log("extra heap memory: " + Boolean.toString(extraMemory));
