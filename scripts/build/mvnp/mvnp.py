@@ -64,7 +64,7 @@ def ansi_length(o):
 
 def match():
     count = 0
-    bar = progressbar.ProgressBar()
+    bar = None
     error = False
     current_max = 0
 

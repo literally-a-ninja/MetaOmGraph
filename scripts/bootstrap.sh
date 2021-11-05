@@ -28,10 +28,6 @@ export DIR_BOOT="$(rel_pwd "/bootstrap")"
 source "${DIR_BOOT}/fun.sh"
 source "${DIR_BOOT}/cli.sh"
 
-function mvn
-{
-  /usr/bin/mvn "$@" -X 2>&1 | "$DIR_SCRIPT/build/mvnp/mvnp.py" -e -t -n;
-}
 fi                              #endif
 
 

@@ -32,7 +32,7 @@ build-package:
     - apt update && apt install sudo maven file unzip python3-pip -y
   script: 
     - bash scripts/build.sh
-    - cp ./target/metaomgraph4*.jar metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.jar
+    - cp ./target/*.jar metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.jar
   artifacts:
     paths:
       - metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.jar

@@ -19,7 +19,7 @@ COPY ./pom.xml ./pom.xml
 COPY ./src ./src
 
 ENV BUILD_MODE 2
-RUN bash ./scripts/bootstrap.sh && bash ./scripts/bootstrap_libraries.sh
+RUN bash ./scripts/bootstrap.sh
 
 ## Build
 ## --------------------- ##
