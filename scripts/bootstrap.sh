@@ -30,7 +30,7 @@ source "${DIR_BOOT}/cli.sh"
 
 function mvn
 {
-  /usr/bin/mvn "$@" -X | "$DIR_SCRIPT/build/mvnp/mvnp.py" -e -t -n;
+  /usr/bin/mvn "$@" -X 2>&1 | "$DIR_SCRIPT/build/mvnp/mvnp.py" -e -t -n;
 }
 fi                              #endif
 
