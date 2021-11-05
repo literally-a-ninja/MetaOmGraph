@@ -5,12 +5,16 @@ export BUILD_MODE=2
 # Bash framework
 # -------------------------------
 source "$(realpath "$(dirname "$0")")/bootstrap.sh"
+source "${DIR_BOOT}/libraries.sh"
 
-# App libraries
-# -------------------------------
+## Libraries
+## ===================== ##
 source "$DIR_SCRIPT/bootstrap_libraries.sh"
 
-# Let's build the app!
-# -------------------------------
+ok "Build system is READY, building in three seconds."
+sleep 3
+
+## Build
+## ===================== ##
 important "Building app..."
-mvn verify clean package >/dev/null
+mvn verify package
