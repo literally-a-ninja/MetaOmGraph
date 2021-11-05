@@ -6,42 +6,41 @@ variables:
   # when running from the command line.
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+variables:
+  MAVEN_OPTS: >-
+    -Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true
+  MAVEN_CLI_OPTS: >-
+    --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true
+    -DdeployAtEnd=true
 
 image: openjdk:17-bullseye
 
-# Cache downloaded dependencies and plugins between builds.
-# To keep cache across branches add 'key: "$CI_JOB_NAME"'
 cache:
   paths:
     - .m2/repository
+    - $CI_PROJECT_DIR/src/lib/
 
 stages:
   - build
   - test
 
-build-script:
-    stage: build
-    before_script:
-    - apt update && apt install -y sudo file
-    script: bash scripts/build.sh
-
-# For merge requests do not `deploy` but only run `verify`.
-# See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
-.verify: &verify
-  image: maven:3.8.3-jdk-11
-  stage: test
-  script:
-    - 'mvn $MAVEN_CLI_OPTS verify'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-# Verify merge requests using JDK11
-verify:JDK11:
-  <<: *verify
+build-package:
+  stage: build
+  before_script:
+    - apt update && apt install sudo maven file unzip python3-pip -y
+  script: 
+    - bash scripts/build.sh
+    - cp ./target/metaomgraph4*.jar metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.jar
+  artifacts:
+    paths:
+      - metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.jar
 
 test-script:
-    stage: test
-    before_script:
+  stage: test
+  before_script:
     - apt update && apt install -y sudo file
-    script: bash scripts/test.sh
+  dependencies: 
+    - build-package
+  script: bash scripts/test.sh
