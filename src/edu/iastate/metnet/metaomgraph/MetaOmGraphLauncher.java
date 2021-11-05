@@ -1,7 +1,11 @@
 package edu.iastate.metnet.metaomgraph;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,12 +48,17 @@ public class MetaOmGraphLauncher implements ActionListener {
     private int maxMemory;
 
     //debugger log on/off
-    private boolean loggerOn = true;
+    private boolean loggerOn = false;
 
     private MetaOmGraphLauncher () {
         // build window
         frame = new JFrame("MetaOmGraph Launcher");
         frame.setLayout(new GridBagLayout());
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
 
         // gridbag formatting
         GridBagConstraints gbc = new GridBagConstraints();
@@ -68,6 +77,7 @@ public class MetaOmGraphLauncher implements ActionListener {
             BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream(logoPath));
             mogLogo = new JLabel(new ImageIcon(image));
             frame.add(mogLogo, gbc);
+            frame.setIconImage(image);
         } catch (IOException e) {
             e.printStackTrace();
             log(e.getMessage());
