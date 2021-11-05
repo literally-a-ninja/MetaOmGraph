@@ -35,6 +35,8 @@ public class MetaOmGraphLauncher implements ActionListener {
     private final String EXTRA_MEMORY = "extra memory";
     private final String DEFAULT_MEMORY = "default memory";
     private final String RUN = "run";
+    private final String SET_MIN_MEMORY = "set min memory";
+    private final String SET_MAX_MEMORY = "set max memory";
 
     //launch variables
     private boolean extraMemory;
@@ -51,7 +53,7 @@ public class MetaOmGraphLauncher implements ActionListener {
 
         // gridbag formatting
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weighty = 1;
         gbc.weightx = 1;
 
@@ -74,7 +76,7 @@ public class MetaOmGraphLauncher implements ActionListener {
         text = new JLabel("MetaOmGraph");
         gbc.gridy++;
         gbc.gridx = 3;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
         frame.add(text, gbc);
 
         // default memory radio button
@@ -112,6 +114,8 @@ public class MetaOmGraphLauncher implements ActionListener {
         // min memory
         minMemoryBox = new JTextField(5);
         minMemoryBox.setHorizontalAlignment(JTextField.CENTER);
+        minMemoryBox.setActionCommand(SET_MIN_MEMORY);
+        minMemoryBox.addActionListener(this);
         gbc.gridx++;
         gbc.anchor = GridBagConstraints.CENTER;
         frame.add(minMemoryBox, gbc);
@@ -129,6 +133,8 @@ public class MetaOmGraphLauncher implements ActionListener {
         // max memory
         maxMemoryBox = new JTextField(5);
         maxMemoryBox.setHorizontalAlignment(JTextField.CENTER);
+        maxMemoryBox.setActionCommand(SET_MAX_MEMORY);
+        maxMemoryBox.addActionListener(this);
         gbc.gridx++;
         gbc.anchor = GridBagConstraints.CENTER;
         frame.add(maxMemoryBox, gbc);
@@ -201,6 +207,14 @@ public class MetaOmGraphLauncher implements ActionListener {
                 runProgram();
                 break;
             }
+            case SET_MIN_MEMORY: {
+                setMinMemory();
+                break;
+            }
+            case SET_MAX_MEMORY: {
+                setMaxMemory();
+                break;
+            }
             default:
             {
                 break;
@@ -228,6 +242,31 @@ public class MetaOmGraphLauncher implements ActionListener {
         log("extra heap memory: " + Boolean.toString(extraMemory));
     }
 
+    // sets min memory
+    // needs error checking - aorgler
+    private void setMinMemory() {
+        String input = minMemoryBox.getText();
+        for(char c : input.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return;
+            }
+        }
+        minMemory = Integer.parseInt(input);
+        log("Set min: " +  minMemory + "gb");
+    }
+
+    //
+    private void setMaxMemory() {
+        String input = maxMemoryBox.getText();
+        for(char c : input.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return;
+            }
+        }
+        maxMemory = Integer.parseInt(input);
+        log("Set min: " +  maxMemory + "gb");
+    }
+
     // method which launches MOG
     private void runProgram() {
         log("Starting MetaOmGraph...");
@@ -246,7 +285,13 @@ public class MetaOmGraphLauncher implements ActionListener {
         ArrayList<String> flags = new ArrayList<String>();
         // add logic for adding flags here
         if (extraMemory) {
-            flags.add("-Xmx4g");
+            setMinMemory();
+            String minHeap = "-Xms" + Integer.toString(minMemory) + "g";
+            flags.add(minHeap);
+
+            setMaxMemory();
+            String maxHeap = "-Xmx" + Integer.toString(maxMemory) + "g";
+            flags.add(maxHeap);
         }
 
         for (String f: flags) {
@@ -255,7 +300,7 @@ public class MetaOmGraphLauncher implements ActionListener {
         cmd += "-jar " + jarPath; // add jar path to command
         try {
             // log for debugging
-            // log(cmd);
+            log(cmd);
             Process pr = Runtime.getRuntime().exec(cmd, null, file); // run command on command line in target dir
             // printResults(pr); // print run results for debugging
 
