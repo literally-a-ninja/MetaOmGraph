@@ -60,7 +60,6 @@ public class ComputeLimma {
             // Start of Limma analysis
         try {
             // Preprocessing
-            engine.eval("counts <- read.delim(\"all_counts.txt\", row.names = 1)");
             engine.eval("d0 <- DGEList(counts)");
             engine.eval("d0 <- calcNormFactors(d0)");
 
