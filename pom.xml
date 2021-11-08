@@ -41,7 +41,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>edu.iastate.metnet.metaomgraph.MetaOmGraph</mainClass>
+							<mainClass>edu.iastate.metnet.metaomgraph.MetaOmGraphLauncher</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
