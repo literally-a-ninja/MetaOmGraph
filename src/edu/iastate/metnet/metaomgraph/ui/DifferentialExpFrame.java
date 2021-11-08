@@ -94,6 +94,8 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 
 	private JCheckBox chckbxSaveResultsWith;
 
+	public static int deaActionNumber;
+
 	/**
 	 * Default Properties
 	 */
@@ -362,6 +364,7 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 					result.put("result", "OK");
 
 					ActionProperties deaAction = new ActionProperties("differential-expression-analysis",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+					deaActionNumber = deaAction.getActionNumber();
 					deaAction.logActionProperties();
 
 				}

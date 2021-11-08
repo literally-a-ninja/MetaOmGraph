@@ -849,6 +849,20 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 				// get selected rowindex
 				int[] rowIndices = getSelectedRowIndices();
+
+				HashMap<String,Object> actionMap = new HashMap<String,Object>();
+				actionMap.put("parent",DifferentialExpFrame.deaActionNumber);
+				actionMap.put("section", "Line chart");
+
+				HashMap<String,Object> dataMap = new HashMap<String,Object>();
+				dataMap.put("Selected row indices",rowIndices);
+
+				HashMap<String,Object> resultLog = new HashMap<String,Object>();
+				resultLog.put("result", "OK");
+
+				ActionProperties lineChartAction = new ActionProperties("line-chart",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				lineChartAction.logActionProperties();
+
 				if (rowIndices == null || rowIndices.length == 0) {
 					JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
 							JOptionPane.ERROR_MESSAGE);
