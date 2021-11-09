@@ -21,26 +21,33 @@ cache:
   paths:
     - .m2/repository
     - $CI_PROJECT_DIR/src/lib/
+    - apt-cache/
 
 stages:
   - build
-  - test
+  - package
 
-build-package:
+build-app:
   stage: build
   before_script:
-    - apt update && apt install sudo maven file unzip python3-pip -y
+    - apt update && apt -o dir::cache::archives="apt-cache" install sudo maven file unzip zip python3-pip -y
   script: 
     - bash scripts/build.sh
-    - cp ./target/*.jar metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.jar
   artifacts:
     paths:
-      - metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.jar
+      - ./target/*.jar
 
-test-script:
-  stage: test
+
+package-archive:
+  stage: package
   before_script:
-    - apt update && apt install -y sudo file
-  dependencies: 
-    - build-package
-  script: bash scripts/test.sh
+    - mv ./target/*.jar mog.jar
+  script: 
+    - bash scripts/package.sh
+    - cp {metaomgraph-latest,metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG}.tar.gz
+    - cp {metaomgraph-latest,metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG}.zip
+  artifacts:
+    paths:
+      - metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.tar.gz
+      - metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.zip
+
