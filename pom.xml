@@ -165,8 +165,11 @@
 			<groupId>com.l2fprod</groupId>
 			<artifactId>l2fprod-common-all</artifactId>
 			<version>6.9.1</version>
-			<scope>system</scope>
-			<systemPath>${pom.basedir}/src/lib/l2fprod-common-all.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.apporiented</groupId>
+			<artifactId>hierarchical-clustering</artifactId>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.formdev</groupId>
