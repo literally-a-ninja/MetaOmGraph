@@ -33,9 +33,9 @@ build-app:
     - apt update && apt -o dir::cache::archives="apt-cache" install sudo maven file unzip zip python3-pip -y
   script: 
     - bash scripts/build.sh
-  artifacts:
-    paths:
-      - ./target/metaomgraph4*.jar
+# artifacts:
+#   paths:
+#     - ./target/metaomgraph4*.jar
 
 
 package-archive:
