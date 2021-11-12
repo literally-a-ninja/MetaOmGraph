@@ -18,4 +18,4 @@ sleep 3
 ## Build
 ## ===================== ##
 important "Building app..."
-mvn verify package
+mvn package
