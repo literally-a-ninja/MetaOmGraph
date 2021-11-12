@@ -33,20 +33,19 @@ build-app:
     - apt update && apt -o dir::cache::archives="apt-cache" install sudo maven file unzip zip python3-pip -y
   script: 
     - bash scripts/build.sh
-# artifacts:
-#   paths:
-#     - ./target/metaomgraph4*.jar
+  artifacts:
+    paths:
+      - ./target/metaomgraph4*.jar
 
 
 package-archive:
   stage: package
   script: 
     - bash scripts/package.sh
-    - cp {metaomgraph4-latest,metaomgraph4-all-$CI_COMMIT_REF_SLUG}.tar.gz
-    - cp {metaomgraph4-latest,metaomgraph4-all-$CI_COMMIT_REF_SLUG}.zip
   artifacts:
     paths:
-      - metaomgraph4-all-$CI_COMMIT_REF_SLUG*
+      - metaomgraph4-jvm-$CI_COMMIT_REF_SLUG.tar.gz
+      - metaomgraph4-jvm-$CI_COMMIT_REF_SLUG.zip
   dependencies:
     - build-app
 

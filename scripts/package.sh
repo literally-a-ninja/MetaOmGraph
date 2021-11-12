@@ -34,15 +34,25 @@ source "$(realpath "$(dirname "$0")")/bootstrap.sh"
 ## ===================== ##
 ## docker cp "$DOCKER_CONTAINER":/opt/mog/mog.jar "$DIR_ROOT/metaomgraph-latest.jar"
 
-cp "$DIR_ROOT/target/metaomgraph4*.jar" "$DIR_ROOT/metaomgraph4-latest.jar"
-cp "$DIR_ROOT/target/metaomgraph4*.jar" "$DIR_ROOT/installer"
-ok "Exported applet as metaomgraph-latest.jar."
+cd "$DIR_ROOT"
 
-tar czvf "metaomgraph4-latest.tar.gz" "$DIR_ROOT/installer/*" 
-ok "Exported installer archive as metaomgraph4-latest.tar.gz."
+BUILD_OUTPUT_SELECTOR="/target/metaomgraph4*.jar"
 
-zip "metaomgraph4-latest.zip" "$DIR_ROOT/installer/*" 
-ok "Exported installer archive as metaomgraph4-latest.zip."
+[[ -z "$CI_COMMIT_REF_SLUG" ]] \
+  && version='latest' \
+  || version="$CI_COMMIT_REF_SLUG"
+
+name="metaomgraph4-jvm-$version"
+
+cp "$DIR_ROOT/target/metaomgraph4*.jar" "$DIR_ROOT/$name.jar"
+cp "$DIR_ROOT/target/metaomgraph4*.jar" "$DIR_ROOT/install/metaomgraph4.jar"
+ok "Exported applet as $name.jar!"
+
+tar czvf "$name.tar.gz" "$DIR_ROOT/install/*" 
+ok "Exported install archive as $name.tar.gz."
+
+zip "$name.zip" "$DIR_ROOT/install/*" 
+ok "Exported install archive as $name.zip."
 
 ## Launch app
 ## ===================== ##
