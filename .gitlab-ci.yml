@@ -40,14 +40,13 @@ build-app:
 
 package-archive:
   stage: package
-  before_script:
-    - mv ./target/*.jar mog.jar
   script: 
     - bash scripts/package.sh
-    - cp {metaomgraph-latest,metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG}.tar.gz
-    - cp {metaomgraph-latest,metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG}.zip
+    - cp {metaomgraph4-latest,metaomgraph4-all-$CI_COMMIT_REF_SLUG}.tar.gz
+    - cp {metaomgraph4-latest,metaomgraph4-all-$CI_COMMIT_REF_SLUG}.zip
   artifacts:
     paths:
-      - metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.tar.gz
-      - metaomgraph4-rcdev-$CI_COMMIT_REF_SLUG.zip
+      - metaomgraph4-all-$CI_COMMIT_REF_SLUG*
+  dependencies:
+    - build-app
 
