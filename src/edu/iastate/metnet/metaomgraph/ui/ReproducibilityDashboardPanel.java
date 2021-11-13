@@ -520,9 +520,9 @@ public class ReproducibilityDashboardPanel extends JPanel {
 
 
 		JScrollPane samplesPanel = new JScrollPane(includedSamplesTable);
-		samplesPane.addNonClosableTab(INCLUDED_SAMPLES_PROPERTY, null, samplesPanel, null);
+		samplesPane.addNonClosableTab(INCLUDED_SAMPLES_PROPERTY, null, samplesPanel, null, MetaOmGraph.getCurrentProjectActionId());
 		JScrollPane samplesPanel2 = new JScrollPane(excludedSamplesTable);
-		samplesPane.addNonClosableTab(EXCLUDED_SAMPLES_PROPERTY, null, samplesPanel2, null);
+		samplesPane.addNonClosableTab(EXCLUDED_SAMPLES_PROPERTY, null, samplesPanel2, null, MetaOmGraph.getCurrentProjectActionId());
 
 
 	}
@@ -730,7 +730,7 @@ public class ReproducibilityDashboardPanel extends JPanel {
 		if (isClosable) {
 			tabbedPane.addTab(tabName, null, splitPane, null);
 		} else {
-			tabbedPane.addNonClosableTab(tabName, null, splitPane, null);
+			tabbedPane.addNonClosableTab(tabName, null, splitPane, null, MetaOmGraph.getCurrentProjectActionId());
 		}
 
 		JScrollPane scrollPane_1 = new JScrollPane();

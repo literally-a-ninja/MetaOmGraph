@@ -93,9 +93,6 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 	private boolean[] excludedCopy;
 
 	private JCheckBox chckbxSaveResultsWith;
-
-	public static int deaActionNumber;
-
 	/**
 	 * Default Properties
 	 */
@@ -127,6 +124,7 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 	 * Create the frame.
 	 */
 	public DifferentialExpFrame() {
+
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		setTitle("Differential expression analysis");
@@ -270,6 +268,10 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 				final String id_f = id;
 				//cant'start with string
 
+				HashMap<String,Object> actionMap = new HashMap<String,Object>();
+				HashMap<String,Object> dataMap = new HashMap<String,Object>();
+				HashMap<String,Object> result = new HashMap<String,Object>();
+				ActionProperties deaAction = new ActionProperties("differential-expression-analysis",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 
 				new AnimatedSwingWorker("Working...", true) {
 					@Override
@@ -297,7 +299,7 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 
 
 									if(MetaOmGraph.getDEAResultsFrame()!=null && !MetaOmGraph.getDEAResultsFrame().isClosed()) {
-										MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
+										MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID(), deaAction.getActionNumber());
 										MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
 										MetaOmGraph.getDEAResultsFrame().setTitle("DE results");
 										MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().maximizeFrame(MetaOmGraph.getDEAResultsFrame());
@@ -307,7 +309,7 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 									}
 									else {
 										MetaOmGraph.setDEAResultsFrame(new StatisticalResultsFrame("DEA","DEA Results"));
-										MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
+										MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID(), deaAction.getActionNumber());
 										MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
 										MetaOmGraph.getDesktop().add(MetaOmGraph.getDEAResultsFrame());
 										MetaOmGraph.getDEAResultsFrame().setTitle("DE results");
@@ -339,14 +341,6 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 					}
 				}.start();
 
-
-
-				//Harsha - reproducibility log
-
-				HashMap<String,Object> actionMap = new HashMap<String,Object>();
-				HashMap<String,Object> dataMap = new HashMap<String,Object>();
-				HashMap<String,Object> result = new HashMap<String,Object>();
-
 				try {
 
 					actionMap.put("parent",MetaOmGraph.getCurrentProjectActionId());
@@ -363,8 +357,6 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 
 					result.put("result", "OK");
 
-					ActionProperties deaAction = new ActionProperties("differential-expression-analysis",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-					deaActionNumber = deaAction.getActionNumber();
 					deaAction.logActionProperties();
 
 				}
