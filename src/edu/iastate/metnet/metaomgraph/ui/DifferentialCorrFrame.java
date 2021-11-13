@@ -117,7 +117,7 @@ public class DifferentialCorrFrame extends TaskbarInternalFrame {
 	/**
 	 * Create the frame.
 	 */
-	public DifferentialCorrFrame(String geneList, String featureName, int featureInd) {
+	public DifferentialCorrFrame(String geneList, String featureName, int featureInd, int parentActionNumber) {
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		setTitle("Differential expression analysis");
@@ -293,7 +293,7 @@ public class DifferentialCorrFrame extends TaskbarInternalFrame {
 
 
 									if(MetaOmGraph.getDCResultsFrame()!=null && !MetaOmGraph.getDCResultsFrame().isClosed()) {
-										MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, id_f);
+										MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, id_f, parentActionNumber);
 										MetaOmGraph.getDCResultsFrame().addTabListToFrame(frame.getGeneLists(), id_f);
 										MetaOmGraph.getDCResultsFrame().getDesktopPane().getDesktopManager().maximizeFrame(MetaOmGraph.getDCResultsFrame());
 										MetaOmGraph.getDCResultsFrame().getDesktopPane().getDesktopManager().minimizeFrame(MetaOmGraph.getDCResultsFrame());
@@ -301,7 +301,7 @@ public class DifferentialCorrFrame extends TaskbarInternalFrame {
 									}
 									else {
 										MetaOmGraph.setDCResultsFrame(new StatisticalResultsFrame("Differential Correlation","Differential Correlation Results ["+diffcorrresOB.getFeatureNames().get(0)+"] ("+diffcorrresOB.getFeatureNames().size()+" features)"));
-										MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, id_f);
+										MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, id_f, parentActionNumber);
 										MetaOmGraph.getDCResultsFrame().addTabListToFrame(frame.getGeneLists(), id_f);
 										MetaOmGraph.getDCResultsFrame().setTitle("Differential Correlation Results");
 										MetaOmGraph.getDesktop().add(MetaOmGraph.getDCResultsFrame());

@@ -337,7 +337,6 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 		geneListPanel.setBorder(BorderFactory.createTitledBorder(loweredetched, "Lists"));
 		initTableModel();
 
-
 		geneLists.addListSelectionListener(new ListSelectionListener() {
 
 			@Override
@@ -383,9 +382,7 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 		add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 
-
 		add(listPanel);
-
 
 		table.setAutoResizeMode(0);
 
@@ -432,7 +429,7 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 					try {
 						//Harsha - reproducibility log
 						HashMap<String,Object> actionMap = new HashMap<String,Object>();
-						actionMap.put("parent",MetaOmGraph.getCurrentProjectActionId());
+						actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
 						actionMap.put("section", "Feature Metadata");
 
 						HashMap<String,Object> dataMap = new HashMap<String,Object>();
@@ -616,6 +613,20 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 								projectColumns(getSelectedFeatureColumns());
 
+								HashMap<String,Object> actionMap = new HashMap<String,Object>();
+								actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+								actionMap.put("section", "P-Value Filter");
+
+								HashMap<String,Object> dataMap = new HashMap<String,Object>();
+								dataMap.put("Selected row indices",getSelectedRowIndices());
+								dataMap.put("Project Columns", getSelectedFeatureColumns());
+
+								HashMap<String,Object> resultLog = new HashMap<String,Object>();
+								resultLog.put("result", "OK");
+
+								ActionProperties action = new ActionProperties("p-value-filter",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+								action.logActionProperties();
+
 							}
 
 							return null;
@@ -793,6 +804,20 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 									projectColumns(getSelectedFeatureColumns());
 
+									HashMap<String,Object> actionMap = new HashMap<String,Object>();
+									actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+									actionMap.put("section", "P-Value Correction");
+
+									HashMap<String,Object> dataMap = new HashMap<String,Object>();
+									dataMap.put("Selected row indices",getSelectedRowIndices());
+									dataMap.put("Project Columns", getSelectedFeatureColumns());
+
+									HashMap<String,Object> resultLog = new HashMap<String,Object>();
+									resultLog.put("result", "OK");
+
+									ActionProperties action = new ActionProperties("p-value-correction",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+									action.logActionProperties();
+
 								}
 
 
@@ -818,6 +843,18 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				HashMap<String,Object> actionMap = new HashMap<String,Object>();
+				actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+				actionMap.put("section", "Hide/Show DEA Result Columns");
+
+				HashMap<String,Object> dataMap = new HashMap<String,Object>();
+				dataMap.put("Project Column Count", table.getColumnCount());
+
+				HashMap<String,Object> resultLog = new HashMap<String,Object>();
+				resultLog.put("result", "OK");
+
+				ActionProperties action = new ActionProperties("hide-show-dea-columns",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				action.logActionProperties();
 
 				table.openColumnSelectorDialog("DEA Result");
 			}
@@ -851,17 +888,17 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 				int[] rowIndices = getSelectedRowIndices();
 
 				HashMap<String,Object> actionMap = new HashMap<String,Object>();
-				actionMap.put("parent",DifferentialExpFrame.deaActionNumber);
+				actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
 				actionMap.put("section", "Line chart");
 
 				HashMap<String,Object> dataMap = new HashMap<String,Object>();
-				dataMap.put("Selected row indices",rowIndices);
+				dataMap.put("Selected row count",rowIndices.length);
 
 				HashMap<String,Object> resultLog = new HashMap<String,Object>();
 				resultLog.put("result", "OK");
 
-				ActionProperties lineChartAction = new ActionProperties("line-chart",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-				lineChartAction.logActionProperties();
+				ActionProperties action = new ActionProperties("line-chart",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				action.logActionProperties();
 
 				if (rowIndices == null || rowIndices.length == 0) {
 					JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
@@ -899,6 +936,20 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 				// get selected rowindex
 				int[] rowIndices = getSelectedRowIndices();
+
+				HashMap<String,Object> actionMap = new HashMap<String,Object>();
+				actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+				actionMap.put("section", "Scatter Plot");
+
+				HashMap<String,Object> dataMap = new HashMap<String,Object>();
+				dataMap.put("Selected row count",rowIndices.length);
+
+				HashMap<String,Object> resultLog = new HashMap<String,Object>();
+				resultLog.put("result", "OK");
+
+				ActionProperties action = new ActionProperties("scatter-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				action.logActionProperties();
+
 				if (rowIndices == null) {
 					JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
 							JOptionPane.ERROR_MESSAGE);
@@ -972,6 +1023,20 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 
 				int[] rowIndices = getSelectedRowIndices();
+
+				HashMap<String,Object> actionMap = new HashMap<String,Object>();
+				actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+				actionMap.put("section", "Box Plot");
+
+				HashMap<String,Object> dataMap = new HashMap<String,Object>();
+				dataMap.put("Selected row count",rowIndices.length);
+
+				HashMap<String,Object> resultLog = new HashMap<String,Object>();
+				resultLog.put("result", "OK");
+
+				ActionProperties action = new ActionProperties("box-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				action.logActionProperties();
+
 				if (rowIndices == null || rowIndices.length == 0) {
 					JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
 							JOptionPane.ERROR_MESSAGE);
@@ -1051,6 +1116,20 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 					public void run() {
 						try {// get data for selected rows
 							int[] selected = getSelectedRowIndices();
+
+							HashMap<String,Object> actionMap = new HashMap<String,Object>();
+							actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+							actionMap.put("section", "Histogram");
+
+							HashMap<String,Object> dataMap = new HashMap<String,Object>();
+							dataMap.put("Selected row count",selected.length);
+
+							HashMap<String,Object> resultLog = new HashMap<String,Object>();
+							resultLog.put("result", "OK");
+
+							ActionProperties action = new ActionProperties("histogram",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+							action.logActionProperties();
+
 							if (selected == null || selected.length == 0) {
 								JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
 										JOptionPane.ERROR_MESSAGE);
@@ -1157,7 +1236,6 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 				}
 				table.getMetadata().setColumnVisibilityMap(newMap);
 				table.hideColumns();
-
 
 				plotColumnHistogram("logFC");
 
@@ -1483,6 +1561,19 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 			pv.add((Double) table.getModel().getValueAt(i, table.getColumn(methodName + " pval").getModelIndex()));
 		}
 
+		HashMap<String,Object> actionMap = new HashMap<String,Object>();
+		actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+		actionMap.put("section", "Volcano Plot");
+
+		HashMap<String,Object> dataMap = new HashMap<String,Object>();
+		dataMap.put("Feature names",featureNames);
+
+		HashMap<String,Object> resultLog = new HashMap<String,Object>();
+		resultLog.put("result", "OK");
+
+		ActionProperties action = new ActionProperties("volcano-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+		action.logActionProperties();
+
 		// make plot
 		VolcanoPlot f = new VolcanoPlot(featureNames, fc, pv, name1, name2, false);
 		MetaOmGraph.getDesktop().add(f);
@@ -1511,7 +1602,18 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 			apv.add((Double) table.getModel().getValueAt(i, table.getColumn("Adj pval").getModelIndex()));
 
 		}
+		HashMap<String,Object> actionMap = new HashMap<String,Object>();
+		actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+		actionMap.put("section", "Adj Volcano Plot");
 
+		HashMap<String,Object> dataMap = new HashMap<String,Object>();
+		dataMap.put("Feature names",featureNames);
+
+		HashMap<String,Object> resultLog = new HashMap<String,Object>();
+		resultLog.put("result", "OK");
+
+		ActionProperties action = new ActionProperties("adj-volcano-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+		action.logActionProperties();
 		// make plot
 		VolcanoPlot f = new VolcanoPlot(featureNames, fc, apv, name1, name2, true);
 		MetaOmGraph.getDesktop().add(f);
@@ -1710,6 +1812,21 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 			@Override
 			public void run() {
 				try {// get data for selected rows
+
+					HashMap<String,Object> actionMap = new HashMap<String,Object>();
+					actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
+					actionMap.put("section", columnName+ " Histogram");
+
+					HashMap<String,Object> dataMap = new HashMap<String,Object>();
+					dataMap.put("Column name",columnName);
+					dataMap.put("Column count", table.getColumnCount());
+
+					HashMap<String,Object> resultLog = new HashMap<String,Object>();
+					resultLog.put("result", "OK");
+
+					ActionProperties action = new ActionProperties(columnName+"-histogram",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+					action.logActionProperties();
+
 					int nBins = 10;
 					HistogramChart f = new HistogramChart(null, nBins, null, 2, data, false);
 					f.setTitle(columnName + " histogram");
