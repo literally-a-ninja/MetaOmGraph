@@ -51,7 +51,7 @@ ok "Exported applet as $name.jar!"
 tar czvf "$name.tar.gz" "$DIR_ROOT/install/*" 
 ok "Exported install archive as $name.tar.gz."
 
-zip "$name.zip" "$DIR_ROOT/install/*" 
+zip -9 "$name.zip" "$DIR_ROOT/install/*" 
 ok "Exported install archive as $name.zip."
 
 ## Launch app
