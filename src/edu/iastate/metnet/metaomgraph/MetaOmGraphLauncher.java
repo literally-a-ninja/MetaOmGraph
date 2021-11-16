@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class MetaOmGraphLauncher implements ActionListener {
 
     // launcher variables
-    private final String jarPath = "metaomgraph4-11.0.12beta.jar"; // replace with jar for current version of MOG
+    private final String jarPath = "metaomgraphclean.jar"; // replace with jar for current version of MOG
     private final String logoPath = "/resource/MetaOmicon.png";
 
     //JFrame
@@ -367,7 +367,8 @@ public class MetaOmGraphLauncher implements ActionListener {
     private void runProgram() {
         log("Starting MetaOmGraph...");
 
-        File file = new File("target"); // jar directory
+        File file = new File(System.getProperty("user.dir")); // jar directory - for running program
+        // File file = new File("target"); // jar directory - for testing jar in IDE
         String cmd = ""; // cmd for launching MOG
 
         String os = System.getProperty("os.name"); // get operating system
@@ -405,6 +406,7 @@ public class MetaOmGraphLauncher implements ActionListener {
             log(cmd);
             Process pr = Runtime.getRuntime().exec(cmd, null, file); // run command on command line in target dir
             // printResults(pr); // print run results for debugging
+            System.exit(-1);
 
         } catch (IOException e) {
             e.printStackTrace();
