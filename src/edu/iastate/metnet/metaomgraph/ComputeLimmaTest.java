@@ -1,11 +1,6 @@
 package edu.iastate.metnet.metaomgraph;
 
-import com.github.rcaller.rstuff.RCaller;
-import com.github.rcaller.rstuff.RCallerOptions;
-import com.github.rcaller.rstuff.RCode;
-import org.apache.spark.api.r.RUtils;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.STIconSetType;
-//import org.renjin.script.RenjinScriptEngineFactory;
+import org.renjin.script.RenjinScriptEngineFactory;
 import org.renjin.script.*;
 import org.renjin.bioconductor.limma.limma;
 import org.renjin.bioconductor.edgeR.edgeR;
@@ -84,15 +79,6 @@ public class ComputeLimmaTest {
         }
     }
 
-    public static void doCalcRCaller() throws IOException, URISyntaxException {
-        String fileContent = RUtils.getMeanScriptContent();
-        RCode code = RCode.create();
-        code.addRCode(fileContent);
-        code.addIntArray("input", values);
-        code.addRCode("result <- customMean(input)");
-        RCaller caller = RCaller.create(code, RCallerOptions.create());
-        caller.runAndReturnResult("result");
-    }
     public static void main(String[] args) throws IOException {
         doCalc();
 

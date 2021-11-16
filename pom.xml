@@ -242,21 +242,6 @@
 			<artifactId>edgeR</artifactId>
 			<version>3.22.3-b1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.renjin.bioconductor</groupId>
-			<artifactId>limma</artifactId>
-			<version>3.36.0-b1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.jbytecode</groupId>
-			<artifactId>RCaller</artifactId>
-			<version>3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.spark</groupId>
-			<artifactId>spark-core_2.13</artifactId>
-			<version>3.2.0</version>
-		</dependency>
 	</dependencies>
 
 	<properties>
