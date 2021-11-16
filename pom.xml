@@ -233,14 +233,9 @@
 			<version>1.2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.renjin</groupId>
-			<artifactId>renjin-script-engine</artifactId>
-			<version>3.5-beta76</version>
-		</dependency>
-		<dependency>
-			<groupId>org.renjin.bioconductor</groupId>
-			<artifactId>edgeR</artifactId>
-			<version>3.22.3-b1</version>
+			<groupId>com.github.jbytecode</groupId>
+			<artifactId>RCaller</artifactId>
+			<version>3.0</version>
 		</dependency>
 	</dependencies>
 

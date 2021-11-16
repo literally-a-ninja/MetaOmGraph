@@ -21,8 +21,6 @@ public class ComputeLimma {
     private boolean[] excluded;
     private int testMethod;
     private int filterLowExpGene;
-    private RenjinScriptEngineFactory factory;
-    private ScriptEngine engine;
 
     private List<String> featureNames;
     Collection<Collection<Integer>> grpInds;
@@ -40,8 +38,6 @@ public class ComputeLimma {
         this.testMethod = 0;
         this.filterLowExpGene = filterLowExpGene;
 
-        factory = new RenjinScriptEngineFactory();
-        engine = factory.getScriptEngine();
     }
 
     public void doCalc() throws IOException {
@@ -55,26 +51,6 @@ public class ComputeLimma {
             thisDataRaw = myProject.getAllData(i, true);
             featureNames.add(myProject.getDefaultRowNames(i));
         }
-
-
-            // Start of Limma analysis
-        try {
-            // Preprocessing
-            engine.eval("d0 <- DGEList(counts)");
-            engine.eval("d0 <- calcNormFactors(d0)");
-
-            // Filter low expression gene (Optional, if filterLowExpGene > 0)
-            if (filterLowExpGene > 0) {
-                String cutoff = "cutoff <- " + filterLowExpGene;
-                String drop = "drop <- which(apply(cpm(d0), " + filterLowExpGene + ", max) < cutoff)";
-                engine.eval(cutoff);
-                engine.eval(drop);
-                engine.eval("d <- d0[-drop,");
-            }
-
-            // Voom
-            engine.eval("mm <- model.matrix(~0 + group)");
-
         } catch (Exception ignored) {
 
         }
