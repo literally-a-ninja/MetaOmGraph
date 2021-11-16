@@ -77,14 +77,20 @@
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>module-info.class</exclude>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
+										<excludes>
+											<exclude>module-info.class</exclude>
+											<exclude>META-INF/*.SF</exclude>
+											<exclude>META-INF/*.DSA</exclude>
+											<exclude>META-INF/*.RSA</exclude>
+											<exclude>*:jar</exclude>
+										</excludes>
 								</filter>
 							</filters>
+							<artifactSet>
+								<includes>
+									<include>com.formdev:flatlaf</include>
+								</includes>
+							</artifactSet>
 						</configuration>
 					</execution>
 				</executions>
