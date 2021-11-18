@@ -367,16 +367,16 @@ public class MetaOmGraphLauncher implements ActionListener {
     private void runProgram() {
         log("Starting MetaOmGraph...");
 
-        File file = new File(System.getProperty("user.dir")); // jar directory - for running program
-        // File file = new File("target"); // jar directory - for testing jar in IDE
+        // File file = new File(System.getProperty("user.dir")); // jar directory - for running program
+        File file = new File("target"); // jar directory - for testing jar in IDE
         String cmd = ""; // cmd for launching MOG
 
-        String os = System.getProperty("os.name"); // get operating system
-        if (os.toLowerCase().startsWith("windows")) { // check if windows
-            cmd += "cmd /c ";
-        } else {
-            cmd += "sh -c ";
-        }
+//        String os = System.getProperty("os.name"); // get operating system
+//        if (os.toLowerCase().startsWith("windows")) { // check if windows
+//            cmd += "cmd /c ";
+//        } else {
+//            cmd += "sh -c ";
+//        }
         cmd += "java ";
 
         ArrayList<String> flags = new ArrayList<String>();
