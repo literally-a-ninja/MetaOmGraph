@@ -52,7 +52,7 @@ public class MetaOmGraphLauncher implements ActionListener {
     private boolean errorExists;
 
     //debugger log on/off
-    private boolean loggerOn = true;
+    private boolean loggerOn = false;
 
     private MetaOmGraphLauncher () {
         // build window
