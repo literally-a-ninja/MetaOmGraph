@@ -314,6 +314,7 @@ public class MetaOmGraphLauncher implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
+        log(System.getProperty("java.version"));
     }
 
     @Override
@@ -434,8 +435,8 @@ public class MetaOmGraphLauncher implements ActionListener {
     private void runProgram() {
         log("Starting MetaOmGraph...");
 
-        // File file = new File(System.getProperty("user.dir")); // jar directory - for running program
-        File file = new File("target"); // jar directory - for testing jar in IDE
+        File file = new File(System.getProperty("user.dir")); // jar directory - for running program
+        // File file = new File("target"); // jar directory - for testing jar in IDE
         String cmd = ""; // cmd for launching MOG
 
 //        String os = System.getProperty("os.name"); // get operating system
@@ -473,7 +474,7 @@ public class MetaOmGraphLauncher implements ActionListener {
             log(cmd);
             Process pr = Runtime.getRuntime().exec(cmd, null, file); // run command on command line in target dir
             // printResults(pr); // print run results for debugging
-            //System.exit(-1);
+            System.exit(-1);
 
         } catch (IOException e) {
             e.printStackTrace();
