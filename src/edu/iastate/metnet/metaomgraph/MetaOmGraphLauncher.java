@@ -326,8 +326,8 @@ public class MetaOmGraphLauncher implements ActionListener {
             }
         }
         int value = Integer.parseInt(input);
-        if (value > 5 || value < 0) {
-            logError("MIN value must be between 0-5GB!");
+        if (value > 31 || value < 0) {
+            logError("MIN value must be between 0-31GB!");
             return;
         } else if (value >= maxMemory) {
             logError("MIN value cannot be higher than MAX!");
@@ -347,8 +347,8 @@ public class MetaOmGraphLauncher implements ActionListener {
             }
         }
         int value = Integer.parseInt(input);
-        if (value > 6 || value < 1) {
-            logError("MAX value must be between 1-6GB!");
+        if (value > 32 || value < 1) {
+            logError("MAX value must be between 1-32GB!");
             return;
         } else if (value <= minMemory) {
             logError("MAX value cannot be lower than MIN!");
