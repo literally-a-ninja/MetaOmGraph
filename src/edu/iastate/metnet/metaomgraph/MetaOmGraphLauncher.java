@@ -4,6 +4,8 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,7 +52,7 @@ public class MetaOmGraphLauncher implements ActionListener {
     private boolean errorExists;
 
     //debugger log on/off
-    private boolean loggerOn = false;
+    private boolean loggerOn = true;
 
     private MetaOmGraphLauncher () {
         // build window
@@ -232,11 +234,68 @@ public class MetaOmGraphLauncher implements ActionListener {
             frame.add(messagePane, gbc);
         }
 
+        DocumentListener dlMin = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedMin();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedMin();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                changedMin();
+            }
+        };
+        DocumentListener dlMax = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedMax();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedMax();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                changedMax();
+            }
+        };
+        minMemoryBox.getDocument().addDocumentListener(dlMin);
+        maxMemoryBox.getDocument().addDocumentListener(dlMax);
+
         // init launch variables
         initVariables();
 
         // open launcher
         init();
+    }
+
+    private void changedMin() {
+        if (extraMemory && !minMemoryBox.getText().equals("")) {
+            if(!minMemoryBox.getText().equals(Integer.toString(minMemory))) {
+                setMinMemory();
+            }
+            else if (checkInputIsInt(minMemoryBox.getText())) {
+                checkValues();
+            }
+        }
+    }
+
+    private void changedMax() {
+        if (extraMemory && !maxMemoryBox.getText().equals("")) {
+            if(!maxMemoryBox.getText().equals(Integer.toString(maxMemory))) {
+                setMaxMemory();
+            }
+            else if (checkInputIsInt(maxMemoryBox.getText())) {
+                checkValues();
+            }
+        }
     }
 
     private void initVariables() {
@@ -260,7 +319,6 @@ public class MetaOmGraphLauncher implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String com = e.getActionCommand();
-        voidErrors();
         switch (com) {
             case DEFAULT_MEMORY:
             {
@@ -303,6 +361,7 @@ public class MetaOmGraphLauncher implements ActionListener {
         minMemoryBox.setText(Integer.toString(minMemory));
         maxMemoryBox.setText(Integer.toString(maxMemory));
         log("extra heap memory: " + Boolean.toString(extraMemory));
+        voidErrors();
     }
 
     private void extraMemory() {
@@ -319,43 +378,51 @@ public class MetaOmGraphLauncher implements ActionListener {
     private void setMinMemory() {
         String input = minMemoryBox.getText();
         // wrong input checks:
-        for(char c : input.toCharArray()) {
-            if (!Character.isDigit(c)) {
-                logError("Input number values only!");
-                return;
-            }
+        if (checkInputIsInt(input)) {
+            int value = Integer.parseInt(input);
+            minMemory = value;
+            log("Set MIN: " + minMemory + "GB");
+            checkValues();
         }
-        int value = Integer.parseInt(input);
-        if (value > 31 || value < 0) {
-            logError("MIN value must be between 0-31GB!");
-            return;
-        } else if (value >= maxMemory) {
-            logError("MIN value cannot be higher than MAX!");
-            return;
-        }
-        minMemory = value;
-        log("Set MIN: " +  minMemory + "GB");
     }
 
     // sets max value
     private void setMaxMemory() {
         String input = maxMemoryBox.getText();
+        if (checkInputIsInt(input)) {
+            int value = Integer.parseInt(input);
+            maxMemory = value;
+            log("Set MAX: " + maxMemory + "GB");
+            checkValues();
+        }
+    }
+
+    private void checkValues() {
+        if (maxMemory > 32 || maxMemory < 1) {
+            logError("MAX value must be between 1-32GB!");
+            return;
+        } else if (maxMemory <= minMemory) {
+            logError("MAX value cannot be lower than MIN!");
+            return;
+        } else if (minMemory > 31 || minMemory < 0) {
+            logError("MIN value must be between 0-31GB!");
+            return;
+        } else if (minMemory >= maxMemory) {
+            logError("MIN value cannot be higher than MAX!");
+            return;
+        } else {
+            voidErrors();
+        }
+    }
+
+    private boolean checkInputIsInt(String input) {
         for(char c : input.toCharArray()) {
             if (!Character.isDigit(c)) {
                 logError("Input number values only!");
-                return;
+                return false;
             }
         }
-        int value = Integer.parseInt(input);
-        if (value > 32 || value < 1) {
-            logError("MAX value must be between 1-32GB!");
-            return;
-        } else if (value <= minMemory) {
-            logError("MAX value cannot be lower than MIN!");
-            return;
-        }
-        maxMemory = value;
-        log("Set MAX: " +  maxMemory + "GB");
+        return true;
     }
 
     private void exit() {
@@ -379,9 +446,15 @@ public class MetaOmGraphLauncher implements ActionListener {
 //        }
         cmd += "java ";
 
-        ArrayList<String> flags = new ArrayList<String>();
+        // check for input errors before running
+        if (errorExists) {
+            log("Errors exist! Abandoned run!");
+            return;
+        }
+
         // add logic for adding flags here
-        if (extraMemory) {
+        ArrayList<String> flags = new ArrayList<String>();
+        if (extraMemory && !errorExists) {
             setMinMemory();
             String minHeap = "-Xms" + Integer.toString(minMemory) + "g";
             flags.add(minHeap);
@@ -389,12 +462,6 @@ public class MetaOmGraphLauncher implements ActionListener {
             setMaxMemory();
             String maxHeap = "-Xmx" + Integer.toString(maxMemory) + "g";
             flags.add(maxHeap);
-        }
-
-        // check for input errors before running
-        if (errorExists) {
-            log("Errors exist! Abandoned run!");
-            return;
         }
 
         for (String f: flags) {
@@ -406,7 +473,7 @@ public class MetaOmGraphLauncher implements ActionListener {
             log(cmd);
             Process pr = Runtime.getRuntime().exec(cmd, null, file); // run command on command line in target dir
             // printResults(pr); // print run results for debugging
-            System.exit(-1);
+            //System.exit(-1);
 
         } catch (IOException e) {
             e.printStackTrace();
