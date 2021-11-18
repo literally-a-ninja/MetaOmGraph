@@ -1,15 +1,12 @@
 package edu.iastate.metnet.metaomgraph;
 
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.STIconSetType;
 import org.renjin.script.RenjinScriptEngineFactory;
 import org.renjin.script.*;
-//import org.renjin.bioconductor.limma.limma;
 import org.renjin.bioconductor.edgeR.edgeR;
 
 import javax.script.ScriptEngine;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
 
 public class ComputeLimma {
 
@@ -42,7 +39,7 @@ public class ComputeLimma {
 
             engine.eval("d0 <- DGEList(counts)");
             engine.eval("d0 <- calcNormFactors(d0)");
-            engine.eval("dim(d0");
+            engine.eval("dim(d0)");
 
             engine.eval("cutoff <- 2");
             engine.eval("drop <- which(apply(cpm(d0), 1, max) < cutoff)");
@@ -82,15 +79,6 @@ public class ComputeLimma {
         }
     }
 
-//    public static void doCalcRCaller() throws IOException, URISyntaxException {
-//        String fileContent = RUtils.getMeanScriptContent();
-//        RCode code = RCode.create();
-//        code.addRCode(fileContent);
-//        code.addIntArray("input", values);
-//        code.addRCode("result <- customMean(input)");
-//        RCaller caller = RCaller.create(code, RCallerOptions.create());
-//        caller.runAndReturnResult("result");
-//    }
     public static void main(String[] args) throws IOException {
         doCalc();
 
