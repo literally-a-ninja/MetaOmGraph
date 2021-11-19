@@ -15,10 +15,10 @@ sleep 3
 important "Building app..."
 mvn package
 
-[[ -z "$CI_COMMIT_REF_SLUG" ]] \
-  && CI_COMMIT_REF_SLUG=$(git log -n1 --format=format:"%h")
+[[ -z "$CI_COMMIT_SHORT_SHA" ]] \
+  && CI_COMMIT_SHORT_SHA=$(git log -n1 --format=format:"%h")
 
-version="1.0+$CI_COMMIT_REF_SLUG"
+version="1.0+$CI_COMMIT_SHORT_SHA"
 
 # Make sure dist directory exists.
 if [[ ! -d "$DIR_ROOT/dist" ]]; then
