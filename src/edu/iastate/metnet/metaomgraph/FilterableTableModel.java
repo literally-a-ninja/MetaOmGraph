@@ -163,22 +163,34 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 		return hits;
 	}
 
-	public TreeSet<Integer> applyRangeFilter(Double min, Double max) {
+	public TreeSet<Integer> applyExprFilter(Double min, Double n, Double minTotal) {
 		TreeSet<Integer> hits = new TreeSet();
 		MetaOmProject myProject = MetaOmGraph.getActiveProject();
-		Boolean shouldAdd;
+		Boolean minTotalExist = (minTotal != null);
+		int nCount;
+		double geneSum;
 
-		for(int i = 0; i < myProject.getRowCount(); i++) {
-			shouldAdd = true;
+		int[] rowList = myProject.getGeneListRowNumbers(MetaOmGraph.getActiveTable().getSelectedListName());
+		for(int i = 0; i < rowList.length; i++) {
+			nCount = 0;
+			geneSum = 0;
+
 			try {
-				double[] rowData = myProject.getIncludedData(i);
+				double[] rowData = myProject.getIncludedData(rowList[i]);
 				for (double curr : rowData) {
-					if (!(curr >= min && curr <= max)) {
-						shouldAdd = false;
+					if (curr > min) {
+						nCount++;
+						geneSum += curr;
 					}
 				}
-				if (shouldAdd) {
-					hits.add(Integer.valueOf(i));
+				if (nCount >= n) {
+					if (minTotalExist) {
+						if (geneSum > minTotal) {
+							hits.add(Integer.valueOf(i));
+						}
+					} else {
+						hits.add(Integer.valueOf(i));
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -192,10 +204,11 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 		MetaOmProject myProject = MetaOmGraph.getActiveProject();
 		double mean;
 
-		for(int i = 0; i < myProject.getRowCount(); i++) {
+		int[] rowList = myProject.getGeneListRowNumbers(MetaOmGraph.getActiveTable().getSelectedListName());
+		for(int i = 0; i < rowList.length; i++) {
 			try {
 				mean = 0;
-				double[] rowData = myProject.getIncludedData(i);
+				double[] rowData = myProject.getIncludedData(rowList[i]);
 				if (rowData.length == 0) { // prevent divide by zero
 					continue;
 				}
@@ -232,11 +245,11 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 				boolean isNotFlag = false;
 				boolean doesNotFlag = false;
 				boolean isFlag = false;
-				boolean rangeFlag = false;
+				boolean exprFlag = false;
 				boolean meanFlag = false;
 				if (findMe.length() >= 4) {
 					if (findMe.contains("EXPR")) {
-						rangeFlag = true;
+						exprFlag = true;
 
 						findMe = findMe.replace("EXPR", "");
 						findMe = findMe.replace("{", "");
@@ -268,8 +281,7 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 				// delim should be present and should have values on both sides
 				if (findMe.indexOf(delim) > -1 && findMe.indexOf(delim) < findMe.length() - delim.length()) {
 					String col = "";
-					if (rangeFlag || meanFlag) {
-						col = findMe.split(delim)[0];
+					if (exprFlag || meanFlag) {
 						anyCol = false;
 						allCols = false;
 					} else {
@@ -347,18 +359,22 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 						hits.addAll(applyAnyColFilter(findMe, isNotFlag, doesNotFlag, isFlag));
 					} else if(allCols) {
 						hits.addAll(applyAllColsFilter(findMe, isNotFlag, doesNotFlag, isFlag));
-					} else if (rangeFlag) {
+					} else if (exprFlag) {
 						try {
-							Double min = Double.parseDouble(findMe.split(delim)[1]);
-							Double max = Double.parseDouble(findMe.split(delim)[2]);
-							hits.addAll(applyRangeFilter(min, max));
+							Double min = Double.parseDouble(findMe.split(delim)[0]);
+							Double max = Double.parseDouble(findMe.split(delim)[1]);
+							Double minTotal = null;
+							if (findMe.split(delim).length == 3) {
+								minTotal = Double.parseDouble(findMe.split(delim)[2]);
+							}
+							hits.addAll(applyExprFilter(min, max, minTotal));
 						} catch (NumberFormatException e) {
 							// if one of the search terms is invalid handle silently
 						}
 					} else if (meanFlag) {
 						try {
-							Double min = Double.parseDouble(findMe.split(delim)[1]);
-							Double max = Double.parseDouble(findMe.split(delim)[2]);
+							Double min = Double.parseDouble(findMe.split(delim)[0]);
+							Double max = Double.parseDouble(findMe.split(delim)[1]);
 							hits.addAll(applyMeanFilter(min, max));
 						} catch (NumberFormatException e) {
 							// if one of the search terms is invalid handle silently

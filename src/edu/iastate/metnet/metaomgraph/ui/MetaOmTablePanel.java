@@ -4561,6 +4561,10 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		}
 
 		if ("loadDiffExp".equals(e.getActionCommand())) {
+			HashMap<String,Object> actionMap = new HashMap<String,Object>();
+			HashMap<String,Object> dataMap = new HashMap<String,Object>();
+			HashMap<String,Object> result = new HashMap<String,Object>();
+			ActionProperties deaAction = new ActionProperties("differential-expression-analysis",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 
 			String[] listOfDE = MetaOmGraph.getActiveProject().getSavedDiffExpResNames();
 			if (listOfDE == null || listOfDE.length < 1) {
@@ -4594,7 +4598,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 
 								if(MetaOmGraph.getDEAResultsFrame()!=null && !MetaOmGraph.getDEAResultsFrame().isClosed()) {
-									MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
+									MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID(), deaAction.getActionNumber());
 									MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
 									MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().maximizeFrame(MetaOmGraph.getDEAResultsFrame());
 									MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().minimizeFrame(MetaOmGraph.getDEAResultsFrame());
@@ -4602,7 +4606,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 								}
 								else {
 									MetaOmGraph.setDEAResultsFrame(new StatisticalResultsFrame("DEA","DEA Results"));
-									MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
+									MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID(), deaAction.getActionNumber());
 									MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
 									MetaOmGraph.getDEAResultsFrame().setTitle("DE results");
 									MetaOmGraph.getDesktop().add(MetaOmGraph.getDEAResultsFrame());
@@ -4629,10 +4633,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 			//Harsha - reproducibility log
 
-			HashMap<String,Object> actionMap = new HashMap<String,Object>();
-			HashMap<String,Object> dataMap = new HashMap<String,Object>();
-			HashMap<String,Object> result = new HashMap<String,Object>();
-
 			try {
 
 				actionMap.put("parent",MetaOmGraph.getCurrentProjectActionId());
@@ -4643,8 +4643,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 				result.put("result", "OK");
 
-				ActionProperties loadDeaAction = new ActionProperties("load-DEA",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-				loadDeaAction.logActionProperties();
+				deaAction.logActionProperties();
 
 			}
 			catch(Exception e1) {
@@ -4691,7 +4690,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 				actionMap.put("section", "All");
 
 				dataMap.put("Removed DEA", chosenVal);
-
 
 				result.put("result", "OK");
 
@@ -5038,6 +5036,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			dataMap.put("correlationColumn1", col1);
 
 			resultLog.put("result", "OK");
+			ActionProperties existingDifferentialAction = new ActionProperties(
+					"differential-correlation-with-existing-columns", actionMap, dataMap, resultLog,
+					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 			try {
 				n1 = Integer.parseInt((String) JOptionPane.showInputDialog(null,
 						"Please Enter the sample size for selected correlation (N1)", "Input N1",
@@ -5076,9 +5077,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 						JOptionPane.ERROR_MESSAGE);
 				resultLog.put("result", "Error");
 				resultLog.put("resultLog", "Invalid integer entered. Please try again.");
-				ActionProperties existingDifferentialAction = new ActionProperties(
-						"differential-correlation-with-existing-columns", actionMap, dataMap, resultLog,
-						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 				existingDifferentialAction.logActionProperties();
 				return;
 			}
@@ -5118,7 +5116,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 								if (MetaOmGraph.getDCResultsFrame() != null
 										&& !MetaOmGraph.getDCResultsFrame().isClosed()) {
-									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, "Fold Change Results");
+									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, "Fold Change Results", existingDifferentialAction.getActionNumber());
 									MetaOmGraph.getDCResultsFrame().addTabListToFrame(frame.getGeneLists(),
 											"Fold Change Results");
 									MetaOmGraph.getDCResultsFrame().getDesktopPane().getDesktopManager()
@@ -5131,7 +5129,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 											.setDCResultsFrame(new StatisticalResultsFrame("Differential Correlation",
 													"Differential Correlation Results [" + featureNames.get(0) + "] ("
 															+ featureNames.size() + " features)"));
-									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, "Fold Change Results");
+									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, "Fold Change Results", existingDifferentialAction.getActionNumber());
 									MetaOmGraph.getDCResultsFrame().addTabListToFrame(frame.getGeneLists(),
 											"Fold Change Results");
 									MetaOmGraph.getDCResultsFrame().setTitle("Differential Correlation Results");
@@ -5158,9 +5156,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			// MetaOmGraph.getDesktop().add(frame);
 			// frame.setVisible(true);
 
-			ActionProperties existingDifferentialAction = new ActionProperties(
-					"differential-correlation-with-existing-columns", actionMap, dataMap, resultLog,
-					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 			existingDifferentialAction.logActionProperties();
 
 		}
@@ -5174,6 +5169,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			HashMap<String, Object> resultLog = new HashMap<String, Object>();
 			HashMap<String, Object> dataMap = new HashMap<String, Object>();
 
+			ActionProperties newDifferentialAction = new ActionProperties("new-differential-correlation", actionMap,
+					dataMap, resultLog, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+
 			if (myProject.getMetadataHybrid() == null) {
 				JOptionPane.showMessageDialog(null, "No metadata read", "No metadata", JOptionPane.ERROR_MESSAGE);
 				resultLog.put("result", "Error");
@@ -5186,8 +5184,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 				resultLog.put("result", "Error");
 				resultLog.put("resultComments", "Please select a row to analyze!");
 
-				ActionProperties newDifferentialAction = new ActionProperties("new-differential-correlation", actionMap,
-						dataMap, resultLog, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 				newDifferentialAction.logActionProperties();
 				return;
 			}
@@ -5198,8 +5194,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 				resultLog.put("result", "Error");
 				resultLog.put("resultComments", "Please select only one row to analyze!");
 
-				ActionProperties newDifferentialAction = new ActionProperties("new-differential-correlation", actionMap,
-						dataMap, resultLog, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 				newDifferentialAction.logActionProperties();
 				return;
 			}
@@ -5207,7 +5201,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			int selectedInd = getTrueSelectedRow();
 			String rowName = getSelectedGeneName();
 			DifferentialCorrFrame lframe = new DifferentialCorrFrame(geneLists.getSelectedValue().toString(), rowName,
-					selectedInd);
+					selectedInd, newDifferentialAction.getActionNumber());
 			lframe.setSize(lframe.getWidth(), MetaOmGraph.getMainWindow().getHeight() / 2);
 			MetaOmGraph.getDesktop().add(lframe);
 			lframe.setVisible(true);
@@ -5220,8 +5214,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 			resultLog.put("result", "OK");
 
-			ActionProperties newDifferentialAction = new ActionProperties("new-differential-correlation", actionMap,
-					dataMap, resultLog, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 			newDifferentialAction.logActionProperties();
 
 			return;
@@ -5236,6 +5228,9 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 			HashMap<String, Object> resultLog = new HashMap<String, Object>();
 			HashMap<String, Object> dataMap = new HashMap<String, Object>();
+			ActionProperties loadDifferentialAction = new ActionProperties("load-differential-correlation",
+					actionMap, dataMap, resultLog,
+					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 
 			String[] listOfDC = myProject.getSavedDiffCorrResNames();
 			if (listOfDC == null || listOfDC.length < 1) {
@@ -5243,9 +5238,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 						JOptionPane.INFORMATION_MESSAGE);
 				resultLog.put("result", "Error");
 				resultLog.put("resultComments", "No saved results found");
-				ActionProperties loadDifferentialAction = new ActionProperties("load-differential-correlation",
-						actionMap, dataMap, resultLog,
-						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+
 				loadDifferentialAction.logActionProperties();
 				return;
 			}
@@ -5282,7 +5275,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 								if (MetaOmGraph.getDCResultsFrame() != null
 										&& !MetaOmGraph.getDCResultsFrame().isClosed()) {
-									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, chosenVal);
+									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, chosenVal, loadDifferentialAction.getActionNumber());
 									MetaOmGraph.getDCResultsFrame().addTabListToFrame(frame.getGeneLists(), chosenVal);
 									MetaOmGraph.getDCResultsFrame().getDesktopPane().getDesktopManager()
 											.maximizeFrame(MetaOmGraph.getDCResultsFrame());
@@ -5296,7 +5289,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 													"Differential Correlation Results ["
 															+ diffcorrresOB.getFeatureNames().get(0) + "] ("
 															+ diffcorrresOB.getFeatureNames().size() + " features)"));
-									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, chosenVal);
+									MetaOmGraph.getDCResultsFrame().addTabToFrame(frame, chosenVal, loadDifferentialAction.getActionNumber());
 									MetaOmGraph.getDCResultsFrame().addTabListToFrame(frame.getGeneLists(), chosenVal);
 									MetaOmGraph.getDCResultsFrame().setTitle("Differential Correlation Results");
 									MetaOmGraph.getDesktop().add(MetaOmGraph.getDCResultsFrame());
@@ -5326,8 +5319,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 
 			resultLog.put("result", "OK");
 
-			ActionProperties loadDifferentialAction = new ActionProperties("load-differential-correlation", actionMap,
-					dataMap, resultLog, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
 			loadDifferentialAction.logActionProperties();
 
 			return;
