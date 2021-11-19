@@ -31,6 +31,7 @@ public class ComputeLimma {
             code.addRCode("library(limma)");
             code.addRCode("library(edgeR)");
             code.addRCode(readFileCounts);
+//            code . addDoubleMatrix ( ”d” , d ) ;
             code.addRCode("counts2 <- counts[,-1]");
             code.addRCode("rownames(counts2) <- counts[,1]");
             code.addRCode("counts <- data.matrix(counts2)");
@@ -69,13 +70,15 @@ public class ComputeLimma {
             code.addRCode("top.table <- topTable(tmp, sort.by = \"P\", n = Inf)");
 
             code.addRCode("length(which(top.table$adj.P.Val < 0.05))");
-            code.addRCode("top.table$Gene <- rownames(top.table)");
-            code.addRCode("top.table <- top.table[,c(\"Gene\", names(top.table)[1:6])]");
-            code.addRCode(writeDETable);
+//            code.addRCode("top.table$Gene <- rownames(top.table)");
+//            code.addRCode("top.table <- top.table[,c(\"Gene\", names(top.table)[1:6])]");
+            code.addRCode("theMatrix <- as.matrix(top.table, rownames=FALSE)");
+//            code.addRCode(writeDETable);
 
             caller.setRCode(code);
-            caller.runAndReturnResult("top.table");
-//            double[][] test = caller.getParser().getAsDoubleMatrix("dsdfs");
+            caller.runAndReturnResult("theMatrix");
+            double[][] test = caller.getParser().getAsDoubleMatrix("theMatrix");
+//            double[][] test = caller.getParser();
             System.out.println("Done!");
 
         } catch (Exception e) {
