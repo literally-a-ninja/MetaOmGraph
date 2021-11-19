@@ -1,8 +1,7 @@
 package edu.iastate.metnet.metaomgraph;
 
-import org.renjin.script.RenjinScriptEngineFactory;
-import org.renjin.script.*;
-import org.renjin.bioconductor.edgeR.edgeR;
+import com.github.rcaller.rstuff.RCaller;
+import com.github.rcaller.rstuff.RCode;
 
 import javax.script.ScriptEngine;
 import java.io.IOException;
@@ -11,8 +10,8 @@ import java.net.URISyntaxException;
 public class ComputeLimma {
 
     public static void doCalc() throws IOException {
-        RenjinScriptEngineFactory factory = new RenjinScriptEngineFactory();
-        ScriptEngine engine = factory.getScriptEngine();
+        RCaller caller = RCaller.create();
+        RCode code = RCode.create();
         // Start of Limma analysis
         try {
             // Preprocessing
@@ -23,55 +22,60 @@ public class ComputeLimma {
             String voomPath = currentPath + "/rscripts/voom-plot.png";
             String dePath = currentPath + "/rscripts/de.tsv";
 
-
             String readFileCounts = "counts <- read.table(\"" + countsPath + "\", header = TRUE, sep = \",\")";
-            String readFileGroups = "counts <- read.table(\"" + groupsPath + "\", header = TRUE, sep = \",\")";
+            String readFileGroups = "groups <- read.table(\"" + groupsPath + "\", header = TRUE, sep = \",\")";
+            String plotMDS = "png(\"/home/fahmi/coms402/3032_3_sd6_mog/rscripts/mds-plot.png\")";
+            String plotVoom = "png(\"/home/fahmi/coms402/3032_3_sd6_mog/rscripts/voom-plot.png\")";
             String writeDETable = "write.table(top.table, file = \"" + dePath + "\", row.names = F, sep = \"\t\", quote = F)";
 
-            engine.eval("library(grid)");
-            engine.eval("library(lattice)");
-            engine.eval("library(locfit)");
-            engine.eval("library(edgeR)");
-            engine.eval(readFileCounts);
-            engine.eval("counts2 <- counts[,-1]");
-            engine.eval("rownames(counts2) <- counts[,1]");
-            engine.eval("counts <- data.matrix(counts2)");
+            code.addRCode("library(limma)");
+            code.addRCode("library(edgeR)");
+            code.addRCode(readFileCounts);
+            code.addRCode("counts2 <- counts[,-1]");
+            code.addRCode("rownames(counts2) <- counts[,1]");
+            code.addRCode("counts <- data.matrix(counts2)");
 
-            engine.eval("d0 <- DGEList(counts)");
-            engine.eval("d0 <- calcNormFactors(d0)");
-            engine.eval("dim(d0)");
 
-            engine.eval("cutoff <- 2");
-            engine.eval("drop <- which(apply(cpm(d0), 1, max) < cutoff)");
-            engine.eval("d <- d0[-drop,] ");
-            engine.eval("dim(d)");
 
-            engine.eval("snames <- colnames(counts)");
-            engine.eval(readFileGroups);
+            code.addRCode("d0 <- DGEList(counts)");
+            code.addRCode("d0 <- calcNormFactors(d0)");
+            code.addRCode("dim(d0)");
 
-            engine.eval("group <- interaction(groups['Groups'])");
+            code.addRCode("cutoff <- 2");
+            code.addRCode("drop <- which(apply(cpm(d0), 1, max) < cutoff)");
+            code.addRCode("d <- d0[-drop,] ");
+            code.addRCode("dim(d)");
 
-            engine.eval("png" + "(" + mdsPath + ")");
-            engine.eval("plotMDS(d, col = as.numeric(group))");
-            engine.eval("dev.off()");
+            code.addRCode("snames <- colnames(counts)");
+            code.addRCode(readFileGroups);
 
-            engine.eval("mm <- model.matrix(~0 + group)");
-            engine.eval("png" + "(" + voomPath + ")");
-            engine.eval("y <- voom(d, mm, plot = T)");
-            engine.eval("dev.off()");
+            code.addRCode("group <- interaction(groups['Groups'])");
 
-            engine.eval("fit <- lmFit(y, mm)");
-            engine.eval("contr <- makeContrasts(groupgroup1 - groupgroup2, levels = colnames(coef(fit)))");
+            code.addRCode(plotMDS);
+            code.addRCode("plotMDS(d, col = as.numeric(group))");
+            code.addRCode("dev.off()");
 
-            engine.eval("tmp <- contrasts.fit(fit, contr)");
-            engine.eval("tmp <- eBayes(tmp)");
+            code.addRCode("mm <- model.matrix(~0 + group)");
+            code.addRCode(plotVoom);
+            code.addRCode("y <- voom(d, mm, plot = T)");
+            code.addRCode("dev.off()");
 
-            engine.eval("top.table <- topTable(tmp, sort.by = \"P\", n = Inf)");
+            code.addRCode("fit <- lmFit(y, mm)");
+            code.addRCode("contr <- makeContrasts(groupgroup1 - groupgroup2, levels = colnames(coef(fit)))");
 
-            engine.eval("length(which(top.table$adj.P.Val < 0.05))");
-            engine.eval("top.table$Gene <- rownames(top.table)");
-            engine.eval("top.table <- top.table[,c(\"Gene\", names(top.table)[1:6])]");
-            engine.eval(writeDETable);
+            code.addRCode("tmp <- contrasts.fit(fit, contr)");
+            code.addRCode("tmp <- eBayes(tmp)");
+
+            code.addRCode("top.table <- topTable(tmp, sort.by = \"P\", n = Inf)");
+
+            code.addRCode("length(which(top.table$adj.P.Val < 0.05))");
+            code.addRCode("top.table$Gene <- rownames(top.table)");
+            code.addRCode("top.table <- top.table[,c(\"Gene\", names(top.table)[1:6])]");
+            code.addRCode(writeDETable);
+
+            caller.setRCode(code);
+            caller.runAndReturnResult("top.table");
+//            double[][] test = caller.getParser().getAsDoubleMatrix("dsdfs");
             System.out.println("Done!");
 
         } catch (Exception e) {
