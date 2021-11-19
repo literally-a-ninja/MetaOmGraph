@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class MetaOmGraphLauncher implements ActionListener {
 
     // launcher variables
-    private final String jarPath = "metaomgraphclean.jar"; // replace with jar for current version of MOG
+    private final String jarPath = "metaomgraph4.jar"; // replace with jar for current version of MOG
     private final String logoPath = "/resource/MetaOmicon.png";
 
     //JFrame

@@ -25,9 +25,6 @@ if [[ ! -d "$DIR_ROOT/dist" ]]; then
   mkdir "$DIR_ROOT/dist"
 fi
 
-# Strip off '-clean'
-mv "$DIR_ROOT"/target/metaomgraph4{-clean,}.jar
-
 tag="jvm-$version"
 
 # 1. Export as zip archive
@@ -43,6 +40,3 @@ source "$DIR_ROOT/build/zip/target.sh"
 # TODO
 
 cd "$DIR_ROOT"
-
-# Re-add '-clean'
-mv "$DIR_ROOT"/target/metaomgraph4{,-clean}.jar

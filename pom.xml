@@ -107,7 +107,7 @@
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
-            <finalName>metaomgraph4-clean</finalName>
+            <finalName>metaomgraph4</finalName>
             <appendAssemblyId>false</appendAssemblyId>
           </configuration>
           <phase>package</phase>

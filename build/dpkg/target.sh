@@ -12,8 +12,7 @@ fi
 
 # Move app jars to opt
 DIR_BUILD_DPKG="$DIR_ROOT/build/dpkg/metaomgraph4"
-cp -f "$DIR_ROOT/target/metaomgraph4.jar" "$DIR_BUILD_DPKG/opt/metaomgraph4.jar"
-cp -f "$DIR_ROOT/target/launcher.jar" "$DIR_BUILD_DPKG/opt/launcher.jar"
+cp -f "$DIR_ROOT"/target/*.jar "$DIR_BUILD_DPKG/opt/MOG4/"
 
 # Ensure permissions are set correctly otherwise dpkg will complain.
 chmod 0755 "$DIR_BUILD_DPKG/DEBIAN/"
