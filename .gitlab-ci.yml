@@ -32,10 +32,10 @@ build-app:
     - apt update && apt install sudo maven file unzip zip python3-pip -y
   script: 
     - bash scripts/build.sh
-    - split --bytes=70000000 --additional-suffix=.jar.part ./target/metaomgraph4.jar metaomgraph4-
+    - split --bytes=70000000 --additional-suffix=.jar.part ./target/launcher.jar launcher-
   artifacts:
     paths:
-      - metaomgraph4-*.jar.part
+      - launcher-*.jar.part
       - build/*.deb
 
 

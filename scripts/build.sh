@@ -16,28 +16,33 @@ important "Building app..."
 mvn package
 
 [[ -z "$CI_COMMIT_REF_SLUG" ]] \
-  && version='latest' \
-  || version="$CI_COMMIT_REF_SLUG"
+  && CI_COMMIT_REF_SLUG=$(git log -n1 --format=format:"%h")
+
+version="1.0+$CI_COMMIT_REF_SLUG"
 
 # Make sure dist directory exists.
 if [[ ! -d "$DIR_ROOT/dist" ]]; then
   mkdir "$DIR_ROOT/dist"
 fi
 
+# Strip off '-clean'
+mv "$DIR_ROOT"/target/metaomgraph4{-clean,}.jar
 
-# 1. Simple export jar + zip
-name="metaomgraph4-jvm-$version"
-cp "$DIR_ROOT/target/metaomgraph4.jar" "$DIR_ROOT/dist/metaomgraph4.jar"
-cp "$DIR_ROOT/target/launcher.jar" "$DIR_ROOT/dist/launcher.jar"
-
-cd "$DIR_ROOT/dist/"
-zip "$DIR_ROOT/dist/$name.zip" "metaomgraph4.jar" "launcher.jar"
+tag="jvm-$version"
 
 # 1. Export as zip archive
+cd "$DIR_ROOT/build/dpkg/"
 source "$DIR_ROOT/build/dpkg/target.sh"
 
 # 2. Export as deb (linux)
+cd "$DIR_ROOT/build/zip/"
 source "$DIR_ROOT/build/zip/target.sh"
+
 
 # 3. Export as package (macos)
 # TODO
+
+cd "$DIR_ROOT"
+
+# Re-add '-clean'
+mv "$DIR_ROOT"/target/metaomgraph4{,-clean}.jar

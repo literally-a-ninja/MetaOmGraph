@@ -30,6 +30,8 @@ source "${DIR_BOOT}/cli.sh"
 
 fi                              #endif
 
+# Globstar is super nice!
+shopt -s globstar
 
 ## Pre-flight
 ## ===================== ##
