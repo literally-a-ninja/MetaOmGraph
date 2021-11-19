@@ -21,23 +21,22 @@ cache:
   paths:
     - .m2/repository
     - $CI_PROJECT_DIR/src/lib/
-    - apt-cache/
 
 stages:
   - build
-  - package
+    #- package
 
 build-app:
   stage: build
   before_script:
-    - apt update && apt -o dir::cache::archives="apt-cache" install sudo maven file unzip zip python3-pip -y
+    - apt update && apt install sudo maven file unzip zip python3-pip -y
   script: 
-    - bash scripts/package.sh
-    - split --bytes=70000000 --additional-suffix=.jar.part ./target/metaomgraph4-jar-with-dependencies.jar metaomgraph4-
-    - rm metaomgraph4-jar-with-dependencies.jar
+    - bash scripts/build.sh
+    - split --bytes=70000000 --additional-suffix=.jar.part ./target/metaomgraph4.jar metaomgraph4-
   artifacts:
     paths:
       - metaomgraph4-*.jar.part
+      - build/*.deb
 
 
 # package-archive:

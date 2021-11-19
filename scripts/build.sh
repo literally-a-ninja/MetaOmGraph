@@ -27,7 +27,7 @@ fi
 
 # 1. Simple export jar + zip
 name="metaomgraph4-jvm-$version"
-cp "$DIR_ROOT/target/metaomgraph4-jar-with-dependencies.jar" "$DIR_ROOT/dist/metaomgraph4.jar"
+cp "$DIR_ROOT/target/metaomgraph4.jar" "$DIR_ROOT/dist/metaomgraph4.jar"
 cp "$DIR_ROOT/target/launcher.jar" "$DIR_ROOT/dist/launcher.jar"
 
 cd "$DIR_ROOT/dist/"
