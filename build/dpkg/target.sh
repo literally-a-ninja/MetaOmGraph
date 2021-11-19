@@ -19,7 +19,7 @@ cp -f "$DIR_ROOT/target/launcher.jar" "$DIR_BUILD_DPKG/opt/launcher.jar"
 chmod 0755 "$DIR_BUILD_DPKG/DEBIAN/"
 
 # Build archive and place in dir above.
-dpkg-deb -v \
+dpkg-deb -v -Sextreme \
   --build "$DIR_BUILD_DPKG" \
   "$DIR_ROOT/build/metaomgraph4-$tag.deb"
 
