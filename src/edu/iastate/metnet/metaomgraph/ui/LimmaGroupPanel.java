@@ -13,6 +13,8 @@ import java.util.*;
 import java.util.List;
 
 public class LimmaGroupPanel extends JPanel  {
+
+    public static int id;
     private Color SELECTIONBCKGRND = MetaOmGraph.getTableSelectionColor();
     private Color BCKGRNDCOLOR1 = MetaOmGraph.getTableColor1();
     private Color BCKGRNDCOLOR2 = MetaOmGraph.getTableColor2();
@@ -21,41 +23,51 @@ public class LimmaGroupPanel extends JPanel  {
     MetaOmProject myProject = MetaOmGraph.getActiveProject();
     MetadataHybrid mdob = myProject.getMetadataHybrid();
 
-    public LimmaGroupPanel(int id) {
-        JPanel panel = new JPanel();
-        getRootPane().getContentPane().add(panel, BorderLayout.CENTER);
-        panel.setLayout(new BorderLayout(0, 0));
+    public LimmaGroupPanel() {
+        id++;
+        setSize(200, 200);
+        setLayout(new BorderLayout(0, 0));
 
-        JSplitPane splitPane = new JSplitPane();
-        panel.add(splitPane, BorderLayout.CENTER);
-        splitPane.setResizeWeight(0.5);
-
-        JPanel panel_3 = new JPanel();
-        splitPane.setRightComponent(panel_3);
-        panel_3.setLayout(new BorderLayout(0, 0));
-
-        JTextField txtGroup = new JTextField();
+        JLabel txtGroup = new JLabel();
         txtGroup.setText("Group" + id);
-        txtGroup.setColumns(10);
-        JPanel topbtnPnl2 = new JPanel();
-        JButton sendLeft = new JButton("<<");
-        sendLeft.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                moveSelectedtoLeft();
-            }
-        });
-        topbtnPnl2.add(sendLeft);
+        JPanel topbtnPnl = new JPanel();
+        if (id > 1) {
+            JButton sendLeft = new JButton("<<");
+            sendLeft.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    moveSelectedtoLeft();
+                }
+            });
+            topbtnPnl.add(sendLeft);
+        } else {
+            JButton placeholder = new JButton();
+            topbtnPnl.add(placeholder);
+        }
 
-        JLabel lblGroupName_1 = new JLabel("Group name:");
-        topbtnPnl2.add(lblGroupName_1);
-        topbtnPnl2.add(txtGroup);
-        panel_3.add(topbtnPnl2, BorderLayout.NORTH);
-        //topbtnPnl2.setLayout(new BoxLayout(topbtnPnl2, BoxLayout.LINE_AXIS));
-        topbtnPnl2.setLayout(new FlowLayout());
+        JLabel lblGroupName = new JLabel("Group name:");
+        topbtnPnl.add(lblGroupName);
+        topbtnPnl.add(txtGroup);
+        add(topbtnPnl, BorderLayout.NORTH);
+        //topbtnPnl.setLayout(new BoxLayout(topbtnPnl, BoxLayout.LINE_AXIS));
+        topbtnPnl.setLayout(new FlowLayout());
         JLabel lblN = new JLabel("n=0");
         lblN.setFont(new Font("Tahoma", Font.BOLD, 13));
-        topbtnPnl2.add(lblN);
+        topbtnPnl.add(lblN);
+
+        if (id < 10) {
+            JButton sendRight = new JButton(">>");
+            sendRight.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    moveSelectedtoLeft();
+                }
+            });
+            topbtnPnl.add(sendRight);
+        } else {
+            JButton placeholder = new JButton();
+            topbtnPnl.add(placeholder);
+        }
 
         // add table2
         JScrollPane jscp = new JScrollPane();
@@ -63,10 +75,10 @@ public class LimmaGroupPanel extends JPanel  {
         // updateTableData(tableGrp, mdob.getMetadataCollection().getAllDataCols());
         updateTableData(tableGrp, null);
         jscp.setViewportView(tableGrp);
-        panel_3.add(jscp, BorderLayout.CENTER);
+        add(jscp, BorderLayout.CENTER);
 
-        JButton btnAdd2 = new JButton("Add");
-        btnAdd2.addActionListener(new ActionListener() {
+        JButton btnAdd = new JButton("Add");
+        btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 java.util.List<String> queryRes = showSearchMetadataPanel();
@@ -77,18 +89,18 @@ public class LimmaGroupPanel extends JPanel  {
                 addRows(tableGrp, queryRes);
             }
         });
-        JPanel btnPnl2 = new JPanel(new FlowLayout());
-        btnPnl2.add(btnAdd2);
-        JButton btnRem2 = new JButton("Remove");
-        btnRem2.addActionListener(new ActionListener() {
+        JPanel btnPnl = new JPanel(new FlowLayout());
+        btnPnl.add(btnAdd);
+        JButton btnRem = new JButton("Remove");
+        btnRem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 removeSelectedRows(tableGrp);
             }
         });
-        btnPnl2.add(btnRem2);
-        JButton btnSearch2 = new JButton("Search");
-        btnSearch2.addActionListener(new ActionListener() {
+        btnPnl.add(btnRem);
+        JButton btnSearch = new JButton("Search");
+        btnSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // search in list by metadatata
@@ -103,8 +115,16 @@ public class LimmaGroupPanel extends JPanel  {
                 setSelectedRows(res, tableGrp);
             }
         });
-        btnPnl2.add(btnSearch2);
-        panel_3.add(btnPnl2, BorderLayout.SOUTH);
+        btnPnl.add(btnSearch);
+        add(btnPnl, BorderLayout.SOUTH);
+    }
+
+    public static int getId() {
+        return id;
+    }
+
+    public static void resetId() {
+        LimmaGroupPanel.id = 0;
     }
 
     private JTable initTableModel() {

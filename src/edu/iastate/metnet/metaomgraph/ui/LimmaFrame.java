@@ -1,8 +1,6 @@
 package edu.iastate.metnet.metaomgraph.ui;
 
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -15,21 +13,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -114,6 +98,7 @@ public class LimmaFrame extends TaskbarInternalFrame {
      */
     public LimmaFrame() {
         setBounds(100, 100, 600, 300);
+        setPreferredSize(new Dimension(600, 300));
         getContentPane().setLayout(new BorderLayout(0, 0));
         setTitle("Limma Analysis");
 
@@ -132,9 +117,16 @@ public class LimmaFrame extends TaskbarInternalFrame {
             System.arraycopy(excluded, 0, excludedCopy, 0, excluded.length);
         }
 
-        groupPanel = new JPanel();
-
         initComboBoxes();
+
+        groupPanel = new JPanel();
+        groupPanel.setLayout(new BoxLayout(groupPanel, 0));
+        getContentPane().add(groupPanel);
+
+        JScrollPane scrollPane = new JScrollPane(groupPanel);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        add(scrollPane);
 
         JPanel panel_1 = new JPanel();
         getContentPane().add(panel_1, BorderLayout.SOUTH);
@@ -143,6 +135,7 @@ public class LimmaFrame extends TaskbarInternalFrame {
         btnOk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // TODO add support for up to 10 lists
                 // check if two lists (sets) are disjoint
                 List<String> grp1 = getAllRows(tableGrp1);
                 if (grp1 == null || grp1.size() < 1) {
@@ -250,8 +243,8 @@ public class LimmaFrame extends TaskbarInternalFrame {
 
                     result.put("result", "OK");
 
-                    ActionProperties deaAction = new ActionProperties("differential-expression-analysis",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-                    deaAction.logActionProperties();
+                    ActionProperties limmaAction = new ActionProperties("limma-analysis",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+                    limmaAction.logActionProperties();
 
                 }
                 catch(Exception e1) {
@@ -262,177 +255,194 @@ public class LimmaFrame extends TaskbarInternalFrame {
         });
         panel_1.add(btnOk);
 
-        groupPanel.add(new LimmaGroupPanel(1), 1);
-
-        JPanel panel_2 = new JPanel();
-        getContentPane().add(panel_2, BorderLayout.CENTER);
-        panel_2.setLayout(new BorderLayout(0, 0));
-
-        JSplitPane splitPane = new JSplitPane();
-        panel_2.add(splitPane, BorderLayout.CENTER);
-        splitPane.setResizeWeight(0.5);
-
-        JPanel panel_3 = new JPanel();
-        splitPane.setRightComponent(panel_3);
-        panel_3.setLayout(new BorderLayout(0, 0));
-
-        txtGroup2 = new JTextField();
-        txtGroup2.setText("Group2");
-        txtGroup2.setColumns(10);
-        JPanel topbtnPnl2 = new JPanel();
-        JButton sendLeft = new JButton("<<");
-        sendLeft.addActionListener(new ActionListener() {
+        JButton btnMore = new JButton("More");
+        btnMore.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                moveSelectedtoLeft();
-            }
-        });
-        topbtnPnl2.add(sendLeft);
-
-        JLabel lblGroupName_1 = new JLabel("Group name:");
-        topbtnPnl2.add(lblGroupName_1);
-        topbtnPnl2.add(txtGroup2);
-        panel_3.add(topbtnPnl2, BorderLayout.NORTH);
-        //topbtnPnl2.setLayout(new BoxLayout(topbtnPnl2, BoxLayout.LINE_AXIS));
-        topbtnPnl2.setLayout(new FlowLayout());
-        lblN2 = new JLabel("n=0");
-        lblN2.setFont(new Font("Tahoma", Font.BOLD, 13));
-        topbtnPnl2.add(lblN2);
-
-        // add table2
-        jscp2 = new JScrollPane();
-        tableGrp2 = initTableModel();
-        // updateTableData(tableGrp2, mdob.getMetadataCollection().getAllDataCols());
-        updateTableData(tableGrp2, null);
-        jscp2.setViewportView(tableGrp2);
-        panel_3.add(jscp2, BorderLayout.CENTER);
-
-        JButton btnAdd2 = new JButton("Add");
-        btnAdd2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<String> queryRes = showSearchMetadataPanel();
-                if (queryRes == null || queryRes.size() < 1) {
-                    return;
+                if (LimmaGroupPanel.getId() < 10) {
+                    groupPanel.add(new LimmaGroupPanel());
+                    groupPanel.validate();
+                    validate();
                 }
-                // JOptionPane.showConfirmDialog(null, "match:" + queryRes.toString());
-                addRows(tableGrp2, queryRes);
             }
         });
-        JPanel btnPnl2 = new JPanel(new FlowLayout());
-        btnPnl2.add(btnAdd2);
-        JButton btnRem2 = new JButton("Remove");
-        btnRem2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                removeSelectedRows(tableGrp2);
-            }
-        });
-        btnPnl2.add(btnRem2);
-        JButton btnSearch2 = new JButton("Search");
-        btnSearch2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // search in list by metadatata
-                List<String> queryRes = showSearchMetadataPanel();
-                if (queryRes == null || queryRes.size() < 1) {
-                    return;
-                }
-                // get intersection
-                List<String> allRows = getAllRows(tableGrp2);
-                List<String> res = (List<String>) CollectionUtils.intersection(queryRes, allRows);
-                // set selected and bring to top
-                setSelectedRows(res, tableGrp2);
-            }
-        });
-        btnPnl2.add(btnSearch2);
-        panel_3.add(btnPnl2, BorderLayout.SOUTH);
+        panel_1.add(btnMore);
 
-        //btnPnl2.setLayout(new BoxLayout(btnPnl2, BoxLayout.LINE_AXIS));
-        btnPnl2.setLayout(new FlowLayout());
-        JPanel panel_4 = new JPanel();
-        splitPane.setLeftComponent(panel_4);
-        panel_4.setLayout(new BorderLayout(0, 0));
+        LimmaGroupPanel.resetId();
 
-        txtGroup1 = new JTextField();
-        txtGroup1.setText("Group1");
-        txtGroup1.setColumns(10);
-        JPanel topbtnPnl1 = new JPanel();
-        JButton sendRight = new JButton(">>");
-        sendRight.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                moveSelectedtoRight();
-            }
-        });
+        //Start with two panels
+        groupPanel.add(new LimmaGroupPanel());
+        groupPanel.add(new LimmaGroupPanel());
 
-        lblN1 = new JLabel("n=0");
-        lblN1.setFont(new Font("Tahoma", Font.BOLD, 13));
-        topbtnPnl1.add(lblN1);
-
-        JLabel lblGroupName = new JLabel("Group name:");
-        topbtnPnl1.add(lblGroupName);
-        topbtnPnl1.add(txtGroup1);
-        topbtnPnl1.add(sendRight);
-
-        panel_4.add(topbtnPnl1, BorderLayout.NORTH);
-
-        //topbtnPnl1.setLayout(new BoxLayout(topbtnPnl1, BoxLayout.LINE_AXIS));
-        topbtnPnl1.setLayout(new FlowLayout());
-
-        // add table1
-        jscp1 = new JScrollPane();
-        tableGrp1 = initTableModel();
-        updateTableData(tableGrp1, null);
-        jscp1.setViewportView(tableGrp1);
-        panel_4.add(jscp1, BorderLayout.CENTER);
-
-        JButton btnAdd1 = new JButton("Add");
-        btnAdd1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<String> queryRes = showSearchMetadataPanel();
-                if (queryRes == null || queryRes.size() < 1) {
-                    return;
-                }
-                // JOptionPane.showConfirmDialog(null, "match:" + queryRes.toString());
-                addRows(tableGrp1, queryRes);
-
-            }
-        });
-        JPanel btnPnl1 = new JPanel();
-        btnPnl1.add(btnAdd1);
-        JButton btnRem1 = new JButton("Remove");
-        btnRem1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                removeSelectedRows(tableGrp1);
-
-            }
-        });
-        btnPnl1.add(btnRem1);
-        JButton btnSearch1 = new JButton("Search");
-        btnSearch1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // search in list by metadatata
-                List<String> queryRes = showSearchMetadataPanel();
-                if (queryRes == null || queryRes.size() < 1) {
-                    return;
-                }
-                // get intersection
-                List<String> allRows = getAllRows(tableGrp1);
-                List<String> res = (List<String>) CollectionUtils.intersection(queryRes, allRows);
-                // set selected and bring to top
-                setSelectedRows(res, tableGrp1);
-
-            }
-        });
-        btnPnl1.add(btnSearch1);
-        panel_4.add(btnPnl1, BorderLayout.SOUTH);
-
-        //btnPnl1.setLayout(new BoxLayout(btnPnl1, BoxLayout.LINE_AXIS));
-        btnPnl1.setLayout(new FlowLayout());
+//        JPanel panel_2 = new JPanel();
+//        getContentPane().add(panel_2, BorderLayout.CENTER);
+//        panel_2.setLayout(new BorderLayout(0, 0));
+//
+//        JSplitPane splitPane = new JSplitPane();
+//        panel_2.add(splitPane, BorderLayout.CENTER);
+//        splitPane.setResizeWeight(0.5);
+//
+//        JPanel panel_3 = new JPanel();
+//        splitPane.setRightComponent(panel_3);
+//        panel_3.setLayout(new BorderLayout(0, 0));
+//
+//        txtGroup2 = new JTextField();
+//        txtGroup2.setText("Group2");
+//        txtGroup2.setColumns(10);
+//        JPanel topbtnPnl2 = new JPanel();
+//        JButton sendLeft = new JButton("<<");
+//        sendLeft.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                moveSelectedtoLeft();
+//            }
+//        });
+//        topbtnPnl2.add(sendLeft);
+//
+//        JLabel lblGroupName_1 = new JLabel("Group name:");
+//        topbtnPnl2.add(lblGroupName_1);
+//        topbtnPnl2.add(txtGroup2);
+//        panel_3.add(topbtnPnl2, BorderLayout.NORTH);
+//        //topbtnPnl2.setLayout(new BoxLayout(topbtnPnl2, BoxLayout.LINE_AXIS));
+//        topbtnPnl2.setLayout(new FlowLayout());
+//        lblN2 = new JLabel("n=0");
+//        lblN2.setFont(new Font("Tahoma", Font.BOLD, 13));
+//        topbtnPnl2.add(lblN2);
+//
+//        // add table2
+//        jscp2 = new JScrollPane();
+//        tableGrp2 = initTableModel();
+//        // updateTableData(tableGrp2, mdob.getMetadataCollection().getAllDataCols());
+//        updateTableData(tableGrp2, null);
+//        jscp2.setViewportView(tableGrp2);
+//        panel_3.add(jscp2, BorderLayout.CENTER);
+//
+//        JButton btnAdd2 = new JButton("Add");
+//        btnAdd2.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                List<String> queryRes = showSearchMetadataPanel();
+//                if (queryRes == null || queryRes.size() < 1) {
+//                    return;
+//                }
+//                // JOptionPane.showConfirmDialog(null, "match:" + queryRes.toString());
+//                addRows(tableGrp2, queryRes);
+//            }
+//        });
+//        JPanel btnPnl2 = new JPanel(new FlowLayout());
+//        btnPnl2.add(btnAdd2);
+//        JButton btnRem2 = new JButton("Remove");
+//        btnRem2.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                removeSelectedRows(tableGrp2);
+//            }
+//        });
+//        btnPnl2.add(btnRem2);
+//        JButton btnSearch2 = new JButton("Search");
+//        btnSearch2.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                // search in list by metadatata
+//                List<String> queryRes = showSearchMetadataPanel();
+//                if (queryRes == null || queryRes.size() < 1) {
+//                    return;
+//                }
+//                // get intersection
+//                List<String> allRows = getAllRows(tableGrp2);
+//                List<String> res = (List<String>) CollectionUtils.intersection(queryRes, allRows);
+//                // set selected and bring to top
+//                setSelectedRows(res, tableGrp2);
+//            }
+//        });
+//        btnPnl2.add(btnSearch2);
+//        panel_3.add(btnPnl2, BorderLayout.SOUTH);
+//
+//        //btnPnl2.setLayout(new BoxLayout(btnPnl2, BoxLayout.LINE_AXIS));
+//        btnPnl2.setLayout(new FlowLayout());
+//        JPanel panel_4 = new JPanel();
+//        splitPane.setLeftComponent(panel_4);
+//        panel_4.setLayout(new BorderLayout(0, 0));
+//
+//        txtGroup1 = new JTextField();
+//        txtGroup1.setText("Group1");
+//        txtGroup1.setColumns(10);
+//        JPanel topbtnPnl1 = new JPanel();
+//        JButton sendRight = new JButton(">>");
+//        sendRight.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent arg0) {
+//                moveSelectedtoRight();
+//            }
+//        });
+//
+//        lblN1 = new JLabel("n=0");
+//        lblN1.setFont(new Font("Tahoma", Font.BOLD, 13));
+//        topbtnPnl1.add(lblN1);
+//
+//        JLabel lblGroupName = new JLabel("Group name:");
+//        topbtnPnl1.add(lblGroupName);
+//        topbtnPnl1.add(txtGroup1);
+//        topbtnPnl1.add(sendRight);
+//
+//        panel_4.add(topbtnPnl1, BorderLayout.NORTH);
+//
+//        //topbtnPnl1.setLayout(new BoxLayout(topbtnPnl1, BoxLayout.LINE_AXIS));
+//        topbtnPnl1.setLayout(new FlowLayout());
+//
+//        // add table1
+//        jscp1 = new JScrollPane();
+//        tableGrp1 = initTableModel();
+//        updateTableData(tableGrp1, null);
+//        jscp1.setViewportView(tableGrp1);
+//        panel_4.add(jscp1, BorderLayout.CENTER);
+//
+//        JButton btnAdd1 = new JButton("Add");
+//        btnAdd1.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                List<String> queryRes = showSearchMetadataPanel();
+//                if (queryRes == null || queryRes.size() < 1) {
+//                    return;
+//                }
+//                // JOptionPane.showConfirmDialog(null, "match:" + queryRes.toString());
+//                addRows(tableGrp1, queryRes);
+//
+//            }
+//        });
+//        JPanel btnPnl1 = new JPanel();
+//        btnPnl1.add(btnAdd1);
+//        JButton btnRem1 = new JButton("Remove");
+//        btnRem1.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent arg0) {
+//                removeSelectedRows(tableGrp1);
+//
+//            }
+//        });
+//        btnPnl1.add(btnRem1);
+//        JButton btnSearch1 = new JButton("Search");
+//        btnSearch1.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                // search in list by metadatata
+//                List<String> queryRes = showSearchMetadataPanel();
+//                if (queryRes == null || queryRes.size() < 1) {
+//                    return;
+//                }
+//                // get intersection
+//                List<String> allRows = getAllRows(tableGrp1);
+//                List<String> res = (List<String>) CollectionUtils.intersection(queryRes, allRows);
+//                // set selected and bring to top
+//                setSelectedRows(res, tableGrp1);
+//
+//            }
+//        });
+//        btnPnl1.add(btnSearch1);
+//        panel_4.add(btnPnl1, BorderLayout.SOUTH);
+//
+//        //btnPnl1.setLayout(new BoxLayout(btnPnl1, BoxLayout.LINE_AXIS));
+//        btnPnl1.setLayout(new FlowLayout());
 
         // frame properties
         this.setClosable(true);
