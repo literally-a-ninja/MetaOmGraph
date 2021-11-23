@@ -389,7 +389,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		JMenu pcorrMenu = new JMenu("Pearson's");
 		JMenu scorrMenu = new JMenu("Spearman's");
 		JMenu poolcorrMenu = new JMenu("Meta-analysis");
-		JMenu diffcorrMenu = new JMenu("Differntial Correlation");
+		JMenu diffcorrMenu = new JMenu("Differential Correlation");
 		JMenu informationMenu = new JMenu("Mutual Information");
 		diffExpMenu = new JMenu("Differential Expression Analysis");
 		
@@ -481,11 +481,11 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		diffCorrelation.setActionCommand("DiffCorrelation");
 		diffCorrelation.addActionListener(this);
 
-		diffCorrelationWizard = new JMenuItem("New  Differential Correlation");
+		diffCorrelationWizard = new JMenuItem("New Differential Correlation");
 		diffCorrelationWizard.setActionCommand("NewDiffCorrelation");
 		diffCorrelationWizard.addActionListener(this);
 
-		loaddiffCorrResults = new JMenuItem("Load  Differential Correlation Results");
+		loaddiffCorrResults = new JMenuItem("Load Differential Correlation Results");
 		loaddiffCorrResults.setActionCommand("LoadDiffCorrelation");
 		loaddiffCorrResults.addActionListener(this);
 
@@ -768,6 +768,10 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 		listDisplay.setAutoResizeMode(0);
 		sizeColumnsToFit();
 		sorter.setSortingStatus(myProject.getDefaultColumn(), 1);
+	}
+
+	public ClearableTextField getFilterField() {
+		return filterField;
 	}
 
 	private void updateList() {

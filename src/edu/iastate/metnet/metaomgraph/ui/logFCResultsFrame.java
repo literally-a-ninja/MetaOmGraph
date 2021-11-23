@@ -889,16 +889,29 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 				HashMap<String,Object> actionMap = new HashMap<String,Object>();
 				actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
-				actionMap.put("section", "Line chart");
 
 				HashMap<String,Object> dataMap = new HashMap<String,Object>();
-				dataMap.put("Selected row count",rowIndices.length);
+				HashMap<String,Object> result = new HashMap<String,Object>();
 
-				HashMap<String,Object> resultLog = new HashMap<String,Object>();
-				resultLog.put("result", "OK");
+				actionMap.put("section", "Feature Metadata");
 
-				ActionProperties action = new ActionProperties("line-chart",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-				action.logActionProperties();
+				String selList = geneLists.getSelectedValue().toString();
+				dataMap.put("Selected List", selList);
+				dataMap.put("Selected Features", table.getSelectedRows());
+				dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+				dataMap.put("XAxis", myProject.getDefaultXAxis());
+				dataMap.put("YAxis", myProject.getDefaultYAxis());
+				dataMap.put("Chart Title", myProject.getDefaultTitle());
+
+				result.put("Color 1", myProject.getColor1());
+				result.put("Color 2", myProject.getColor2());
+				result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+				result.put("Playable", "true");
+				result.put("result", "OK");
+
+				ActionProperties lineChartAction = new ActionProperties("line-chart", actionMap, dataMap, result,
+						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				lineChartAction.logActionProperties();
 
 				if (rowIndices == null || rowIndices.length == 0) {
 					JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
@@ -942,13 +955,25 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 				actionMap.put("section", "Scatter Plot");
 
 				HashMap<String,Object> dataMap = new HashMap<String,Object>();
-				dataMap.put("Selected row count",rowIndices.length);
 
-				HashMap<String,Object> resultLog = new HashMap<String,Object>();
-				resultLog.put("result", "OK");
+				HashMap<String,Object> result = new HashMap<String,Object>();
 
-				ActionProperties action = new ActionProperties("scatter-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-				action.logActionProperties();
+				String selList = geneLists.getSelectedValue().toString();
+				dataMap.put("Selected List", selList);
+				dataMap.put("Selected Features", table.getSelectedRows());
+				dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+				dataMap.put("XAxis", myProject.getDefaultXAxis());
+				dataMap.put("YAxis", myProject.getDefaultYAxis());
+				dataMap.put("Chart Title", myProject.getDefaultTitle());
+
+				result.put("Color 1", myProject.getColor1());
+				result.put("Color 2", myProject.getColor2());
+				result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+				result.put("Playable", "true");
+				result.put("result", "OK");
+				ActionProperties scatterPlotAction = new ActionProperties("scatter-plot", actionMap, dataMap, result,
+					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				scatterPlotAction.logActionProperties();
 
 				if (rowIndices == null) {
 					JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
@@ -1031,11 +1056,25 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 				HashMap<String,Object> dataMap = new HashMap<String,Object>();
 				dataMap.put("Selected row count",rowIndices.length);
 
-				HashMap<String,Object> resultLog = new HashMap<String,Object>();
-				resultLog.put("result", "OK");
+				HashMap<String,Object> result = new HashMap<String,Object>();
 
-				ActionProperties action = new ActionProperties("box-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-				action.logActionProperties();
+				String selList = geneLists.getSelectedValue().toString();
+				dataMap.put("Selected List", selList);
+				dataMap.put("Selected Features", table.getSelectedRows());
+				dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+				dataMap.put("XAxis", myProject.getDefaultXAxis());
+				dataMap.put("YAxis", myProject.getDefaultYAxis());
+				dataMap.put("Chart Title", myProject.getDefaultTitle());
+
+				result.put("Color 1", myProject.getColor1());
+				result.put("Color 2", myProject.getColor2());
+				result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+				result.put("Playable", "true");
+				result.put("result", "OK");
+
+				ActionProperties boxPlotAction = new ActionProperties("box-plot", actionMap, dataMap, result,
+					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				boxPlotAction.logActionProperties();
 
 				if (rowIndices == null || rowIndices.length == 0) {
 					JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
@@ -1124,11 +1163,25 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 							HashMap<String,Object> dataMap = new HashMap<String,Object>();
 							dataMap.put("Selected row count",selected.length);
 
-							HashMap<String,Object> resultLog = new HashMap<String,Object>();
-							resultLog.put("result", "OK");
+							HashMap<String,Object> result = new HashMap<String,Object>();
 
-							ActionProperties action = new ActionProperties("histogram",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-							action.logActionProperties();
+							String selList = geneLists.getSelectedValue().toString();
+							dataMap.put("Selected List", selList);
+							dataMap.put("Selected Features", table.getSelectedRows());
+							dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+							dataMap.put("XAxis", myProject.getDefaultXAxis());
+							dataMap.put("YAxis", myProject.getDefaultYAxis());
+							dataMap.put("Chart Title", myProject.getDefaultTitle());
+
+							result.put("Color 1", myProject.getColor1());
+							result.put("Color 2", myProject.getColor2());
+							result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+							result.put("Playable", "true");
+							result.put("result", "OK");
+
+							ActionProperties histogramAction = new ActionProperties("histogram", actionMap, dataMap, result,
+								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+							histogramAction.logActionProperties();
 
 							if (selected == null || selected.length == 0) {
 								JOptionPane.showMessageDialog(null, "No rows selected", "Nothing selected",
@@ -1566,13 +1619,32 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 		actionMap.put("section", "Volcano Plot");
 
 		HashMap<String,Object> dataMap = new HashMap<String,Object>();
-		dataMap.put("Feature names",featureNames);
 
-		HashMap<String,Object> resultLog = new HashMap<String,Object>();
-		resultLog.put("result", "OK");
+		HashMap<String,Object> result = new HashMap<String,Object>();
 
-		ActionProperties action = new ActionProperties("volcano-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-		action.logActionProperties();
+		String selList = geneLists.getSelectedValue().toString();
+		dataMap.put("Selected List", selList);
+		dataMap.put("Selected Features", table.getSelectedRows());
+		dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+		dataMap.put("XAxis", myProject.getDefaultXAxis());
+		dataMap.put("YAxis", myProject.getDefaultYAxis());
+		dataMap.put("Chart Title", myProject.getDefaultTitle());
+		dataMap.put("Feature Names", featureNames);
+		dataMap.put("FC", fc);
+		dataMap.put("PV", pv);
+		dataMap.put("Name 1", name1);
+		dataMap.put("Name 2", name2);
+
+		result.put("Color 1", myProject.getColor1());
+		result.put("Color 2", myProject.getColor2());
+		result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+		result.put("Playable", "true");
+		result.put("result", "OK");
+
+
+		ActionProperties volcanoAction = new ActionProperties("volcano-plot", actionMap, dataMap, result,
+				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+		volcanoAction.logActionProperties();
 
 		// make plot
 		VolcanoPlot f = new VolcanoPlot(featureNames, fc, pv, name1, name2, false);
@@ -1604,16 +1676,34 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 		}
 		HashMap<String,Object> actionMap = new HashMap<String,Object>();
 		actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
-		actionMap.put("section", "Adj Volcano Plot");
+		actionMap.put("section", "Volcano Plot");
 
 		HashMap<String,Object> dataMap = new HashMap<String,Object>();
-		dataMap.put("Feature names",featureNames);
 
-		HashMap<String,Object> resultLog = new HashMap<String,Object>();
-		resultLog.put("result", "OK");
+		HashMap<String,Object> result = new HashMap<String,Object>();
 
-		ActionProperties action = new ActionProperties("adj-volcano-plot",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-		action.logActionProperties();
+		String selList = geneLists.getSelectedValue().toString();
+		dataMap.put("Selected List", selList);
+		dataMap.put("Selected Features", table.getSelectedRows());
+		dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+		dataMap.put("XAxis", myProject.getDefaultXAxis());
+		dataMap.put("YAxis", myProject.getDefaultYAxis());
+		dataMap.put("Chart Title", myProject.getDefaultTitle());
+		dataMap.put("Feature Names", featureNames);
+		dataMap.put("FC", fc);
+		dataMap.put("APV", apv);
+		dataMap.put("Name 1", name1);
+		dataMap.put("Name 2", name2);
+
+		result.put("Color 1", myProject.getColor1());
+		result.put("Color 2", myProject.getColor2());
+		result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+		result.put("Playable", "true");
+		result.put("result", "OK");
+
+		ActionProperties volcanoAction = new ActionProperties("adj-volcano-plot", actionMap, dataMap, result,
+				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+		volcanoAction.logActionProperties();
 		// make plot
 		VolcanoPlot f = new VolcanoPlot(featureNames, fc, apv, name1, name2, true);
 		MetaOmGraph.getDesktop().add(f);
@@ -1815,17 +1905,31 @@ public class logFCResultsFrame extends StatisticalResultsPanel {
 
 					HashMap<String,Object> actionMap = new HashMap<String,Object>();
 					actionMap.put("parent",MetaOmGraph.getDEAResultsFrame().getSelectedTabActionNumber());
-					actionMap.put("section", columnName+ " Histogram");
+					actionMap.put("section", "Histogram");
 
 					HashMap<String,Object> dataMap = new HashMap<String,Object>();
-					dataMap.put("Column name",columnName);
-					dataMap.put("Column count", table.getColumnCount());
 
-					HashMap<String,Object> resultLog = new HashMap<String,Object>();
-					resultLog.put("result", "OK");
+					HashMap<String,Object> result = new HashMap<String,Object>();
 
-					ActionProperties action = new ActionProperties(columnName+"-histogram",actionMap,dataMap,resultLog,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-					action.logActionProperties();
+					String selList = geneLists.getSelectedValue().toString();
+					dataMap.put("Selected List", selList);
+					dataMap.put("Selected Features", table.getSelectedRows());
+					dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
+					dataMap.put("XAxis", myProject.getDefaultXAxis());
+					dataMap.put("YAxis", myProject.getDefaultYAxis());
+					dataMap.put("Chart Title", myProject.getDefaultTitle());
+					dataMap.put("Data", data);
+					dataMap.put("Name", columnName);
+
+					result.put("Color 1", myProject.getColor1());
+					result.put("Color 2", myProject.getColor2());
+					result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+					result.put("Playable", "true");
+					result.put("result", "OK");
+
+					ActionProperties histogramAction = new ActionProperties("column-histogram", actionMap, dataMap, result,
+							new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+					histogramAction.logActionProperties();
 
 					int nBins = 10;
 					HistogramChart f = new HistogramChart(null, nBins, null, 2, data, false);
