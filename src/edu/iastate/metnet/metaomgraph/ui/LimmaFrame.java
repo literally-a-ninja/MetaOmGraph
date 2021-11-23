@@ -33,6 +33,7 @@ import javax.swing.JDialog;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.sun.codemodel.JOp;
 import org.apache.commons.collections4.CollectionUtils;
 
 import edu.iastate.metnet.metaomgraph.AnimatedSwingWorker;
@@ -58,6 +59,8 @@ import java.awt.event.ActionEvent;
  */
 
 public class LimmaFrame extends TaskbarInternalFrame {
+
+    private JPanel groupPanel;
 
     private JComboBox comboBox;
     private JComboBox comboBox_1;
@@ -110,7 +113,7 @@ public class LimmaFrame extends TaskbarInternalFrame {
      * Create the frame.
      */
     public LimmaFrame() {
-        setBounds(100, 100, 450, 300);
+        setBounds(100, 100, 600, 300);
         getContentPane().setLayout(new BorderLayout(0, 0));
         setTitle("Limma Analysis");
 
@@ -128,6 +131,8 @@ public class LimmaFrame extends TaskbarInternalFrame {
             excludedCopy = new boolean[excluded.length];
             System.arraycopy(excluded, 0, excludedCopy, 0, excluded.length);
         }
+
+        groupPanel = new JPanel();
 
         initComboBoxes();
 
@@ -186,10 +191,10 @@ public class LimmaFrame extends TaskbarInternalFrame {
                 // measure time
                 // long startTime = System.nanoTime();
 
-                LimmaLowExpGeneFrame lframe = new LimmaLowExpGeneFrame();
-                lframe.setSize(lframe.getWidth(), MetaOmGraph.getMainWindow().getHeight() / 2);
-                MetaOmGraph.getDesktop().add(lframe);
-                lframe.setVisible(true);
+                //TODO check what joptionpane returns on no input
+                String input = JOptionPane.showInputDialog(null, "Remove lowly expressed genes\nMean expression value threshhold of:" +
+                        "\n(Optional)", "Limma Analysis", JOptionPane.INFORMATION_MESSAGE);
+
 
                 CalculateLogFC ob = new CalculateLogFC(selectedFeatureList, grp1, grp2, txtGroup1.getText(),
                         txtGroup2.getText(), myProject, comboBox_1.getSelectedIndex());
@@ -216,45 +221,7 @@ public class LimmaFrame extends TaskbarInternalFrame {
                         EventQueue.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                try {
-                                    // create DifferentialExpResults object to store results in MOG
-                                    DifferentialExpResults diffExpObj = new DifferentialExpResults(id_f, comboBox_1.getSelectedIndex(),
-                                            txtGroup1.getText(), txtGroup2.getText(), getAllRows(tableGrp1).size(),
-                                            getAllRows(tableGrp2).size(), selectedFeatureList, MetaOmGraph.getInstance().getTransform(),
-                                            ob.getFeatureNames(), ob.getMean1(), ob.getMean2(), ob.ftestRatios(), ob.ftestPV(),
-                                            ob.testPV());
-
-                                    // display result using diffExpObj
-                                    logFCResultsFrame frame = null;
-                                    frame = new logFCResultsFrame(diffExpObj, myProject);
-                                    frame.setSize(MetaOmGraph.getMainWindow().getWidth() / 2, MetaOmGraph.getMainWindow().getHeight() / 2);
-                                    //frame.setTitle("DE results");
-
-                                    MetaOmGraph.setDEAResultsFrame(new StatisticalResultsFrame("DEA","DEA Results"));
-                                    MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
-                                    MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
-                                    MetaOmGraph.getDesktop().add(MetaOmGraph.getDEAResultsFrame());
-                                    MetaOmGraph.getDEAResultsFrame().setTitle("DE results");
-                                    MetaOmGraph.getDEAResultsFrame().setVisible(true);
-                                    MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().maximizeFrame(MetaOmGraph.getDEAResultsFrame());
-                                    MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().minimizeFrame(MetaOmGraph.getDEAResultsFrame());
-                                    MetaOmGraph.getDEAResultsFrame().moveToFront();
-                                    frame.setEnabled(true);
-
-                                } catch (Exception e) {
-                                    StringWriter sw = new StringWriter();
-                                    PrintWriter pw = new PrintWriter(sw);
-                                    e.printStackTrace(pw);
-                                    String sStackTrace = sw.toString();
-
-                                    JDialog jd = new JDialog();
-                                    JTextPane jt = new JTextPane();
-                                    jt.setText(sStackTrace);
-                                    jt.setBounds(10, 10, 300, 100);
-                                    jd.getContentPane().add(jt);
-                                    jd.setBounds(100, 100, 500, 200);
-                                    jd.setVisible(true);
-                                }
+                                // TODO CALL FUNCTION HERE
                             }
                         });
                         return null;
@@ -294,6 +261,8 @@ public class LimmaFrame extends TaskbarInternalFrame {
             }
         });
         panel_1.add(btnOk);
+
+        groupPanel.add(new LimmaGroupPanel(1), 1);
 
         JPanel panel_2 = new JPanel();
         getContentPane().add(panel_2, BorderLayout.CENTER);
