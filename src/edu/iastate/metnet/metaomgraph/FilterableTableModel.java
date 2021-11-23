@@ -391,23 +391,28 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 		fireTableChanged(new TableModelEvent(this));
 
 		//Harsha - Reproducibility log
-		try {
-			HashMap<String,Object> actionMap = new HashMap<String,Object>();
-			actionMap.put("parent",MetaOmGraph.getCurrentProjectActionId());
+		if (MetaOmGraph.getLoggingRequired()) {
+			try {
+				HashMap<String, Object> actionMap = new HashMap<String, Object>();
+				actionMap.put("parent", MetaOmGraph.getCurrentProjectActionId());
 
-			HashMap<String,Object> dataMap = new HashMap<String,Object>();
+				HashMap<String, Object> dataMap = new HashMap<String, Object>();
 
-			dataMap.put("Filter Strings", values);
-			dataMap.put("Num Hits", hits.size());
+				dataMap.put("Filter Strings", values);
+				dataMap.put("Num Hits", hits.size());
 
-			HashMap<String,Object> result = new HashMap<String,Object>();
-			result.put("result", "OK");
+				HashMap<String, Object> result = new HashMap<String, Object>();
+				result.put("Color 1", MetaOmGraph.getActiveProject().getColor1());
+				result.put("Color 2", MetaOmGraph.getActiveProject().getColor2());
+				result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+				result.put("Playable", "true");
+				result.put("result", "OK");
 
-			ActionProperties filterAction = new ActionProperties("filter",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-			filterAction.logActionProperties();
-		}
-		catch(Exception e) {
+				ActionProperties filterAction = new ActionProperties("filter", actionMap, dataMap, result, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				filterAction.logActionProperties();
+			} catch (Exception e) {
 
+			}
 		}
 	}
 

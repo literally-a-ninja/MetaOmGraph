@@ -465,12 +465,12 @@ public class ReproducibilityDashboardPanel extends JPanel {
 		playButton.setToolTipText("Select an action from the tree and play it");
 		playButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
+				MetaOmGraph.setLoggingRequired(false);
 				int tabNo = tabbedPane.getSelectedIndex();
 				JTree selectedTree = allTabsInfo.get(tabNo).getTabTree();
 				TreePath[] allPaths = selectedTree.getSelectionPaths();
 				playbackAction.playActions(tabNo, selectedTree, allPaths, allTabsInfo);
-
+				MetaOmGraph.setLoggingRequired(true);
 			}
 		});
 		playButton.setIcon(new ImageIcon(project.getClass().getResource(PLAY_ICON_PATH)));
