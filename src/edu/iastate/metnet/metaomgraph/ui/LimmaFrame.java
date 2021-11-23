@@ -50,8 +50,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JCheckBox;
-
 
 /**
  *
@@ -80,8 +78,6 @@ public class LimmaFrame extends TaskbarInternalFrame {
     private MetaOmProject myProject;
 
     private boolean[] excludedCopy;
-
-    private JCheckBox chckbxSaveResultsWith;
 
     /**
      * Default Properties
@@ -210,45 +206,9 @@ public class LimmaFrame extends TaskbarInternalFrame {
 
                 // save object
                 String id = "";
-                if (chckbxSaveResultsWith.isSelected()) {
-                    id = JOptionPane.showInputDialog(MetaOmGraph.getMainWindow(),
-                            "Please enter a name for this analysis:", "Save differential expression results", 2);
-                    if (id == null) {
-                        // cancelled
-                        return;
-                    }
-                    id = id.trim();
-                    if (myProject.diffExpNameExists(id)) {
-                        while (myProject.diffExpNameExists(id)) {
-                            id = JOptionPane.showInputDialog(MetaOmGraph.getDesktop(),
-                                    "A previous analysis exists with the same name. Please enter a different name for this analysis",
-                                    "Save differential expression results", 2);
-                            if (id == null) {
-                                // cancelled
-                                return;
-                            }
-                            id = id.trim();
-                        }
-                    }
-
-                    //if name starts with number its illegal
-                    if (Character.isDigit(id.charAt(0))) {
-                        while (Character.isDigit(id.charAt(0))) {
-                            id = JOptionPane.showInputDialog(MetaOmGraph.getDesktop(),
-                                    "Name can't start with a number. Please enter a different name for this analysis",
-                                    "Save differential expression results", 2);
-                            if (id == null) {
-                                // cancelled
-                                return;
-                            }
-                            id = id.trim();
-                        }
-                    }
-                }
 
                 final String id_f = id;
                 //cant'start with string
-
 
                 new AnimatedSwingWorker("Working...", true) {
                     @Override
@@ -263,10 +223,6 @@ public class LimmaFrame extends TaskbarInternalFrame {
                                             getAllRows(tableGrp2).size(), selectedFeatureList, MetaOmGraph.getInstance().getTransform(),
                                             ob.getFeatureNames(), ob.getMean1(), ob.getMean2(), ob.ftestRatios(), ob.ftestPV(),
                                             ob.testPV());
-
-                                    if (chckbxSaveResultsWith.isSelected()) {
-                                        myProject.addDiffExpRes(diffExpObj.getID(), diffExpObj);
-                                    }
 
                                     // display result using diffExpObj
                                     logFCResultsFrame frame = null;
@@ -319,7 +275,6 @@ public class LimmaFrame extends TaskbarInternalFrame {
                 }.start();
 
 
-
                 //Harsha - reproducibility log
 
                 HashMap<String,Object> actionMap = new HashMap<String,Object>();
@@ -337,7 +292,6 @@ public class LimmaFrame extends TaskbarInternalFrame {
                     dataMap.put("Group 2 Name", txtGroup2.getText());
                     dataMap.put("Group 1 List", grp1);
                     dataMap.put("Group 2 List", grp2);
-                    dataMap.put("Save Results", chckbxSaveResultsWith.isSelected());
                     dataMap.put("Analysis Name", id);
 
                     result.put("result", "OK");

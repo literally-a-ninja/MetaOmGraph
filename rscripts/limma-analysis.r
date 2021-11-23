@@ -3,7 +3,7 @@ library(edgeR)
 
 ## READING THE COUNT MATRIX FROM THE FILE
 
-counts <- read.table("/Users/harshavk/Documents/Harsha/Fall2021/RFiles/limma_counts.csv", header = TRUE, sep = ",")
+counts <- read.table("/home/fahmi/coms402/3032_3_sd6_mog/rscripts/limma_counts.csv", header = TRUE, sep = ",")
 counts2 <- counts[,-1]
 rownames(counts2) <- counts[,1]
 counts <- data.matrix(counts2)
@@ -31,11 +31,11 @@ d
 ## READING GROUPS AND PLOTTING MDS CHART
 
 snames <- colnames(counts) # Sample names
-groups <- read.table("/Users/harshavk/Documents/Harsha/Fall2021/RFiles/limma_groups.csv", header = TRUE, sep = ",")
+groups <- read.table("/home/fahmi/coms402/3032_3_sd6_mog/rscripts/limma_groups.csv", header = TRUE, sep = ",")
 group <- interaction(groups['Groups'])
 group
 
-png("/Users/harshavk/Documents/Harsha/Fall2021/RFiles/mds-plot.png")
+png("/home/fahmi/coms402/3032_3_sd6_mog/rscripts/mds-plot.png")
 plotMDS(d, col = as.numeric(group))
 dev.off()
 
@@ -44,7 +44,7 @@ dev.off()
 ## PERFORMING THE LIMMA VOOM OPERATION
 
 mm <- model.matrix(~0 + group)
-png("/Users/harshavk/Documents/Harsha/Fall2021/RFiles/voom-plot.png")
+png("/home/fahmi/coms402/3032_3_sd6_mog/rscripts/voom-plot.png")
 y <- voom(d, mm, plot = T)
 dev.off()
 
@@ -68,5 +68,7 @@ length(which(top.table$adj.P.Val < 0.05))
 
 top.table$Gene <- rownames(top.table)
 top.table <- top.table[,c("Gene", names(top.table)[1:6])]
-write.table(top.table, file = "/Users/harshavk/Documents/Harsha/Fall2021/RFiles/differentialexpression.tsv", row.names = F, sep = "\t", quote = F)
+write.table(top.table, file = "/home/fahmi/coms402/3032_3_sd6_mog/rscripts/differentialexpression.tsv", row.names = F, sep = "\t", quote = F)
+
+theMatrix <- as.matrix(top.table, rownames=TRUE)
 
