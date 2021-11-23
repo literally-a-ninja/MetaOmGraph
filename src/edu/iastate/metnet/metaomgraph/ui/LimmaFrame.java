@@ -230,29 +230,16 @@ public class LimmaFrame extends TaskbarInternalFrame {
                                     frame.setSize(MetaOmGraph.getMainWindow().getWidth() / 2, MetaOmGraph.getMainWindow().getHeight() / 2);
                                     //frame.setTitle("DE results");
 
-
-                                    if(MetaOmGraph.getDEAResultsFrame()!=null && !MetaOmGraph.getDEAResultsFrame().isClosed()) {
-                                        MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
-                                        MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
-                                        MetaOmGraph.getDEAResultsFrame().setTitle("DE results");
-                                        MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().maximizeFrame(MetaOmGraph.getDEAResultsFrame());
-                                        MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().minimizeFrame(MetaOmGraph.getDEAResultsFrame());
-                                        MetaOmGraph.getDEAResultsFrame().moveToFront();
-                                        frame.setEnabled(true);
-                                    }
-                                    else {
-                                        MetaOmGraph.setDEAResultsFrame(new StatisticalResultsFrame("DEA","DEA Results"));
-                                        MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
-                                        MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
-                                        MetaOmGraph.getDesktop().add(MetaOmGraph.getDEAResultsFrame());
-                                        MetaOmGraph.getDEAResultsFrame().setTitle("DE results");
-                                        MetaOmGraph.getDEAResultsFrame().setVisible(true);
-                                        MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().maximizeFrame(MetaOmGraph.getDEAResultsFrame());
-                                        MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().minimizeFrame(MetaOmGraph.getDEAResultsFrame());
-                                        MetaOmGraph.getDEAResultsFrame().moveToFront();
-                                        frame.setEnabled(true);
-                                    }
-
+                                    MetaOmGraph.setDEAResultsFrame(new StatisticalResultsFrame("DEA","DEA Results"));
+                                    MetaOmGraph.getDEAResultsFrame().addTabToFrame(frame, diffExpObj.getID());
+                                    MetaOmGraph.getDEAResultsFrame().addTabListToFrame(frame.getGeneLists(), diffExpObj.getID());
+                                    MetaOmGraph.getDesktop().add(MetaOmGraph.getDEAResultsFrame());
+                                    MetaOmGraph.getDEAResultsFrame().setTitle("DE results");
+                                    MetaOmGraph.getDEAResultsFrame().setVisible(true);
+                                    MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().maximizeFrame(MetaOmGraph.getDEAResultsFrame());
+                                    MetaOmGraph.getDEAResultsFrame().getDesktopPane().getDesktopManager().minimizeFrame(MetaOmGraph.getDEAResultsFrame());
+                                    MetaOmGraph.getDEAResultsFrame().moveToFront();
+                                    frame.setEnabled(true);
 
                                 } catch (Exception e) {
                                     StringWriter sw = new StringWriter();
