@@ -166,12 +166,20 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                     }
                 }
 
-//                List<String> intrsection = (List<String>) CollectionUtils.intersection(grp1, grp2);
-//                if (intrsection.size() > 0) {
-//                    JOptionPane.showMessageDialog(null, "The two groups must be disjoint. Please check the lists",
-//                            "Please check the lists", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
+                //Check if lists are disjoint
+                HashMap<String, String> map = new HashMap<>();
+
+                for (LimmaGroupPanel group : limmaGroupPanels) {
+                    for (String entry : group.getAllRows()) {
+                        if (map.get(entry) == null) { // if null we've never seen that name
+                            map.put(entry, "");
+                        } else { // if not null that name exists somewhere else immediately cancel
+                            JOptionPane.showMessageDialog(null, "The two groups must be disjoint. Please check the lists",
+                            "Please check the lists", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                }
 
                 String selectedFeatureList = comboBox.getSelectedItem().toString();
                 String selectedMethod = comboBox_1.getSelectedItem().toString();
