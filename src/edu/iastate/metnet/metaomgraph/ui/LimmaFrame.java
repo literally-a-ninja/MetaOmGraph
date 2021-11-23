@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
  *
  */
 
-public class LimmaFrame extends TaskbarInternalFrame {
+public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
 
     private JPanel groupPanel;
 
@@ -60,6 +60,8 @@ public class LimmaFrame extends TaskbarInternalFrame {
 
     private JScrollPane jscp2;
     private JTable tableGrp2;
+
+    ArrayList<LimmaGroupPanel> limmaGroupPanels;
 
     private MetadataHybrid mdob;
     private MetaOmProject myProject;
@@ -97,14 +99,14 @@ public class LimmaFrame extends TaskbarInternalFrame {
      * Create the frame.
      */
     public LimmaFrame() {
-        setBounds(100, 100, 600, 300);
-        setPreferredSize(new Dimension(600, 300));
+        setBounds(100, 100, 750, 300);
         getContentPane().setLayout(new BorderLayout(0, 0));
         setTitle("Limma Analysis");
 
         // init objects
         myProject = MetaOmGraph.getActiveProject();
         mdob = myProject.getMetadataHybrid();
+        limmaGroupPanels = new ArrayList<>();
         if (mdob == null) {
             JOptionPane.showMessageDialog(null, "Error. No metadata found", "Error", JOptionPane.ERROR_MESSAGE);
             dispose();
@@ -135,48 +137,55 @@ public class LimmaFrame extends TaskbarInternalFrame {
         btnOk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO add support for up to 10 lists
-                // check if two lists (sets) are disjoint
-                List<String> grp1 = getAllRows(tableGrp1);
-                if (grp1 == null || grp1.size() < 1) {
-                    JOptionPane.showMessageDialog(null, "Please check the lists. First list is empty", "Empty list",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
+                String errorMsg = "";
+                boolean shouldExit = false;
+                int totalSize = 0;
+                for (LimmaGroupPanel group : limmaGroupPanels) {
+                    List<String> grp = group.getAllRows();
+                    if (grp == null || grp.size() < 1) {
+                        errorMsg += "Group "+ group.getId() +" is empty\n";
+                        shouldExit = true;
+                    } else if (grp.size() > 100) {
+                        errorMsg += "Group size of < 100 recommended for group "+group.getId()+"\n";
+                        totalSize += grp.size();
+                    }
                 }
-                List<String> grp2 = getAllRows(tableGrp2);
-                if (grp2 == null || grp2.size() < 1) {
-                    JOptionPane.showMessageDialog(null, "Please check the lists. Second list is empty", "Empty list",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
+                if (errorMsg != "") {
+                    if (totalSize > 1000) {
+                        errorMsg += "Overall size of < 1000 is recommended for Limma Analysis\n";
+                    }
+                    if (shouldExit) {
+                        JOptionPane.showMessageDialog(null, errorMsg);
+                        return;
+                    } else {
+                        errorMsg += "\nContinue anyway?";
+                        int stopRequested = JOptionPane.showConfirmDialog(null, errorMsg);
+                        if (stopRequested != 0) {
+                            return;
+                        }
+                    }
                 }
-                List<String> intrsection = (List<String>) CollectionUtils.intersection(grp1, grp2);
-                if (intrsection.size() > 0) {
-                    JOptionPane.showMessageDialog(null, "The two groups must be disjoint. Please check the lists",
-                            "Please check the lists", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+
+//                List<String> intrsection = (List<String>) CollectionUtils.intersection(grp1, grp2);
+//                if (intrsection.size() > 0) {
+//                    JOptionPane.showMessageDialog(null, "The two groups must be disjoint. Please check the lists",
+//                            "Please check the lists", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
 
                 String selectedFeatureList = comboBox.getSelectedItem().toString();
                 String selectedMethod = comboBox_1.getSelectedItem().toString();
                 // if paired test is selected lists must be equal size
                 if (selectedMethod.equals("Paired t-test") || selectedMethod.equals("Wilcoxon Signed Rank Test")
                         || selectedMethod.equals("Permutation test (paired samples)")) {
-                    if (grp1.size() != grp2.size()) {
-                        JOptionPane.showMessageDialog(null,
-                                "The two groups must be equal to perform paired test. Please check the input lists.",
-                                "Unequal lists", JOptionPane.ERROR_MESSAGE);
-                        return;
+                    for (int i = 0; i < limmaGroupPanels.size() - 1; i++) {
+                        if (limmaGroupPanels.get(i).getAllRows().size() != limmaGroupPanels.get(i+1).getAllRows().size()) {
+                            JOptionPane.showMessageDialog(null,
+                                    "The groups must be equal to perform paired test. Please check the input lists.",
+                                    "Unequal lists", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                     }
-                }
-
-                /**
-                 * TODO
-                 * If samples in each group exceed 100, or the total number of samples exceed 1000, then throw a warning message
-                 */
-                if (grp1.size() > 100 || grp2.size() > 100) {
-                    JOptionPane.showMessageDialog(null,
-                            "Larger group size is not useful for Limma analysis. Group size < 100 is recommended",
-                            "Small groups", JOptionPane.WARNING_MESSAGE);
                 }
 
                 // all checks completed, compute logFC
@@ -189,18 +198,18 @@ public class LimmaFrame extends TaskbarInternalFrame {
                         "\n(Optional)", "Limma Analysis", JOptionPane.INFORMATION_MESSAGE);
 
 
-                CalculateLogFC ob = new CalculateLogFC(selectedFeatureList, grp1, grp2, txtGroup1.getText(),
-                        txtGroup2.getText(), myProject, comboBox_1.getSelectedIndex());
+//                CalculateLogFC ob = new CalculateLogFC(selectedFeatureList, grp1, grp2, txtGroup1.getText(),
+//                        txtGroup2.getText(), myProject, comboBox_1.getSelectedIndex());
+//
+//                // start calculation
+//                ob.doCalc();
 
-                // start calculation
-                ob.doCalc();
-
-                // check if calculation was cancelled
-                // compare if pvalues math size of gene list. hacky way to do
-                if (ob.testPV()==null || ob.testPV().size() < myProject.getGeneListRowNumbers(selectedFeatureList).length) {
-                    // JOptionPane.showMessageDialog(null, "cancelled");
-                    return;
-                }
+//                // check if calculation was cancelled
+//                // compare if pvalues math size of gene list. hacky way to do
+//                if (ob.testPV()==null || ob.testPV().size() < myProject.getGeneListRowNumbers(selectedFeatureList).length) {
+//                    // JOptionPane.showMessageDialog(null, "cancelled");
+//                    return;
+//                }
 
                 // save object
                 String id = "";
@@ -237,8 +246,8 @@ public class LimmaFrame extends TaskbarInternalFrame {
                     dataMap.put("Selected Method", selectedMethod);
                     dataMap.put("Group 1 Name", txtGroup1.getText());
                     dataMap.put("Group 2 Name", txtGroup2.getText());
-                    dataMap.put("Group 1 List", grp1);
-                    dataMap.put("Group 2 List", grp2);
+//                    dataMap.put("Group 1 List", grp1);
+//                    dataMap.put("Group 2 List", grp2);
                     dataMap.put("Analysis Name", id);
 
                     result.put("result", "OK");
@@ -259,10 +268,19 @@ public class LimmaFrame extends TaskbarInternalFrame {
         btnMore.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (LimmaGroupPanel.getId() < 10) {
-                    groupPanel.add(new LimmaGroupPanel());
+                if (limmaGroupPanels.size() < 10) {
+                    LimmaGroupPanel lgp = new LimmaGroupPanel();
+                    lgp.getMoveSelectedBtn().addActionListener(LimmaFrame.this::actionPerformed);
+                    limmaGroupPanels.add(lgp);
+                    groupPanel.add(lgp);
+                    //refresh the window with the new group
                     groupPanel.validate();
                     validate();
+                    // if its the first time a user clicks the more button (we just now added our third group)
+                    // then expand the window a little to show them where the groups are
+                    if (limmaGroupPanels.size() == 3) {
+                        setSize(getWidth() + 50, getHeight());
+                    }
                 }
             }
         });
@@ -271,178 +289,14 @@ public class LimmaFrame extends TaskbarInternalFrame {
         LimmaGroupPanel.resetId();
 
         //Start with two panels
-        groupPanel.add(new LimmaGroupPanel());
-        groupPanel.add(new LimmaGroupPanel());
-
-//        JPanel panel_2 = new JPanel();
-//        getContentPane().add(panel_2, BorderLayout.CENTER);
-//        panel_2.setLayout(new BorderLayout(0, 0));
-//
-//        JSplitPane splitPane = new JSplitPane();
-//        panel_2.add(splitPane, BorderLayout.CENTER);
-//        splitPane.setResizeWeight(0.5);
-//
-//        JPanel panel_3 = new JPanel();
-//        splitPane.setRightComponent(panel_3);
-//        panel_3.setLayout(new BorderLayout(0, 0));
-//
-//        txtGroup2 = new JTextField();
-//        txtGroup2.setText("Group2");
-//        txtGroup2.setColumns(10);
-//        JPanel topbtnPnl2 = new JPanel();
-//        JButton sendLeft = new JButton("<<");
-//        sendLeft.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                moveSelectedtoLeft();
-//            }
-//        });
-//        topbtnPnl2.add(sendLeft);
-//
-//        JLabel lblGroupName_1 = new JLabel("Group name:");
-//        topbtnPnl2.add(lblGroupName_1);
-//        topbtnPnl2.add(txtGroup2);
-//        panel_3.add(topbtnPnl2, BorderLayout.NORTH);
-//        //topbtnPnl2.setLayout(new BoxLayout(topbtnPnl2, BoxLayout.LINE_AXIS));
-//        topbtnPnl2.setLayout(new FlowLayout());
-//        lblN2 = new JLabel("n=0");
-//        lblN2.setFont(new Font("Tahoma", Font.BOLD, 13));
-//        topbtnPnl2.add(lblN2);
-//
-//        // add table2
-//        jscp2 = new JScrollPane();
-//        tableGrp2 = initTableModel();
-//        // updateTableData(tableGrp2, mdob.getMetadataCollection().getAllDataCols());
-//        updateTableData(tableGrp2, null);
-//        jscp2.setViewportView(tableGrp2);
-//        panel_3.add(jscp2, BorderLayout.CENTER);
-//
-//        JButton btnAdd2 = new JButton("Add");
-//        btnAdd2.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                List<String> queryRes = showSearchMetadataPanel();
-//                if (queryRes == null || queryRes.size() < 1) {
-//                    return;
-//                }
-//                // JOptionPane.showConfirmDialog(null, "match:" + queryRes.toString());
-//                addRows(tableGrp2, queryRes);
-//            }
-//        });
-//        JPanel btnPnl2 = new JPanel(new FlowLayout());
-//        btnPnl2.add(btnAdd2);
-//        JButton btnRem2 = new JButton("Remove");
-//        btnRem2.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                removeSelectedRows(tableGrp2);
-//            }
-//        });
-//        btnPnl2.add(btnRem2);
-//        JButton btnSearch2 = new JButton("Search");
-//        btnSearch2.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // search in list by metadatata
-//                List<String> queryRes = showSearchMetadataPanel();
-//                if (queryRes == null || queryRes.size() < 1) {
-//                    return;
-//                }
-//                // get intersection
-//                List<String> allRows = getAllRows(tableGrp2);
-//                List<String> res = (List<String>) CollectionUtils.intersection(queryRes, allRows);
-//                // set selected and bring to top
-//                setSelectedRows(res, tableGrp2);
-//            }
-//        });
-//        btnPnl2.add(btnSearch2);
-//        panel_3.add(btnPnl2, BorderLayout.SOUTH);
-//
-//        //btnPnl2.setLayout(new BoxLayout(btnPnl2, BoxLayout.LINE_AXIS));
-//        btnPnl2.setLayout(new FlowLayout());
-//        JPanel panel_4 = new JPanel();
-//        splitPane.setLeftComponent(panel_4);
-//        panel_4.setLayout(new BorderLayout(0, 0));
-//
-//        txtGroup1 = new JTextField();
-//        txtGroup1.setText("Group1");
-//        txtGroup1.setColumns(10);
-//        JPanel topbtnPnl1 = new JPanel();
-//        JButton sendRight = new JButton(">>");
-//        sendRight.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent arg0) {
-//                moveSelectedtoRight();
-//            }
-//        });
-//
-//        lblN1 = new JLabel("n=0");
-//        lblN1.setFont(new Font("Tahoma", Font.BOLD, 13));
-//        topbtnPnl1.add(lblN1);
-//
-//        JLabel lblGroupName = new JLabel("Group name:");
-//        topbtnPnl1.add(lblGroupName);
-//        topbtnPnl1.add(txtGroup1);
-//        topbtnPnl1.add(sendRight);
-//
-//        panel_4.add(topbtnPnl1, BorderLayout.NORTH);
-//
-//        //topbtnPnl1.setLayout(new BoxLayout(topbtnPnl1, BoxLayout.LINE_AXIS));
-//        topbtnPnl1.setLayout(new FlowLayout());
-//
-//        // add table1
-//        jscp1 = new JScrollPane();
-//        tableGrp1 = initTableModel();
-//        updateTableData(tableGrp1, null);
-//        jscp1.setViewportView(tableGrp1);
-//        panel_4.add(jscp1, BorderLayout.CENTER);
-//
-//        JButton btnAdd1 = new JButton("Add");
-//        btnAdd1.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                List<String> queryRes = showSearchMetadataPanel();
-//                if (queryRes == null || queryRes.size() < 1) {
-//                    return;
-//                }
-//                // JOptionPane.showConfirmDialog(null, "match:" + queryRes.toString());
-//                addRows(tableGrp1, queryRes);
-//
-//            }
-//        });
-//        JPanel btnPnl1 = new JPanel();
-//        btnPnl1.add(btnAdd1);
-//        JButton btnRem1 = new JButton("Remove");
-//        btnRem1.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent arg0) {
-//                removeSelectedRows(tableGrp1);
-//
-//            }
-//        });
-//        btnPnl1.add(btnRem1);
-//        JButton btnSearch1 = new JButton("Search");
-//        btnSearch1.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // search in list by metadatata
-//                List<String> queryRes = showSearchMetadataPanel();
-//                if (queryRes == null || queryRes.size() < 1) {
-//                    return;
-//                }
-//                // get intersection
-//                List<String> allRows = getAllRows(tableGrp1);
-//                List<String> res = (List<String>) CollectionUtils.intersection(queryRes, allRows);
-//                // set selected and bring to top
-//                setSelectedRows(res, tableGrp1);
-//
-//            }
-//        });
-//        btnPnl1.add(btnSearch1);
-//        panel_4.add(btnPnl1, BorderLayout.SOUTH);
-//
-//        //btnPnl1.setLayout(new BoxLayout(btnPnl1, BoxLayout.LINE_AXIS));
-//        btnPnl1.setLayout(new FlowLayout());
+        LimmaGroupPanel lgp1 = new LimmaGroupPanel();
+        lgp1.getMoveSelectedBtn().addActionListener(this);
+        limmaGroupPanels.add(lgp1);
+        groupPanel.add(lgp1);
+        LimmaGroupPanel lgp2 = new LimmaGroupPanel();
+        lgp2.getMoveSelectedBtn().addActionListener(this);
+        limmaGroupPanels.add(lgp2);
+        groupPanel.add(lgp2);
 
         // frame properties
         this.setClosable(true);
@@ -775,4 +629,66 @@ public class LimmaFrame extends TaskbarInternalFrame {
         }
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        JButton source = (JButton) e.getSource();
+        JFrame f = new JFrame();
+        f.setLayout(new BorderLayout(0, 0));
+
+        JLabel label = new JLabel("Move Selected Items to..");
+        //create a panel
+        JPanel p =new JPanel();
+
+        //String array to store weekdays
+        String[] names = new String[limmaGroupPanels.size()];
+        for (int i = 0; i < limmaGroupPanels.size(); i++) {
+            names[i] = limmaGroupPanels.get(i).getName();
+        }
+
+        //create list
+        JList groups = new JList(names);
+        groups.setFixedCellHeight(25);
+        groups.setFixedCellWidth(150);
+
+        //set a selected index
+        groups.setSelectedIndex(0);
+
+        //add list to panel
+        p.add(label, BorderLayout.NORTH);
+        p.add(groups, BorderLayout.CENTER);
+
+        JPanel btnPnl = new JPanel();
+        JButton cancel = new JButton("Cancel");
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                f.dispose();
+            }
+        });
+        btnPnl.add(cancel);
+        JButton ok = new JButton("Ok");
+        ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // buttons group id - 1 gives us the index of the corresponding group
+                int callerIdx = Integer.parseInt(source.getName()) - 1;
+                limmaGroupPanels.get(groups.getSelectedIndex()).addRows(limmaGroupPanels.get(callerIdx).getSelectedRows());
+                limmaGroupPanels.get(callerIdx).removeSelectedRows();
+                f.dispose();
+            }
+        });
+        btnPnl.add(ok);
+
+        f.add(p, BorderLayout.CENTER);
+        f.add(btnPnl, BorderLayout.SOUTH);
+
+        //set the size of frame
+        int height = (names.length * 25) + 90;
+        f.setSize(160,height);
+        f.setLocation(getWidth() / 2, getHeight() / 2);
+        f.setResizable(false);
+
+        f.show();
+    }
 }

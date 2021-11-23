@@ -15,6 +15,10 @@ import java.util.List;
 public class LimmaGroupPanel extends JPanel  {
 
     public static int id;
+    private int thisId;
+    private JTable table;
+    private JButton moveSelected;
+    JLabel lblN;
     private Color SELECTIONBCKGRND = MetaOmGraph.getTableSelectionColor();
     private Color BCKGRNDCOLOR1 = MetaOmGraph.getTableColor1();
     private Color BCKGRNDCOLOR2 = MetaOmGraph.getTableColor2();
@@ -25,25 +29,13 @@ public class LimmaGroupPanel extends JPanel  {
 
     public LimmaGroupPanel() {
         id++;
+        thisId = id;
         setSize(200, 200);
         setLayout(new BorderLayout(0, 0));
 
         JLabel txtGroup = new JLabel();
         txtGroup.setText("Group" + id);
         JPanel topbtnPnl = new JPanel();
-        if (id > 1) {
-            JButton sendLeft = new JButton("<<");
-            sendLeft.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    moveSelectedtoLeft();
-                }
-            });
-            topbtnPnl.add(sendLeft);
-        } else {
-            JButton placeholder = new JButton();
-            topbtnPnl.add(placeholder);
-        }
 
         JLabel lblGroupName = new JLabel("Group name:");
         topbtnPnl.add(lblGroupName);
@@ -51,29 +43,25 @@ public class LimmaGroupPanel extends JPanel  {
         add(topbtnPnl, BorderLayout.NORTH);
         //topbtnPnl.setLayout(new BoxLayout(topbtnPnl, BoxLayout.LINE_AXIS));
         topbtnPnl.setLayout(new FlowLayout());
-        JLabel lblN = new JLabel("n=0");
+        lblN = new JLabel("n=0");
         lblN.setFont(new Font("Tahoma", Font.BOLD, 13));
         topbtnPnl.add(lblN);
 
-        if (id < 10) {
-            JButton sendRight = new JButton(">>");
-            sendRight.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    moveSelectedtoLeft();
-                }
-            });
-            topbtnPnl.add(sendRight);
-        } else {
-            JButton placeholder = new JButton();
-            topbtnPnl.add(placeholder);
-        }
+        moveSelected = new JButton("Move Selected Rows");
+        moveSelected.setName(""+thisId);
+        moveSelected.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //moveSelectedRows();
+            }
+        });
+        topbtnPnl.add(moveSelected);
 
         // add table2
         JScrollPane jscp = new JScrollPane();
         JTable tableGrp = initTableModel();
         // updateTableData(tableGrp, mdob.getMetadataCollection().getAllDataCols());
-        updateTableData(tableGrp, null);
+        updateTableData(null);
         jscp.setViewportView(tableGrp);
         add(jscp, BorderLayout.CENTER);
 
@@ -86,7 +74,7 @@ public class LimmaGroupPanel extends JPanel  {
                     return;
                 }
                 // JOptionPane.showConfirmDialog(null, "match:" + queryRes.toString());
-                addRows(tableGrp, queryRes);
+                addRows(queryRes);
             }
         });
         JPanel btnPnl = new JPanel(new FlowLayout());
@@ -95,7 +83,7 @@ public class LimmaGroupPanel extends JPanel  {
         btnRem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                removeSelectedRows(tableGrp);
+                removeSelectedRows();
             }
         });
         btnPnl.add(btnRem);
@@ -109,26 +97,34 @@ public class LimmaGroupPanel extends JPanel  {
                     return;
                 }
                 // get intersection
-                java.util.List<String> allRows = getAllRows(tableGrp);
+                java.util.List<String> allRows = getAllRows();
                 java.util.List<String> res = (List<String>) CollectionUtils.intersection(queryRes, allRows);
                 // set selected and bring to top
-                setSelectedRows(res, tableGrp);
+                setSelectedRows(res);
             }
         });
         btnPnl.add(btnSearch);
         add(btnPnl, BorderLayout.SOUTH);
     }
 
-    public static int getId() {
-        return id;
+    public int getId() {
+        return thisId;
     }
 
     public static void resetId() {
         LimmaGroupPanel.id = 0;
     }
 
+    public JButton getMoveSelectedBtn() {
+        return moveSelected;
+    }
+
+    public String getName() {
+        return "Group" + thisId;
+    }
+
     private JTable initTableModel() {
-        JTable table = new JTable() {
+        table = new JTable() {
             @Override
             public boolean getScrollableTracksViewportWidth() {
                 return getPreferredSize().width < getParent().getWidth();
@@ -186,7 +182,7 @@ public class LimmaGroupPanel extends JPanel  {
         return table;
     }
 
-    private void updateTableData(JTable table, List<String> rows) {
+    private void updateTableData(List<String> rows) {
         DefaultTableModel tablemodel = (DefaultTableModel) table.getModel();
         tablemodel.setRowCount(0);
         tablemodel.setColumnCount(0);
@@ -218,34 +214,15 @@ public class LimmaGroupPanel extends JPanel  {
     }
 
     /**
-     * move selected rows from table 1 to table 2
-     */
-    private void moveSelectedtoRight() {
-//        List<String> selected1 = getSelectedRows(tableGrp1);
-//        addRows(tableGrp2, selected1);
-//        removeSelectedRows(tableGrp1);
-//        updateLabelN();
-    }
-
-    private void moveSelectedtoLeft() {
-//        List<String> selected2 = getSelectedRows(tableGrp2);
-//        addRows(tableGrp1, selected2);
-//        removeSelectedRows(tableGrp2);
-//        updateLabelN();
-
-    }
-
-    /**
      * get selected rows from a table
      *
-     * @param table
      * @return
      */
-    private List<String> getSelectedRows(JTable table) {
-        return getSelectedRows(table, false);
+    public List<String> getSelectedRows() {
+        return getSelectedRows(false);
     }
 
-    private List<String> getSelectedRows(JTable table, boolean invert) {
+    private List<String> getSelectedRows(boolean invert) {
         int selected[] = table.getSelectedRows();
         List<String> res = new ArrayList<>();
         for (int i = 0; i < selected.length; i++) {
@@ -270,22 +247,22 @@ public class LimmaGroupPanel extends JPanel  {
         return res;
     }
 
-    private void removeSelectedRows(JTable table) {
-        List<String> toKeep = getSelectedRows(table, true);
+    public void removeSelectedRows() {
+        List<String> toKeep = getSelectedRows(true);
         // JOptionPane.showMessageDialog(null, "tokeep:" + toKeep.toString());
-        updateTableData(table, toKeep);
+        updateTableData(toKeep);
         updateLabelN();
 
     }
 
-    private void addRows(JTable table, List<String> toAdd) {
-        toAdd.addAll(getAllRows(table));
+    public void addRows(List<String> toAdd) {
+        toAdd.addAll(getAllRows());
         // JOptionPane.showMessageDialog(null, "toAdd:" + toAdd.toString());
-        updateTableData(table, toAdd);
+        updateTableData(toAdd);
         updateLabelN();
     }
 
-    private List<String> getAllRows(JTable table) {
+    public List<String> getAllRows() {
         // get existing rows
         List<String> temp = new ArrayList<>();
         for (int i = 0; i < table.getRowCount(); i++) {
@@ -297,21 +274,16 @@ public class LimmaGroupPanel extends JPanel  {
     }
 
     private void updateLabelN() {
-
-//        int n1 = getAllRows(tableGrp1).size();
-//        lblN1.setText("n=" + String.valueOf(n1));
-//        int n2 = getAllRows(tableGrp2).size();
-//        lblN2.setText("n=" + String.valueOf(n2));
-
+        int n = getAllRows().size();
+        lblN.setText("n=" + String.valueOf(n));
     }
 
     /**
      * @author urmi bring the matched items to top and set them as selected
      * @param res
-     * @param tab
      */
-    private void setSelectedRows(List<String> res, JTable tab) {
-        DefaultTableModel model = (DefaultTableModel) tab.getModel();
+    private void setSelectedRows(List<String> res) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
         List<String> newVals = new ArrayList<>();
         // bring matched values at top
         String temp;
@@ -335,7 +307,7 @@ public class LimmaGroupPanel extends JPanel  {
 
         }
         if (total_matches > 0) {
-            tab.setRowSelectionInterval(0, total_matches - 1);
+            table.setRowSelectionInterval(0, total_matches - 1);
         }
     }
 
