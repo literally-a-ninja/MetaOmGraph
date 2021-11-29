@@ -1,41 +1,21 @@
 package edu.iastate.metnet.metaomgraph.ui;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.PropertyVetoException;
+import java.awt.*;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.JTextPane;
-import javax.swing.MenuElement;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.EmptyBorder;
 
+import com.sun.management.OperatingSystemMXBean;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -81,6 +61,9 @@ public class TaskbarPanel extends JPanel{
 
 	private LinkedHashMap<String,List<TaskbarInternalFrame>> taskbarData;
 	private JMenuBar menuBar;
+	private JLabel cpuLabel;
+	private JLabel memoryLabel;
+	private JPanel taskbarPanel;
 
 	/**
 	 * Constructor to initialize the masterdata (taskbarData) and the JPanel
@@ -90,15 +73,55 @@ public class TaskbarPanel extends JPanel{
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
 		Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
-		setSize((int)rect.getMaxX(), 30);
-		setLocation(0, (int)rect.getMaxY()-30);
-		setLayout(new FlowLayout(FlowLayout.LEFT));
+		setLayout(new BorderLayout());
+		taskbarPanel = new JPanel();
+		taskbarPanel.setSize((int)rect.getMaxX(), 30);
+		taskbarPanel.setLocation(0, (int)rect.getMaxY()-30);
+		taskbarPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		taskbarData = new LinkedHashMap<String,List<TaskbarInternalFrame>>();
 		menuBar = new JMenuBar();
-		add(menuBar);
+		taskbarPanel.add(menuBar);
+		add(taskbarPanel, BorderLayout.WEST);
+
+
+		JPanel statisticsPanel = new JPanel();
+		statisticsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		// Add memory Usage
+		memoryLabel = new JLabel(getMemoryUsage());
+		memoryLabel.setBackground(Color.white);
+		memoryLabel.setOpaque(true);
+		memoryLabel.setBorder(new EmptyBorder(3,5,3,5));
+		memoryLabel.setLocation(0,(int) rect.getMaxY() - 100);
+		statisticsPanel.add(memoryLabel);
+
+		cpuLabel = new JLabel(getCPUUsage());
+		cpuLabel.setBackground(Color.white);
+		cpuLabel.setOpaque(true);
+		cpuLabel.setBorder(new EmptyBorder(3,5,3,5));
+		cpuLabel.setLocation(0,(int) rect.getMaxY() - 100);
+		statisticsPanel.add(cpuLabel);
+		add(statisticsPanel, BorderLayout.EAST);
+		// WIP: CPU usage
+		OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		double v = bean.getProcessCpuLoad();
+
+		StatisticsThread thread = new StatisticsThread();
+		thread.start();
+
 	}
 
+	// return memory usage in GB
+	public String getMemoryUsage() {
+		long runtime = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		return "MEM: " + String.format("%.2f", runtime / Math.pow(1024, 3)) + " GB";
+	}
+	// Returns % of CPU being used by MetaOMgraph
+	public String getCPUUsage(){
+		OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		double v = bean.getProcessCpuLoad() * 100.0;
+		return "CPU: " + String.format("%.2f", v) + "%";
+	}
 	/**
 	 * This method adds a tab to the taskbar
 	 * 
@@ -240,5 +263,22 @@ public class TaskbarPanel extends JPanel{
 		}
 
 	}
+	private class StatisticsThread extends Thread {
+		public StatisticsThread() {
+			super();
+		}
 
+		public void run() {
+			while (true) {
+				try {
+					sleep(5000);
+					cpuLabel.setText(getCPUUsage());
+					memoryLabel.setText(getMemoryUsage());
+				} catch (InterruptedException e) {
+
+				}
+			}
+		}
+	}
 }
+
