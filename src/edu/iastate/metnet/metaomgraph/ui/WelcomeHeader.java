@@ -9,26 +9,16 @@ import java.awt.Image;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-public class WelcomeHeader extends javax.swing.JComponent {
-    String text;
+public class WelcomeHeader extends Header {
     Image icon;
 
     public WelcomeHeader(String text, Image icon) {
-        this.text = text;
+        super(text);
         this.icon = icon;
-        setFont(new JLabel().getFont().deriveFont(18.0F));
     }
 
     @Override
-	public Dimension getPreferredSize() {
-        int width = SwingUtilities.computeStringWidth(this.getFontMetrics(this
-                .getFont()), text)
-                + icon.getWidth(null) + this.getInsets().left + this.getInsets().right + 50;
-        return new Dimension(width, 50);
-    }
-
-    @Override
-	protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         GradientPaint gradient = new GradientPaint(0.0F, 0.0F, Color.WHITE, 0.0F,
                 getHeight(), new Color(255, 255, 255, 0));
 
