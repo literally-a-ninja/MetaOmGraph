@@ -8,12 +8,12 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class VersionHeader extends Header {
-    public VersionHeader(String title) {
+public class BigHeader extends Header {
+    public BigHeader(String title) {
         super(title);
     }
 
-    public VersionHeader(String title, Font font) {
+    public BigHeader(String title, Font font) {
         super(title, font);
     }
 

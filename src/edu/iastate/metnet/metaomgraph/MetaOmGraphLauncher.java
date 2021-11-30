@@ -1,6 +1,7 @@
 package edu.iastate.metnet.metaomgraph;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import edu.iastate.metnet.metaomgraph.ui.VersionFrame.VersionController;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -315,6 +316,8 @@ public class MetaOmGraphLauncher implements ActionListener {
         frame.setResizable(false);
         frame.setVisible(true);
         log(System.getProperty("java.version"));
+
+        VersionController.check();
     }
 
     @Override

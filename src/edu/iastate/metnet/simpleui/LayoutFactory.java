@@ -53,6 +53,7 @@ public class LayoutFactory {
         JFrame frame = new JFrame(String.format(this.getFormattedTitle(), title));
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
 
         this.layout.fill(frame.getContentPane());
 
