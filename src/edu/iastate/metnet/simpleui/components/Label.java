@@ -14,6 +14,6 @@ public class Label extends AbstractComponent {
 
     @Override
     public Container create() {
-        return new JLabel(this.m_textContent);
+        return new JLabel("<html><p>" + this.m_textContent + "</p></html>");
     }
 }

@@ -13,6 +13,6 @@ public class Header extends Label {
 
     @Override
     public Container create() {
-        return new edu.iastate.metnet.metaomgraph.ui.Header(this.m_textContent);
+        return new edu.iastate.metnet.metaomgraph.ui.Header("<html><p>" +this.m_textContent + "</p></html>");
     }
 }

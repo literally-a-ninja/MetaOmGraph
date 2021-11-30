@@ -33,7 +33,7 @@ public class StackConstraint extends GridBagConstraints implements ISimpleConstr
         Insets insets = this.insets;
         this.insets = new Insets(
                 height + insets.top + this.ipady,
-                width + width + insets.left + this.ipadx,
+                width + insets.left + this.ipadx,
                 height + insets.bottom + this.ipady,
                 width + insets.right + this.ipadx
         );

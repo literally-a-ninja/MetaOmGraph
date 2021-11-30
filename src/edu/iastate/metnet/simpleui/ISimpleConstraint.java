@@ -1,5 +1,6 @@
 package edu.iastate.metnet.simpleui;
 
+
 import java.awt.*;
 
 public interface ISimpleConstraint {

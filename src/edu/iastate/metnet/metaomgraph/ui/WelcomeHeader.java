@@ -29,7 +29,7 @@ public class WelcomeHeader extends Header {
         g2d.drawImage(icon, 10, getHeight() / 2 - icon.getHeight(null) / 2,
                 null);
         g2d.setPaint(Color.BLACK);
-        g2d.drawString(text, 15 + icon.getWidth(null), getHeight() / 2 +
+        g2d.drawString(this.getText(), 15 + icon.getWidth(null), getHeight() / 2 +
                 g2d.getFontMetrics().getAscent() / 2);
     }
 }
