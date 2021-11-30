@@ -11,8 +11,16 @@ public class Header extends Label {
         super(title);
     }
 
+    public Header(String title, Font font) {
+        super(title, font);
+    }
+
+
     @Override
     public Container create() {
-        return new edu.iastate.metnet.metaomgraph.ui.Header("<html><p>" +this.m_textContent + "</p></html>");
+        JLabel label =  new edu.iastate.metnet.metaomgraph.ui.Header("<html><p>" +this.m_textContent + "</p></html>");
+        this.applyStyles(label);
+
+        return label;
     }
 }

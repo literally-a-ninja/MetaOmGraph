@@ -3,6 +3,7 @@ package edu.iastate.metnet.simpleui;
 import kotlin.Pair;
 import org.apache.logging.log4j.core.config.AbstractConfiguration;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -10,23 +11,27 @@ import java.awt.*;
  * <p>
  * Represents a possible layout for our JFrame; this layer is responsible for laying out our information.
  */
-public abstract class AbstractLayout {
+public abstract class AbstractLayout extends AbstractComponent {
 
     /**
      * Called on inserting a single component into a container.
      *
-     * @param content   what to fill
+     * @param parent   what to fill
      * @param component what to insert
      */
-    public void fillEach(Container content, AbstractComponent component, ISimpleConstraint constraint) {
+    public void fillEach(Container parent, AbstractComponent component, ISimpleConstraint constraint) {
         // Create our item
         Container item = component.create();
 
-        constraint.beforeInsert(content, item);
-        content.add(item, constraint);
-        constraint.afterInsert(content, item);
-    }
+        constraint.beforeInsert(parent, item);
+        parent.add(item, constraint);
+        constraint.afterInsert(parent, item);
 
+        if (component instanceof AbstractLayout) {
+            parent.add(item, constraint);
+            ((AbstractLayout) component).fill(item);
+        }
+    }
 
     protected abstract AbstractComponent[] components();
 
@@ -45,5 +50,12 @@ public abstract class AbstractLayout {
 
     public void fill(Container container) {
         this.fill(container, this.components(), this.constraint());
+    }
+
+    @Override
+    public Container create() {
+        JPanel panel = new JPanel();
+
+        return panel;
     }
 }

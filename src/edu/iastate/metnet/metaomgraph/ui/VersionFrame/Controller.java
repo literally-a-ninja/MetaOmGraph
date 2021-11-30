@@ -1,17 +1,13 @@
 package edu.iastate.metnet.metaomgraph.ui.VersionFrame;
 
-import edu.iastate.metnet.metaomgraph.ui.VersionFrame.layouts.MainLayout.MainLayout;
+import edu.iastate.metnet.metaomgraph.ui.VersionFrame.layouts.MainLayout.Manifest;
 import edu.iastate.metnet.simpleui.LayoutFactory;
-import org.apache.logging.log4j.core.Layout;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class Controller {
     final protected LayoutFactory factory;
 
     Controller() {
-        factory = new LayoutFactory(new MainLayout());
+        factory = new LayoutFactory(new Manifest());
     }
 
     public void dialog() {

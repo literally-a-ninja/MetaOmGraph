@@ -7,7 +7,7 @@ import javax.swing.*;
  */
 public class LayoutFactory {
 
-    public String m_titlePrefix = "MetaOmGraph";
+    public          String         m_titlePrefix = "MetaOmGraph";
     final protected AbstractLayout layout;
 
     public LayoutFactory(AbstractLayout layout) {
@@ -22,8 +22,8 @@ public class LayoutFactory {
      */
     public JFrame make(String title) {
         JFrame frame = this.makeFrame(title);
-
         frame.setVisible(true);
+//        frame.pack();
 
         return frame;
     }
@@ -59,6 +59,9 @@ public class LayoutFactory {
         return frame;
     }
 
+    final public static int DEFAULT_WIDTH = 705;
+    final public static int DEFAULT_HEIGHT = 300;
+
     /**
      * Constructs a prefab'd basic JFrame window.
      *
@@ -66,6 +69,6 @@ public class LayoutFactory {
      * @return Invisible prefab JFrame window
      */
     public JFrame makeFrame(String title) {
-        return this.makeFrame(title, 705, 300);
+        return this.makeFrame(title, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 }

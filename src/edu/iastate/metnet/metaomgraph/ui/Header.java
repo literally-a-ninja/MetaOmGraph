@@ -1,6 +1,7 @@
 package edu.iastate.metnet.metaomgraph.ui;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class Header extends JLabel {
@@ -24,7 +25,11 @@ public class Header extends JLabel {
         int         typeWidth      = metrics.stringWidth(this.getText());
         int         componentWidth = this.getWidth();
 
-        int height = Math.min(this.getFont().getSize() * (componentWidth / typeWidth), this.getHeight()) + metrics.getMaxAscent();
+        Insets margin = this.getBorder().getBorderInsets(this);
+
+        int height = Math.min(this.getFont().getSize() * (componentWidth / typeWidth), this.getHeight())
+                     + metrics.getMaxAscent()
+                     + margin.bottom + margin.top;
 
         return new Dimension(componentWidth, height);
     }
