@@ -33,10 +33,10 @@ build-app:
   script: 
     - bash scripts/build.sh
     - split --bytes=70000000 --additional-suffix=.jar.part ./target/launcher.jar launcher-
-  artifacts:
-    paths:
-      - launcher-*.jar.part
-      - build/*.deb
+      #artifacts:
+      #  paths:
+      #    - launcher-*.jar.part
+      #    - build/*.deb
 
 
 # package-archive:
