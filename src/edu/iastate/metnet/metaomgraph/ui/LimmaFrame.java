@@ -17,17 +17,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.sun.codemodel.JOp;
-import org.apache.commons.collections4.CollectionUtils;
-
-import edu.iastate.metnet.metaomgraph.AnimatedSwingWorker;
-import edu.iastate.metnet.metaomgraph.MetaOmAnalyzer;
-import edu.iastate.metnet.metaomgraph.MetaOmGraph;
-import edu.iastate.metnet.metaomgraph.MetaOmProject;
-import edu.iastate.metnet.metaomgraph.MetadataHybrid;
-import edu.iastate.metnet.metaomgraph.CalculateLogFC;
-import edu.iastate.metnet.metaomgraph.DifferentialExpResults;
-import edu.iastate.metnet.metaomgraph.FrameModel;
+import edu.iastate.metnet.metaomgraph.*;
 import edu.iastate.metnet.metaomgraph.Metadata.MetadataQuery;
 import edu.iastate.metnet.metaomgraph.logging.ActionProperties;
 
@@ -119,8 +109,6 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
             System.arraycopy(excluded, 0, excludedCopy, 0, excluded.length);
         }
 
-        initComboBoxes();
-
         groupPanel = new JPanel();
         groupPanel.setLayout(new BoxLayout(groupPanel, 0));
         getContentPane().add(groupPanel);
@@ -172,7 +160,7 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                 for (LimmaGroupPanel group : limmaGroupPanels) {
                     for (String entry : group.getAllRows()) {
                         if (map.get(entry) == null) { // if null we've never seen that name
-                            map.put(entry, "");
+                            map.put(entry, String.valueOf(group.getId()));
                         } else { // if not null that name exists somewhere else immediately cancel
                             JOptionPane.showMessageDialog(null, "The two groups must be disjoint. Please check the lists",
                             "Please check the lists", JOptionPane.ERROR_MESSAGE);
@@ -181,43 +169,14 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                     }
                 }
 
-                String selectedFeatureList = comboBox.getSelectedItem().toString();
-                String selectedMethod = comboBox_1.getSelectedItem().toString();
-                // if paired test is selected lists must be equal size
-                if (selectedMethod.equals("Paired t-test") || selectedMethod.equals("Wilcoxon Signed Rank Test")
-                        || selectedMethod.equals("Permutation test (paired samples)")) {
-                    for (int i = 0; i < limmaGroupPanels.size() - 1; i++) {
-                        if (limmaGroupPanels.get(i).getAllRows().size() != limmaGroupPanels.get(i+1).getAllRows().size()) {
-                            JOptionPane.showMessageDialog(null,
-                                    "The groups must be equal to perform paired test. Please check the input lists.",
-                                    "Unequal lists", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
-                }
-
-                // all checks completed, compute logFC
-
-                // measure time
-                // long startTime = System.nanoTime();
-
                 //TODO check what joptionpane returns on no input
                 String input = JOptionPane.showInputDialog(null, "Remove lowly expressed genes\nMean expression value threshhold of:" +
                         "\n(Optional)", "Limma Analysis", JOptionPane.INFORMATION_MESSAGE);
 
+                ComputeLimma ob = new ComputeLimma(map, null, myProject, -1);
 
-//                CalculateLogFC ob = new CalculateLogFC(selectedFeatureList, grp1, grp2, txtGroup1.getText(),
-//                        txtGroup2.getText(), myProject, comboBox_1.getSelectedIndex());
-//
-//                // start calculation
-//                ob.doCalc();
-
-//                // check if calculation was cancelled
-//                // compare if pvalues math size of gene list. hacky way to do
-//                if (ob.testPV()==null || ob.testPV().size() < myProject.getGeneListRowNumbers(selectedFeatureList).length) {
-//                    // JOptionPane.showMessageDialog(null, "cancelled");
-//                    return;
-//                }
+                // start calculation
+                ob.doCalc();
 
                 // save object
                 String id = "";
@@ -250,8 +209,6 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                     actionMap.put("parent",MetaOmGraph.getCurrentProjectActionId());
                     actionMap.put("section", "All");
 
-                    dataMap.put("Selected Feature List", selectedFeatureList);
-                    dataMap.put("Selected Method", selectedMethod);
                     dataMap.put("Group 1 Name", txtGroup1.getText());
                     dataMap.put("Group 2 Name", txtGroup2.getText());
 //                    dataMap.put("Group 1 List", grp1);
@@ -435,13 +392,6 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
             temp.add(s);
             tablemodel.addRow(temp);
         }
-    }
-
-    private void initComboBoxes() {
-        comboBox = new JComboBox(MetaOmGraph.getActiveProject().getGeneListNames());
-        String[] methods = new String[] { "M-W U test", "Student's t-test", "Welch's t-test", "Permutation test",
-                "Paired t-test", "Wilcoxon Signed Rank Test", "Permutation test (paired samples)" };
-        comboBox_1 = new JComboBox(methods);
     }
 
     /**
