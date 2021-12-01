@@ -89,15 +89,6 @@ public class ComputeLimma {
         }
     }
 
-    //    public static void doCalcRCaller() throws IOException, URISyntaxException {
-//        String fileContent = RUtils.getMeanScriptContent();
-//        RCode code = RCode.create();
-//        code.addRCode(fileContent);
-//        code.addIntArray("input", values);
-//        code.addRCode("result <- customMean(input)");
-//        RCaller caller = RCaller.create(code, RCallerOptions.create());
-//        caller.runAndReturnResult("result");
-//    }
     public static void main(String[] args) throws IOException {
 //        doCalc();
     }
