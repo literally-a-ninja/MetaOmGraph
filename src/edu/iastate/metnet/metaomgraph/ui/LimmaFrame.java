@@ -168,11 +168,6 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                         }
                     }
                 }
-
-                //TODO check what joptionpane returns on no input
-                String input = JOptionPane.showInputDialog(null, "Remove lowly expressed genes\nMean expression value threshhold of:" +
-                        "\n(Optional)", "Limma Analysis", JOptionPane.INFORMATION_MESSAGE);
-
                 ComputeLimma ob = new ComputeLimma(map, null, myProject, -1);
 
                 // start calculation
@@ -250,6 +245,27 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
             }
         });
         panel_1.add(btnMore);
+
+        JButton btnLess = new JButton("Less");
+        btnLess.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (limmaGroupPanels.size() > 2) {
+                    groupPanel.remove(limmaGroupPanels.size() - 1);
+                    limmaGroupPanels.remove(limmaGroupPanels.size() - 1);
+                    LimmaGroupPanel.id -= 1;
+                    //refresh the window with the new group
+                    groupPanel.validate();
+                    validate();
+                    // if its the first time a user clicks the more button (we just now added our third group)
+                    // then expand the window a little to show them where the groups are
+                    if (limmaGroupPanels.size() == 2) {
+                        setSize(getWidth() - 50, getHeight());
+                    }
+                }
+            }
+        });
+        panel_1.add(btnLess);
 
         LimmaGroupPanel.resetId();
 
