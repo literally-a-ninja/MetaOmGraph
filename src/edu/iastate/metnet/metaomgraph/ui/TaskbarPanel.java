@@ -113,8 +113,8 @@ public class TaskbarPanel extends JPanel{
 
 	// return memory usage in GB
 	public String getMemoryUsage() {
-		long runtime = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-		return "MEM: " + String.format("%.2f", runtime / Math.pow(1024, 3)) + " GB";
+		long runtime = Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
+		return "MEM: " + String.format("%.2f", runtime / Math.pow(1024, 2)) + " MB";
 	}
 	// Returns % of CPU being used by MetaOMgraph
 	public String getCPUUsage(){
