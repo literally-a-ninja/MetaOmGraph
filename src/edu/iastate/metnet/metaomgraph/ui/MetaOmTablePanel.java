@@ -3079,7 +3079,6 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			final MetadataQuery[] queries;
 			queries = tsp.showSearchDialog();
 			// boolean matchCase=tsp.matchCase();
-			boolean matchAll = tsp.matchAll();
 			if (tsp.getQueryCount() <= 0) {
 				// System.out.println("Search dialog cancelled");
 				// User didn't enter any queries
@@ -3120,6 +3119,11 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 				} else {
 					int thisCol = headersList.indexOf(thisField);
 					thisFilter = searchQueryTerm + ":::" + String.valueOf(thisCol);
+				}
+				if (queries[i].isAND()) {
+					thisFilter += ":::AND";
+				} else if (queries[i].isOR()) {
+					thisFilter += ":::OR";
 				}
 				allFilter += thisFilter + ";";
 			}
