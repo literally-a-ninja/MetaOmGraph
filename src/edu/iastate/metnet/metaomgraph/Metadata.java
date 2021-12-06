@@ -515,6 +515,10 @@ public class Metadata {
 	}
 
 	public static class MetadataQuery implements Serializable, SimpleXMLizable<MetadataQuery> {
+
+		private boolean isAND;
+		private boolean isOR;
+
 		private String field;
 
 		private String term;
@@ -531,6 +535,31 @@ public class Metadata {
 			this.term = term.trim();
 			this.matchType = matchType;
 			this.matchCase=matchCase;
+		}
+
+		public MetadataQuery(boolean isAND, boolean isOR, String field, String term, SearchMatchType matchType,boolean matchCase) {
+			this.isAND = isAND;
+			this.isOR = isOR;
+			this.field = field;
+			this.term = term.trim();
+			this.matchType = matchType;
+			this.matchCase=matchCase;
+		}
+
+		public boolean isAND() {
+			return isAND;
+		}
+
+		public void setAND(boolean AND) {
+			isAND = AND;
+		}
+
+		public boolean isOR() {
+			return isOR;
+		}
+
+		public void setOR(boolean OR) {
+			isOR = OR;
 		}
 
 		public String getField() {
