@@ -168,7 +168,7 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                         }
                     }
                 }
-                ComputeLimma ob = new ComputeLimma(map, null, myProject, -1);
+                ComputeLimma ob = new ComputeLimma(map, myProject);
 
                 // start calculation
                 ob.doCalc();

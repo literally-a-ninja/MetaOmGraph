@@ -109,17 +109,15 @@
     <orderEntry type="library" name="Maven: com.formdev:flatlaf:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.formdev:flatlaf-intellij-themes:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-native:1.0.0-beta7" level="project" />
-    <orderEntry type="library" name="Maven: org.nd4j:nd4j-native:macosx-x86_64:1.0.0-beta7" level="project" />
+    <orderEntry type="library" name="Maven: org.nd4j:nd4j-native:linux-x86_64:1.0.0-beta7" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:javacpp:1.5.3" level="project" />
-    <orderEntry type="library" name="Maven: org.bytedeco:javacpp:macosx-x86_64:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: org.bytedeco:javacpp:linux-x86_64:1.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.bytedeco:openblas:0.3.9-1-1.5.3" level="project" />
-    <orderEntry type="library" name="Maven: org.bytedeco:openblas:macosx-x86_64:0.3.9-1-1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: org.bytedeco:openblas:linux-x86_64:0.3.9-1-1.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-native-api:1.0.0-beta7" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-api:1.0.0-beta7" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:nd4j-common:1.0.0-beta7" level="project" />
     <orderEntry type="library" name="Maven: org.nd4j:guava:1.0.0-beta7" level="project" />
-    <orderEntry type="library" name="Maven: org.bytedeco:mkl:2020.1-1.5.3" level="project" />
-    <orderEntry type="library" name="Maven: org.bytedeco:mkl:macosx-x86_64:2020.1-1.5.3" level="project" />
     <orderEntry type="library" name="Maven: com.github.lejon.T-SNE-Java:tsne:v2.6.3" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.f2j:arpack_combined_all:0.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.fommil.netlib:core:1.1.2" level="project" />

@@ -15,11 +15,14 @@ public class ComputeLimma {
     private HashMap<String, String> groups;
     private List<String> names;
     private MetaOmProject myProject;
-    private double lowly;
+    private Double lowly;
 
-    public ComputeLimma(HashMap<String, String> groups, List<String> names, MetaOmProject myProject, double lowly) {
+    public ComputeLimma(HashMap<String, String> groups, MetaOmProject myProject) {
         this.groups = groups;
-        this.names = names;
+    }
+
+    public ComputeLimma(HashMap<String, String> groups, MetaOmProject myProject, Double lowly) {
+        this.groups = groups;
         this.lowly = lowly;
     }
 
@@ -36,7 +39,6 @@ public class ComputeLimma {
             String voomPath = currentPath + "/rscripts/voom-plot.png";
             String dePath = currentPath + "/rscripts/de.tsv";
 
-
             String readFileCounts = "counts <- read.table(\"" + countsPath + "\", header = TRUE, sep = \",\")";
             String readFileGroups = "groups <- read.table(\"" + groupsPath + "\", header = TRUE, sep = \",\")";
             String writeDETable = "write.table(top.table, file = \"" + dePath + "\", row.names = F, sep = \"\t\", quote = F)";
@@ -49,11 +51,6 @@ public class ComputeLimma {
 
             code.addRCode("d0 <- DGEList(counts)");
             code.addRCode("d0 <- calcNormFactors(d0)");
-
-            code.addRCode("cutoff <- 2");
-            code.addRCode("drop <- which(apply(cpm(d0), 1, max) < cutoff)");
-            code.addRCode("print(d0)");
-            code.addRCode("d <- d0[-drop,]");
 
             code.addRCode("snames <- colnames(counts)");
             code.addRCode(readFileGroups);
