@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 public class ExpressionFilterConstructionPanel extends JPanel
         implements ActionListener {
 
-    private JDialog window = new JDialog(MetaOmGraph.getMainWindow(), "Expression Filter", true);
+    private JDialog window;
     private JTextField max;
     private JLabel maxDesc;
     private JTextField min;
@@ -39,6 +39,7 @@ public class ExpressionFilterConstructionPanel extends JPanel
 
     public ExpressionFilterConstructionPanel(MetaOmProject project) {
         this.project = project;
+        window = new JDialog(MetaOmGraph.getMainWindow(), "Expression Filter", true);
         Container mypane = window.getContentPane();
         window.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -224,6 +225,7 @@ public class ExpressionFilterConstructionPanel extends JPanel
 
         // Align Frame
         window.setSize(500, 250);
+        System.out.println(MetaOmGraph.getMainWindow());
         int width = MetaOmGraph.getMainWindow().getWidth();
         int height = MetaOmGraph.getMainWindow().getHeight();
         // align window to the middle of the screen
