@@ -1693,7 +1693,7 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			myWriter.close();
 			String myOS = System.getProperty("os.name").toLowerCase();
 
-			String url = System.getProperty("user.dir").replace("\\", "/") + "/violin/violin.html";
+			String url = "file://" + System.getProperty("user.dir").replace("\\", "/") + "/violin/violin.html";
 //			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
 //
 //				Desktop.getDesktop().browse(new URI(url));
