@@ -1691,9 +1691,27 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
 			myWriter.write("var rows = ");
 			myWriter.write(jsonData.toString());
 			myWriter.close();
-			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-				String url = System.getProperty("user.dir").replace("\\", "/") + "/violin/violin.html";
-				Desktop.getDesktop().browse(new URI(url));
+			String myOS = System.getProperty("os.name").toLowerCase();
+
+			String url = System.getProperty("user.dir").replace("\\", "/") + "/violin/violin.html";
+//			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+//
+//				Desktop.getDesktop().browse(new URI(url));
+//			}
+			if(Desktop.isDesktopSupported()) { // Probably Windows
+				Desktop desktop = Desktop.getDesktop();
+				desktop.browse(new URI(url));
+			} else { // Definitely Non-windows
+				Runtime runtime = Runtime.getRuntime();
+				if(myOS.contains("mac")) { // Apples
+					runtime.exec("open " + url);
+				}
+				else if(myOS.contains("nix") || myOS.contains("nux")) { // Linux flavours
+					runtime.exec("xdg-open " + url);
+				}
+				else{
+					System.out.println("Could not open browser with url: " +  url);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
