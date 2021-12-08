@@ -1,27 +1,53 @@
-# Continuous integration docker image
-# Contains the bare files needed to build and test the application
-FROM openjdk:17-bullseye as build
-ENV BUILD_MODE 2
-RUN apt update && apt install -y sudo
+# syntax=docker/dockerfile:1
 
+## Init
+## --------------------- ##
+FROM openjdk:17-bullseye as init
 WORKDIR /opt/mog
-COPY ./pom.xml ./pom.xml
+## --------------------- ##
+
+RUN apt update && apt install maven file unzip python3-pip -y
+
+## Build
+## --------------------- ##
+FROM init as setup
+WORKDIR /opt/mog
+## --------------------- ##
+
 COPY ./scripts ./scripts
-RUN bash ./scripts/bootstrap.sh \
-	&& mvn dependency:go-offline -B
-
+COPY ./pom.xml ./pom.xml
 COPY ./src ./src
-RUN bash ./scripts/build.sh \
-	&& cp ./target/metaomgraph4*.jar ./mog-applet.jar
+
+ENV BUILD_MODE 2
+RUN bash ./scripts/bootstrap.sh
+
+## Build
+## --------------------- ##
+FROM setup as build
+WORKDIR /opt/mog
+## --------------------- ##
+
+COPY ./scripts ./scripts
+COPY ./pom.xml ./pom.xml
+COPY ./src ./src
+
+# Build the project!
+ENV BUILD_MODE 2
+RUN bash ./scripts/build.sh
+RUN cp ./target/metaomgraph4*.jar mog.jar
 
 
-# Live docker image
-# 
-#FROM openjdk:17-bullseye as live
+
+## Live Image
+## --------------------- ##
+FROM build as live
+## --------------------- ##
 
 # Graphics stuff
-RUN apt update \
-	&& apt install -y libxext6 libxrender1 libxtst6
-#WORKDIR /opt/mog
-#COPY --from=build /opt/mog/mog-applet.jar .
-ENTRYPOINT ["java", "-jar", "./mog-applet.jar"]
+RUN apt update && apt install -y libxext6 libxrender1 libxtst6
+
+COPY --from=build ./mog.jar ./mog.jar
+
+# Launch!
+ENTRYPOINT ["java"]
+CMD ["-jar", "./mog.jar"]

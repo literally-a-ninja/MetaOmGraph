@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-# CLI Framework
-# -------------------------------
+if [[ ! -v DIR_PROJECT ]]; then #ifdef DIR_PROJECT
+
+## CLI Framework
+## ===================== ##
 
 function rel_pwd() {
 	echo $(realpath "$(dirname "$0")$1")
@@ -26,9 +28,13 @@ export DIR_BOOT="$(rel_pwd "/bootstrap")"
 source "${DIR_BOOT}/fun.sh"
 source "${DIR_BOOT}/cli.sh"
 
+fi                              #endif
 
-# Pre-flight
-# -------------------------------
+# Globstar is super nice!
+shopt -s globstar
+
+## Pre-flight
+## ===================== ##
 if [[ $BUILD_MODE > $MODE_MIN ]]; then
 	JAVA_VERSION=$(java --version | head -n1 | awk -F '[^0-9]*' '$0=$2')
 	if [[ -z ${OJAVA_VERSION+z} && ${JAVA_VERSION} < 17 ]]; then
@@ -37,23 +43,17 @@ if [[ $BUILD_MODE > $MODE_MIN ]]; then
 	fi
 fi
 
-
-# Dependencies
-# -------------------------------
-important "Checking build sys dependencies..."
-source "${DIR_BOOT}/dependencies.sh"
-ok "All dependencies are OK."
-
-
-# Done.
-# -------------------------------
+## Exit bootstrap
+## ===================== ##
 
 # Make sure our pwd is in project root.
-cd "$DIR_SCRIPT/.."
+cd "$DIR_ROOT"
 
-
+## Final bootstrapping
+## ===================== ##
 if [[ $BUILD_MODE > $MODE_MIN ]]; then
-	source "${DIR_BOOT}/libraries.sh"
-	ok "Build system is READY, building in three seconds."
-	sleep 3
+  # Download dependencies
+  important "Checking build sys dependencies..."
+  source "${DIR_BOOT}/dependencies.sh"
+  ok "All dependencies are OK."
 fi

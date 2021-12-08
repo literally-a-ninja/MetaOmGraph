@@ -45,7 +45,7 @@ warn() {
 
 important() {
 	echo
-	echo "🔮${PURPLE} NOTE${RESET}: ${1}"
+	echo "👉${PURPLE} ATTN${RESET}: ${1}"
 	echo
 }
 
