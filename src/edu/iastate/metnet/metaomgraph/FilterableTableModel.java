@@ -1,5 +1,6 @@
 package edu.iastate.metnet.metaomgraph;
 
+import com.sun.source.tree.Tree;
 import edu.iastate.metnet.metaomgraph.ui.NoneditableTableModel;
 import edu.iastate.metnet.metaomgraph.logging.ActionProperties;
 import java.awt.event.ActionEvent;
@@ -45,17 +46,22 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 			filterText = "";
 			clearFilter();
 		} else {
+			boolean complex = false;
 			filterText = newFilter;
 			String[] filters = null;
-			boolean matchAll = false;
-			// match any or all
 			filters = newFilter.split(";|\\^");
 			// JOptionPane.showMessageDialog(null, Arrays.toString(filters));
 			for (int i = 0; i < filters.length; i++) {
 				filters[i] = filters[i].trim();
+				if (filters[i].contains("AND") || filters[i].contains("OR")) {
+					complex = true;
+				}
 			}
-
-			applyFilter(filters);
+			if (complex) {
+				applyComplexFilter(filters);
+			} else {
+				applyFilter(filters);
+			}
 		}
 	}
 
@@ -144,14 +150,12 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 						allFields = false;
 						break;
 					}
-				}
-				else if(isFlag) {
+				} else if(isFlag) {
 					if (!thisValue.contentEquals(value)) {
 							allFields = false;
 							break;
 					}
-				}
-				else if(!thisValue.contains(value)) {
+				} else if(!thisValue.contains(value)) {
 					allFields = false;
 					break;
 				}
@@ -222,6 +226,259 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		return hits;
+	}
+
+	public void applyComplexFilter(String[] values) {
+		// query contating column info is like "searchterm":::"colnumber" where
+		// colnumber starts from zero
+		String delim = ":::";
+
+		List<ComplexQuery> complexQueries = new ArrayList<>();
+
+		// if query ends with --C: means case sensitive
+		String caseFlag = "--C";
+		caseSensitive = false;
+		TreeSet<Integer> hits = new TreeSet();
+		try {
+			// Parse the values into ComplexQueries
+			for (String findMe : values) {
+				boolean isNotFlag = false;
+				boolean doesNotFlag = false;
+				boolean isFlag = false;
+				if (findMe.length() > 1) {
+					if (findMe.substring(0, 2).contentEquals("!=")) {
+						isNotFlag = true;
+						findMe = findMe.substring(2);
+					} else if (findMe.charAt(0) == '!') {
+						doesNotFlag = true;
+						findMe = findMe.substring(1);
+					} else if (findMe.charAt(0) == '=') {
+						isFlag = true;
+						findMe = findMe.substring(1);
+					}
+				}
+				String andOr = null;
+				if (findMe.split(delim).length > 2) {
+					andOr = findMe.split(delim)[2];
+				}
+				ComplexQuery complexQuery = new ComplexQuery(findMe.split(delim)[0], findMe.split(delim)[1], andOr);
+				if (findMe.contains("--C")) {
+					complexQuery.markCaseFlagTrue();
+				}
+				if (isFlag) {
+					complexQuery.markIsFlagTrue();
+				} else if (isNotFlag) {
+					complexQuery.markIsNotFlagTrue();
+				} else if (doesNotFlag) {
+					complexQuery.markDoesNotFlagTrue();
+				} else {
+					complexQuery.markAsContains();
+				}
+				complexQueries.add(complexQuery);
+			}
+
+			int numAnds = 0;
+			int numOrs = 0;
+			for (ComplexQuery query : complexQueries) {
+				if (query.isOr()) {
+					numOrs++;
+				} else if (query.isAnd()) {
+					numAnds++;
+				}
+			}
+
+			// Get all rows to begin trimming down
+			TreeSet<Integer> currentRows = new TreeSet<>();
+			hits = currentRows;
+			for (int i = 0; i < model.getRowCount(); i++) {
+				currentRows.add(Integer.valueOf(i));
+			}
+			// If queries are all OR statements use existing logic for any col
+			if (numAnds == 0) {
+				hits.retainAll(checkOrStatements(complexQueries, currentRows));
+			// If queries are all AND statements use existing logic for all col and only include if all are true
+			} else if (numOrs == 0) {
+				for (ComplexQuery query : complexQueries) {
+					hits.retainAll(findRelevantRows(query.generateFilter()));
+					if (hits.isEmpty()) {
+						break;
+					}
+				}
+			} else {
+				// If neither of the above is true we have a mixed group of ANDs and ORs
+				List<ComplexQuery> orSetToCheck;
+				ComplexQuery query;
+				for (int i = 0; i < complexQueries.size(); i++) {
+					query = complexQueries.get(i);
+					if (query.isOr()) {
+						orSetToCheck = new ArrayList<>();
+						while (query.isOr()) {
+							orSetToCheck.add(query);
+							query = complexQueries.get(++i);
+						}
+						orSetToCheck.add(query);
+						hits.retainAll(checkOrStatements(orSetToCheck, currentRows));
+					} else {
+						hits.retainAll(findRelevantRows(query.generateFilter()));
+					}
+					if (hits.isEmpty()) { // hits is empty so no rows match our entire query
+						break;
+					} else {
+						currentRows = hits;
+					}
+				}
+			}
+		} catch (NullPointerException | ArrayIndexOutOfBoundsException ae) {
+
+		}
+
+		filterToRows(hits);
+		manualFilter = false;
+		fireTableChanged(new TableModelEvent(this));
+
+		//Harsha - Reproducibility log
+		if (MetaOmGraph.getLoggingRequired()) {
+			try {
+				HashMap<String, Object> actionMap = new HashMap<String, Object>();
+				actionMap.put("parent", MetaOmGraph.getCurrentProjectActionId());
+
+				HashMap<String, Object> dataMap = new HashMap<String, Object>();
+
+				dataMap.put("Filter Strings", values);
+				dataMap.put("Num Hits", hits.size());
+
+				HashMap<String, Object> result = new HashMap<String, Object>();
+				result.put("Color 1", MetaOmGraph.getActiveProject().getColor1());
+				result.put("Color 2", MetaOmGraph.getActiveProject().getColor2());
+				result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+				result.put("Playable", "true");
+				result.put("result", "OK");
+
+				ActionProperties filterAction = new ActionProperties("filter", actionMap, dataMap, result, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				filterAction.logActionProperties();
+			} catch (Exception e) {
+
+			}
+		}
+	}
+
+	private TreeSet<Integer> checkOrStatements(List<ComplexQuery> queries, TreeSet<Integer> rows) {
+		TreeSet<Integer> hits = new TreeSet<>();
+		for (ComplexQuery query : queries) {
+			hits.addAll(findRelevantRows(query.generateFilter()));
+		}
+		hits.retainAll(rows);
+		return hits;
+	}
+
+	public TreeSet<Integer> findRelevantRows(String filter) {
+		String delim = ":::";
+
+		// if query ends with --C: means case sensitive
+		String caseFlag = "--C";
+		caseSensitive = false;
+		TreeSet<Integer> hits = new TreeSet();
+		try {
+			boolean isNotFlag = false;
+			boolean doesNotFlag = false;
+			boolean isFlag = false;
+			if (filter.length() > 1) {
+				if (filter.substring(0, 2).contentEquals("!=")) {
+					isNotFlag = true;
+					filter = filter.substring(2);
+				} else if (filter.charAt(0) == '!') {
+					doesNotFlag = true;
+					filter = filter.substring(1);
+				} else if (filter.charAt(0) == '=') {
+					isFlag = true;
+					filter = filter.substring(1);
+				}
+			}
+			boolean colFlag = false;
+			int colInt = -1;
+			boolean allCols = false;
+			boolean anyCol = true;
+			// delim should be present and should have values on both sides
+			if (filter.indexOf(delim) > -1 && filter.indexOf(delim) < filter.length() - delim.length()) {
+				String col = filter.split(delim)[1];
+				if (col.contentEquals("ALL")) {
+					allCols = true;
+					anyCol = false;
+					filter = filter.split(delim)[0];
+				} else if (col.contentEquals("ANY")) {
+					anyCol = true;
+					allCols = false;
+					filter = filter.split(delim)[0];
+				} else {
+					// check if col is a valid integer
+					try {
+						colInt = Integer.parseInt(col);
+						colFlag = true;
+
+					} catch (NumberFormatException e) {
+						// not an integer!
+						colFlag = false;
+					}
+					if (colFlag) {
+						// check if col is in range of tables
+						if (colInt < 0 || colInt >= model.getColumnCount()) {
+							colFlag = false;
+						}
+					}
+				}
+
+			}
+
+			if (colFlag) {
+				// search only specified column
+				filter = filter.split(delim)[0];
+
+				// JOptionPane.showMessageDialog(null, "searching:" + filter + " col:" +
+				// colInt);
+
+				if (filter.endsWith(caseFlag)) {
+					caseSensitive = true;
+					filter = filter.split(caseFlag)[0];
+				}
+
+				for (int row = 0; row < model.getRowCount(); row++) {
+					// for (int col = 0; col <= colInt; col++) {
+					String thisValue = model.getValueAt(row, colInt) + "";
+					if (!caseSensitive) {
+						thisValue = thisValue.toLowerCase();
+						filter = filter.toLowerCase();
+					}
+					if (isNotFlag) {
+						if (!thisValue.contentEquals(filter)) {
+							hits.add(Integer.valueOf(row));
+						}
+					} else if (doesNotFlag) {
+						if (!thisValue.contains(filter)) {
+							hits.add(Integer.valueOf(row));
+						}
+					} else if (isFlag) {
+						if (thisValue.contentEquals(filter)) {
+							hits.add(Integer.valueOf(row));
+						}
+					} else if (thisValue.contains(filter)) {
+						hits.add(Integer.valueOf(row));
+					}
+				}
+			} else {
+				if (filter.endsWith(caseFlag)) {
+					caseSensitive = true;
+					filter = filter.split(caseFlag)[0];
+				}
+				if (anyCol) {
+					hits.addAll(applyAnyColFilter(filter, isNotFlag, doesNotFlag, isFlag));
+				} else if (allCols) {
+					hits.addAll(applyAllColsFilter(filter, isNotFlag, doesNotFlag, isFlag));
+				}
+			}
+		} catch (NullPointerException | ArrayIndexOutOfBoundsException ae) {
+
 		}
 		return hits;
 	}
@@ -391,23 +648,28 @@ public class FilterableTableModel extends AbstractTableModel implements Document
 		fireTableChanged(new TableModelEvent(this));
 
 		//Harsha - Reproducibility log
-		try {
-			HashMap<String,Object> actionMap = new HashMap<String,Object>();
-			actionMap.put("parent",MetaOmGraph.getCurrentProjectActionId());
+		if (MetaOmGraph.getLoggingRequired()) {
+			try {
+				HashMap<String, Object> actionMap = new HashMap<String, Object>();
+				actionMap.put("parent", MetaOmGraph.getCurrentProjectActionId());
 
-			HashMap<String,Object> dataMap = new HashMap<String,Object>();
+				HashMap<String, Object> dataMap = new HashMap<String, Object>();
 
-			dataMap.put("Filter Strings", values);
-			dataMap.put("Num Hits", hits.size());
+				dataMap.put("Filter Strings", values);
+				dataMap.put("Num Hits", hits.size());
 
-			HashMap<String,Object> result = new HashMap<String,Object>();
-			result.put("result", "OK");
+				HashMap<String, Object> result = new HashMap<String, Object>();
+				result.put("Color 1", MetaOmGraph.getActiveProject().getColor1());
+				result.put("Color 2", MetaOmGraph.getActiveProject().getColor2());
+				result.put("Sample Action", MetaOmGraph.getCurrentSamplesActionId());
+				result.put("Playable", "true");
+				result.put("result", "OK");
 
-			ActionProperties filterAction = new ActionProperties("filter",actionMap,dataMap,result,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
-			filterAction.logActionProperties();
-		}
-		catch(Exception e) {
+				ActionProperties filterAction = new ActionProperties("filter", actionMap, dataMap, result, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz").format(new Date()));
+				filterAction.logActionProperties();
+			} catch (Exception e) {
 
+			}
 		}
 	}
 

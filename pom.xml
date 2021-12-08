@@ -288,5 +288,10 @@
     <artifactId>hierarchical-clustering</artifactId>
     <version>1.2.0</version>
   </dependency>
-</dependencies>
+<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20201115</version>
+		</dependency>
+	</dependencies>
 </project>
