@@ -18,7 +18,7 @@ cp -f "$DIR_ROOT"/target/*.jar "$DIR_BUILD_DPKG/opt/MOG4/"
 chmod 0755 "$DIR_BUILD_DPKG/DEBIAN/"
 
 # Build archive and place in dir above.
-dpkg-deb -v -Sextreme \
+dpkg-deb -v \
   --build "$DIR_BUILD_DPKG" \
   "$DIR_ROOT/build/metaomgraph4-$tag.deb"
 
