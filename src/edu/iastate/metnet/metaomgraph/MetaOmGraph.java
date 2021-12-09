@@ -703,7 +703,7 @@ public class MetaOmGraph implements ActionListener {
 	private static JMenu historyMenu;
 
 	/** Items on the Help menu */
-	private static JMenuItem checkUpdateitem, overviewItem, contextItem, tipsItem, aboutItem, contactItem;
+	private static JMenuItem checkUpdateitem, overviewItem, contextItem, tipsItem, contactItem;
 	private static JMenuItem thirdPartyLibs;
 	
 	/** An instance of this class created by the main() method */
@@ -1545,43 +1545,39 @@ public class MetaOmGraph implements ActionListener {
 
 		helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);
-		checkUpdateitem = new JMenuItem("Check for updates");
 
-		checkUpdateitem.setName("update");
-		checkUpdateitem.setActionCommand("update");
-		checkUpdateitem.addActionListener(myself);
-		helpMenu.add(checkUpdateitem);
 
-		overviewItem = new JMenuItem("Overview");
-		overviewItem.setMnemonic(KeyEvent.VK_O);
+		overviewItem = new JMenuItem("User Manual");
+		overviewItem.setMnemonic(KeyEvent.VK_U);
 		helpListener = new MetaOmHelpListener();
 		overviewItem.addActionListener(new MetaOmHelpListener());
+		overviewItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		overviewItem.setName("overview");
 		helpMenu.add(overviewItem);
-		contextItem = new JMenuItem("Context Help");
-		contextItem.setMnemonic(KeyEvent.VK_H);
-		contextItem.addActionListener(helpListener);
-		contextItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-		contextItem.setName("context");
-		helpMenu.add(contextItem);
+
 		tipsItem = new JMenuItem("Tip of the Day");
 		tipsItem.setMnemonic(KeyEvent.VK_T);
 		tipsItem.setActionCommand(SHOW_TIPS_COMMAND);
 		tipsItem.addActionListener(myself);
 		tipsItem.setName("tips");
 		helpMenu.add(tipsItem);
+
 		helpMenu.addSeparator();
+
+		checkUpdateitem = new JMenuItem("Check for updates");
+		checkUpdateitem.setName("update");
+		checkUpdateitem.setActionCommand("update");
+		checkUpdateitem.addActionListener(myself);
+		helpMenu.add(checkUpdateitem);
+
+		helpMenu.addSeparator();
+
 		contactItem = new JMenuItem("Contact the Developer");
 		contactItem.setMnemonic(KeyEvent.VK_C);
 		contactItem.setActionCommand(CONTACT_COMMAND);
 		contactItem.addActionListener(myself);
 		//helpMenu.add(contactItem);
-		aboutItem = new JMenuItem("About...");
-		aboutItem.setMnemonic(KeyEvent.VK_A);
-		aboutItem.setActionCommand(ABOUT_COMMAND);
-		aboutItem.addActionListener(myself);
-		helpMenu.add(aboutItem);
-		
+
 		thirdPartyLibs = new JMenuItem("Third party libraries");
 		thirdPartyLibs.setActionCommand(THIRD_PARTY_LIBS_COMMAND);
 		thirdPartyLibs.addActionListener(myself);
@@ -3802,7 +3798,7 @@ public class MetaOmGraph implements ActionListener {
 			projectPropertiesItem.setIcon(new ImageIcon(
 					myself.getClass().getResource("/resource/tango/16x16/actions/document-properties.png")));
 			overviewItem.setIcon(
-					new ImageIcon(myself.getClass().getResource("/resource/tango/16x16/apps/help-browser.png")));
+					new ImageIcon(myself.getClass().getResource("/resource/silkicons/book.png")));
 			tipsItem.setIcon(new ImageIcon(
 					myself.getClass().getResource("/resource/tango/16x16/status/dialog-information.png")));
 			ReproducibilityLogMenu.setIcon(new ImageIcon(((new ImageIcon(myself.getClass().getResource("/resource/loggingicons/loggingicon2.png")).getImage()).getScaledInstance(14, 14, java.awt.Image.SCALE_SMOOTH))));
