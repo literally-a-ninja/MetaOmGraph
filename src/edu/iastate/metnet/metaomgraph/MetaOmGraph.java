@@ -796,11 +796,14 @@ public class MetaOmGraph implements ActionListener {
 				break;
 			}
 
-
-			activeTheme = theme;
-			if (mainWindow!=null) {
-			SwingUtilities.updateComponentTreeUI(mainWindow);
-			}
+			// John: We're currently in EDT thread, we need to be patient and wait for the UI update thread.
+			// 		 https://docs.oracle.com/javase/tutorial/uiswing/concurrency/index.html
+			SwingUtilities.invokeLater(() -> {
+				activeTheme = theme;
+				for(Window window : JFrame.getWindows()) {
+					SwingUtilities.updateComponentTreeUI(window);
+				}
+			});
 		}
 		catch (Exception e) {
 			//TODO: handle exception when theme change fails
@@ -813,6 +816,7 @@ public class MetaOmGraph implements ActionListener {
 
 	public static Themes getActiveTheme() {
 		if (activeTheme==null) {
+			activeTheme = Themes.Light;
 			return Themes.Light;
 		}
 		return activeTheme;
