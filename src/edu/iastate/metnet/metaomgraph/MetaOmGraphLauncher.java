@@ -1,6 +1,7 @@
 package edu.iastate.metnet.metaomgraph;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import edu.iastate.metnet.metaomgraph.ui.VersionFrame.VersionController;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class MetaOmGraphLauncher implements ActionListener {
 
     // launcher variables
-    private final String jarPath = "metaomgraphclean.jar"; // replace with jar for current version of MOG
+    private final String jarPath = "metaomgraph4.jar"; // replace with jar for current version of MOG
     private final String logoPath = "/resource/MetaOmicon.png";
 
     //JFrame
@@ -315,6 +316,8 @@ public class MetaOmGraphLauncher implements ActionListener {
         frame.setResizable(false);
         frame.setVisible(true);
         log(System.getProperty("java.version"));
+
+        VersionController.check();
     }
 
     @Override

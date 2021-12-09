@@ -43,7 +43,7 @@
                   <mainClass>edu.iastate.metnet.metaomgraph.MetaOmGraphLauncher</mainClass>
                 </manifest>
               </archive>
-              <finalName>metaomgraph</finalName>
+              <finalName>launcher</finalName>
             </configuration>
           </execution>
         </executions>
@@ -103,7 +103,7 @@
               <descriptorRefs>
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
-              <finalName>metaomgraphclean</finalName>
+              <finalName>metaomgraph4</finalName>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
