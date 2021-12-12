@@ -13,7 +13,7 @@ sleep 3
 ## Build
 ## ===================== ##
 important "Building app..."
-## mvn package
+mvn package
 
 [[ -z "$CI_COMMIT_SHORT_SHA" ]] \
   && CI_COMMIT_SHORT_SHA=$(git log -n1 --format=format:"%h")
