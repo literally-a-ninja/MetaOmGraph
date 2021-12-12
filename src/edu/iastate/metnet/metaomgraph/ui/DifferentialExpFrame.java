@@ -3,24 +3,18 @@ package edu.iastate.metnet.metaomgraph.ui;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.swing.JInternalFrame;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -32,11 +26,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
-import javax.swing.AbstractListModel;
-import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.table.DefaultTableModel;
@@ -52,11 +43,9 @@ import edu.iastate.metnet.metaomgraph.MetadataHybrid;
 import edu.iastate.metnet.metaomgraph.CalculateLogFC;
 import edu.iastate.metnet.metaomgraph.DifferentialExpResults;
 import edu.iastate.metnet.metaomgraph.FrameModel;
-import edu.iastate.metnet.metaomgraph.utils.Utils;
 import edu.iastate.metnet.metaomgraph.Metadata.MetadataQuery;
 import edu.iastate.metnet.metaomgraph.logging.ActionProperties;
 
-import javax.swing.ScrollPaneConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -98,8 +87,8 @@ public class DifferentialExpFrame extends TaskbarInternalFrame {
 	 */
 
 	private Color SELECTIONBCKGRND = MetaOmGraph.getTableSelectionColor();
-	private Color BCKGRNDCOLOR1 = MetaOmGraph.getTableColor1();
-	private Color BCKGRNDCOLOR2 = MetaOmGraph.getTableColor2();
+	private Color BCKGRNDCOLOR1 = MetaOmGraph.getTableColorEven();
+	private Color BCKGRNDCOLOR2 = MetaOmGraph.getTableColorOdd();
 	private Color HIGHLIGHTCOLOR = MetaOmGraph.getTableHighlightColor();
 	private Color HYPERLINKCOLOR = MetaOmGraph.getTableHyperlinkColor();
 
