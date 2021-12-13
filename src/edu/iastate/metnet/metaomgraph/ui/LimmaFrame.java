@@ -34,10 +34,9 @@ import java.awt.event.ActionEvent;
 
 public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
 
-    private JPanel groupPanel;
-
     private JComboBox comboBox;
-    private JComboBox comboBox_1;
+
+    private JPanel groupPanel;
 
     JLabel lblN2;
     JLabel lblN1;
@@ -113,6 +112,13 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
         groupPanel.setLayout(new BoxLayout(groupPanel, 0));
         getContentPane().add(groupPanel);
 
+        initComboBoxes();
+        JPanel panel = new JPanel();
+        getContentPane().add(panel, BorderLayout.NORTH);
+        JLabel lblTop = new JLabel("Select feature list");
+        panel.add(lblTop);
+        panel.add(comboBox);
+
         JScrollPane scrollPane = new JScrollPane(groupPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -168,10 +174,12 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                         }
                     }
                 }
-                ComputeLimma ob = new ComputeLimma(map, myProject);
+
+                String selectedFeatureList = comboBox.getSelectedItem().toString();
+//                ComputeLimma ob = new ComputeLimma(map, myProject);
 
                 // start calculation
-                ob.doCalc();
+//                ob.doCalc();
 
                 // save object
                 String id = "";
@@ -408,6 +416,10 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
             temp.add(s);
             tablemodel.addRow(temp);
         }
+    }
+
+    private void initComboBoxes() {
+        comboBox = new JComboBox(MetaOmGraph.getActiveProject().getGeneListNames());
     }
 
     /**

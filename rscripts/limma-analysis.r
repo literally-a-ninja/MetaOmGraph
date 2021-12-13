@@ -3,7 +3,7 @@ library(edgeR)
 
 ## READING THE COUNT MATRIX FROM THE FILE
 
-counts <- read.table("/home/fahmi/coms402/3032_3_sd6_mog/rscripts/limma_counts.csv", header = TRUE, sep = ",")
+counts <- read.table("/home/fahmi/3032_3_sd6_mog/rscripts/limma_counts.csv", header = TRUE, sep = ",")
 counts2 <- counts[,-1]
 rownames(counts2) <- counts[,1]
 counts <- data.matrix(counts2)
@@ -31,7 +31,7 @@ d
 ## READING GROUPS AND PLOTTING MDS CHART
 
 snames <- colnames(counts) # Sample names
-groups <- read.table("/home/fahmi/coms402/3032_3_sd6_mog/rscripts/limma_groups.csv", header = TRUE, sep = ",")
+groups <- read.table("/home/fahmi/3032_3_sd6_mog/rscripts/limma_groups.csv", header = TRUE, sep = ",")
 group <- interaction(groups['Groups'])
 group
 
