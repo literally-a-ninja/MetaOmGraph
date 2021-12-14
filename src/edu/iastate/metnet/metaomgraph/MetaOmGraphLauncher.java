@@ -11,10 +11,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class MetaOmGraphLauncher implements ActionListener {
@@ -438,13 +437,29 @@ public class MetaOmGraphLauncher implements ActionListener {
     private void runProgram() {
         log("Starting MetaOmGraph...");
 
-        File file = new File(System.getProperty("user.dir")); // jar directory - for running program
+        File file = null; // jar directory - for running program
+        try {
+            file = new File(MetaOmGraphLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            file = file.getParentFile(); // get parent directory
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            log(e.getMessage());
+            return;
+        }
+//        try {
+//            file = new File(".").getCanonicalFile();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            log(e.getMessage());
+//            return;
+//        }
+        // File file = new File(System.getProperty("user.dir")); // doesn't work on macOS???? -_-
         // File file = new File("target"); // jar directory - for testing jar in IDE
         String cmd = ""; // cmd for launching MOG
 
 //        String os = System.getProperty("os.name"); // get operating system
 //        if (os.toLowerCase().startsWith("windows")) { // check if windows
-//            cmd += "cmd /c ";
+//            cmd += "cmd /c ";g
 //        } else {
 //            cmd += "sh -c ";
 //        }
@@ -475,9 +490,12 @@ public class MetaOmGraphLauncher implements ActionListener {
         try {
             // log for debugging
             log(cmd);
+            log(file.getAbsolutePath());
             Process pr = Runtime.getRuntime().exec(cmd, null, file); // run command on command line in target dir
+            InputStream in = pr.getInputStream();
+            InputStream err = pr.getErrorStream();
             // printResults(pr); // print run results for debugging
-            System.exit(-1);
+            // System.exit(-1);
 
         } catch (IOException e) {
             e.printStackTrace();
