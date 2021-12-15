@@ -1,32 +1,24 @@
 package edu.iastate.metnet.metaomgraph;
 
-import com.github.rcaller.datatypes.DataFrame;
-import com.github.rcaller.rstuff.RCaller;
-import com.github.rcaller.rstuff.RCode;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.renjin.primitives.matrix.DoubleMatrixBuilder;
-import org.renjin.primitives.matrix.Matrix;
 import org.renjin.primitives.matrix.StringMatrixBuilder;
 import org.renjin.script.*;
-import org.renjin.sexp.DoubleArrayVector;
-import org.renjin.sexp.DoubleVector;
-import org.renjin.sexp.ListVector;
-import org.renjin.sexp.StringVector;
-
 
 public class ComputeLimma {
 
-    private String selectedList;
-    private HashMap<String, String> groups;
-    private MetaOmProject myProject;
-    private ArrayList<Integer> limmaCountsInd;
+    private final String selectedList;
+    private final HashMap<String, String> groups;
+    private final MetaOmProject myProject;
+    private final ArrayList<Integer> limmaCountsInd;
 
     public ComputeLimma(String selectedList, HashMap<String, String> groups, MetaOmProject myProject,  ArrayList<Integer> limmaCountsInd) {
         this.selectedList = selectedList;
@@ -35,12 +27,11 @@ public class ComputeLimma {
         this.limmaCountsInd = limmaCountsInd;
     }
 
-    public void calc() {
+    public void calc() throws ScriptException, IOException, URISyntaxException {
         int[] selected = myProject.getGeneListRowNumbers(this.selectedList);
         double[][] thisData;
-        ArrayList<ArrayList<Double>> data = new ArrayList<>();
-        String[] rowHeaders = new String[selected.length];
-        String[] columnHeaders = new String[limmaCountsInd.size()];
+        String[] rowHeaders;
+        String[] columnHeaders;
 
         StringMatrixBuilder rGroups = new StringMatrixBuilder(2, limmaCountsInd.size());
 
@@ -49,88 +40,72 @@ public class ComputeLimma {
         // create a Renjin engine:
         ScriptEngine engine = factory.getScriptEngine();
 
-
-
-        int[] example = limmaCountsInd.stream().mapToInt(i->i).toArray();
+        int[] countsInd = limmaCountsInd.stream().mapToInt(i->i).toArray();
 
         // Start of Limma analysis
-        try {
-            thisData = myProject.getSelectedListOnlyRowData(example, selectedList);
+        thisData = myProject.getSelectedListOnlyRowData(countsInd, selectedList);
 
-            rowHeaders = myProject.getDefaultRowNames(selected);
-            columnHeaders = myProject.getDataColumnHeaders(example);
+        rowHeaders = myProject.getDefaultRowNames(selected);
+        columnHeaders = myProject.getDataColumnHeaders(countsInd);
 
-//            for (int row = 0; row < limmaCountsInd.size(); row++) {
-//                for (int col = 0; col < selected.length; col++) {
-//                    rData.setValue(row, col, thisData[row][col]);
-//                }
-//            }
-//            rData.setColNames(Arrays.asList(rowHeaders));
-//            rData.setRowNames(Arrays.asList(columnHeaders));
-
-            DoubleMatrixBuilder rData = new DoubleMatrixBuilder(selected.length, limmaCountsInd.size());
-            for (int row = 0; row < selected.length; row++) {
-                for (int col = 0; col < limmaCountsInd.size(); col++) {
-                    rData.setValue(row, col, thisData[col][row]);
-                }
+        DoubleMatrixBuilder rData = new DoubleMatrixBuilder(selected.length, limmaCountsInd.size());
+        for (int row = 0; row < selected.length; row++) {
+            for (int col = 0; col < limmaCountsInd.size(); col++) {
+                rData.setValue(row, col, thisData[col][row]);
             }
-            rData.setColNames(Arrays.asList(columnHeaders));
-            rData.setRowNames(Arrays.asList(rowHeaders));
+        }
+        rData.setColNames(Arrays.asList(columnHeaders));
+        rData.setRowNames(Arrays.asList(rowHeaders));
 
-            for (int i = 0; i < limmaCountsInd.size(); i++) {
-                rGroups.setValue(0, i, columnHeaders[i]);
-                rGroups.setValue(1, i, groups.get(columnHeaders[i]));
-            }
-            rGroups.setRowNames(Arrays.asList("Samples", "Groups"));
+        for (int i = 0; i < limmaCountsInd.size(); i++) {
+            rGroups.setValue(0, i, columnHeaders[i]);
+            rGroups.setValue(1, i, groups.get(columnHeaders[i]));
+        }
+        rGroups.setRowNames(Arrays.asList("Samples", "Groups"));
 
-            // Preprocessing
-            engine.eval("library(edgeR)");
+        // Preprocessing
+        engine.eval("library(edgeR)");
 
-            engine.put("counts", rData.build());
+        engine.put("counts", rData.build());
 
-            engine.eval("d <- DGEList(counts)");
-            engine.eval("d <- calcNormFactors(d)");
+        // CONVERTING THE COUNT MATRIX TO A DGELIST OBJECT AND CALCULATING THE NORMALIZATION FACTORS
 
-            engine.eval("snames <- colnames(counts)");
+        engine.eval("d <- DGEList(counts)");
+        engine.eval("d <- calcNormFactors(d)");
 
-            engine.put("groups", rGroups.build());
-            engine.eval("group2 <- interaction(groups[2,])");
+        // READING GROUPS AND TODO PLOTTING MDS CHART
 
-            /////////////
-//            engine.eval("countsx <- read.table(\"/home/fahmi/3032_3_sd6_mog/rscripts/limma_counts.csv\", header = TRUE, sep = \",\")");
-//            engine.eval("counts2x <- countsx[,-1]");
-//            engine.eval("rownames(counts2x) <- countsx[,1]");
-//            engine.eval("countsx <- data.matrix(counts2x)");
-//            engine.eval("d0x <- DGEList(countsx)");
-//            engine.eval("d0x <- calcNormFactors(d0x)");
-//            engine.eval("snamesx <- colnames(countsx) # Sample names");
-//            engine.eval("groupsx <- read.table(\"/home/fahmi/3032_3_sd6_mog/rscripts/limma_groups.csv\", header = TRUE, sep = \",\")");
-//            engine.eval("groupx <- interaction(groupsx['Groups'])");
+        String homePath = System.getProperty("user.home");
+        engine.eval("snames <- colnames(counts)");
+        engine.put("groups", rGroups.build());
+        engine.eval("group2 <- interaction(groups[2,])");
+        String mdsPath = "png(\"" + homePath + "/metaomgraph/mds.png\")";
+//            engine.eval(mdsPath);
+//            engine.eval("plotMDS(d, col = as.numeric(group))");
+//            engine.eval("dev.off()");
 
-            /////////////
+        // PERFORMING THE LIMMA VOOM OPERATION
+        String voomPath = "png(\"" + homePath + "/metaomgraph/voom.png\")";
+        engine.eval("mm <- model.matrix(~0 + group2)");
+        engine.eval(voomPath);
+        engine.eval("y <- voom(d, mm, plot = T)");
+        engine.eval("dev.off()");
 
-            String currentPath = System.getProperty("user.home");
-            String pngPath = "png(\"" + currentPath + "/metaomgraph/voom.png\")";
-            System.out.println(pngPath);
-            engine.eval("mm <- model.matrix(~0 + group2)");
-            engine.eval(pngPath);
-            engine.eval("y <- voom(d, mm, plot = T)");
-            engine.eval("dev.off()");
+        // Finding differentially expressed genes
+        engine.eval("fit <- lmFit(y, mm)");
+        engine.eval("fitbit <- colnames(coef(fit))");
 
-            engine.eval("fit <- lmFit(y, mm)");
-            engine.eval("fitbit <- colnames(coef(fit))");
+        engine.eval("contr <- makeContrasts(group21 - group22, levels = colnames(coef(fit)))");
 
-            engine.eval("contr <- makeContrasts(group21 - group22, levels = colnames(coef(fit)))");
+        engine.eval("tmp <- contrasts.fit(fit, contr)");
+        engine.eval("tmp <- eBayes(tmp)");
 
-            engine.eval("tmp <- contrasts.fit(fit, contr)");
-            engine.eval("tmp <- eBayes(tmp)");
+        engine.eval("top.table <- topTable(tmp, coef=1, sort.by = \"P\", n = Inf)");
+        engine.eval("top.table$Gene <- rownames(top.table)");
+        engine.eval("top.table <- top.table[,c(\"Gene\", names(top.table)[1:6])]");
 
-            engine.eval("top.table <- topTable(tmp, coef=1, sort.by = \"P\", n = Inf)");
-            engine.eval("top.table$Gene <- rownames(top.table)");
-            engine.eval("top.table <- top.table[,c(\"Gene\", names(top.table)[1:6])]");
-
-            String writeDETable = "write.table(top.table, file = \"" + currentPath + "/metaomgraph/de.tsv" + "\", row.names = F, sep = \"\t\", quote = F)";
-            engine.eval(writeDETable);
+        String writeDETable = "write.table(top.table, file = \"" + homePath + "/metaomgraph/differentialexpression.tsv" + "\", row.names = F, sep = \"\t\", quote = F)";
+        engine.eval(writeDETable);
 
 //            StringVector genes = (StringVector)engine.eval("top.table$Gene");
 //            DoubleVector logFC = (DoubleVector)engine.eval("top.table$logFC");
@@ -138,11 +113,5 @@ public class ComputeLimma {
 //            DoubleVector t = (DoubleVector)engine.eval("top.table$t");
 //            DoubleVector pVal = (DoubleVector)engine.eval("top.table$P.Value");
 //            DoubleVector adjPVal = (DoubleVector)engine.eval("top.table$adj.P.Val");
-
-            System.out.println("Done!");
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
     }
 }

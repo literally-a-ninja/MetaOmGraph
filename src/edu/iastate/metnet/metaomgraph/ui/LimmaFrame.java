@@ -3,6 +3,7 @@ package edu.iastate.metnet.metaomgraph.ui;
 import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -184,7 +185,6 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
 
                 String selectedFeatureList = comboBox.getSelectedItem().toString();
                 ComputeLimma ob = new ComputeLimma(selectedFeatureList, map, myProject, limmaCountsInd);
-                ob.calc();
 
                 // save object
                 String id = "";
@@ -198,8 +198,27 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                         EventQueue.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                // TODO CALL FUNCTION HERE
-                                // start calculation
+                                // Start calculating
+                                try {
+                                    ob.calc();
+                                    JOptionPane.showMessageDialog(panel, "Limma analysis results saved at " + System.getProperty("user.home") + "/metaomgraph/voom.png");
+                                    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                                        Desktop.getDesktop().browse(new URI("file://" + System.getProperty("user.home") + "/metaomgraph/voom.png"));
+                                    }
+                                } catch (Exception e) {
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    e.printStackTrace(pw);
+                                    String sStackTrace = sw.toString();
+
+                                    JDialog jd = new JDialog();
+                                    JTextPane jt = new JTextPane();
+                                    jt.setText(sStackTrace);
+                                    jt.setBounds(10, 10, 300, 100);
+                                    jd.getContentPane().add(jt);
+                                    jd.setBounds(100, 100, 500, 200);
+                                    jd.setVisible(true);
+                                }
                             }
                         });
                         return null;
