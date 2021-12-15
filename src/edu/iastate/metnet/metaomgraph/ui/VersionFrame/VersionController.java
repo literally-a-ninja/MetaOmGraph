@@ -15,7 +15,7 @@ public class VersionController {
     }
 
     public static void check() {
-        if (getVersion() < 17)
+        if (getVersion() < 11)
         {
             VersionController ctrl = new VersionController();
             ctrl.prompt();

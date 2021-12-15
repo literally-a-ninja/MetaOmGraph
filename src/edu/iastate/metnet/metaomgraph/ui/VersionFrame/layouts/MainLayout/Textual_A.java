@@ -26,9 +26,9 @@ public class Textual_A extends AbstractLayout {
         Font boldFontVariant = defaultFont.deriveFont(defaultFont.getStyle() | Font.BOLD);
         return new AbstractComponent[]{
                 new BigHeader("UNSUPPORTED JAVA VERSION"),
-                new FmtVersionLabel("You using JDK %d. We only support JDK 17 and higher.", boldFontVariant),
-                new Label("We can download and setup JDK 17 for you automatically or you can choose to do " +
-                          "so manually. If you choose to allow us to manually setup JDK 17, the binaries will be" +
+                new FmtVersionLabel("You're using JDK %d. We only support JDK 11 and higher.", boldFontVariant),
+                new Label("We can download and setup JDK 11 for you automatically or you can choose to do " +
+                          "so manually. If you choose to allow us to automatically setup JDK 11, the binaries will be " +
                           "stored relative to MetaOmGraph.")
         };
     }
