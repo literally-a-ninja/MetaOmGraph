@@ -35,6 +35,9 @@ target/
 .DS_Store
 .idea/
 bin/
+*.iml
 #MOG specific for now
 #src/edu/iastate/metnet/metaomgraph/utils/ExceptionHandler.java
 src/resource/config.properties
+
+violin-data.js
