@@ -201,7 +201,7 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                                 // Start calculating
                                 try {
                                     ob.calc();
-                                    JOptionPane.showMessageDialog(panel, "Limma analysis results saved at " + System.getProperty("user.home") + "/metaomgraph/voom.png");
+                                    JOptionPane.showMessageDialog(panel, "Limma analysis results saved at " + System.getProperty("user.home") + "/metaomgraph/differentialexpression.tsv");
                                     if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                                         Desktop.getDesktop().browse(new URI("file://" + System.getProperty("user.home") + "/metaomgraph/voom.png"));
                                     }
