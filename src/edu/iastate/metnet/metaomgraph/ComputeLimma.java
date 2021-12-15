@@ -80,23 +80,29 @@ public class ComputeLimma {
 
             engine.put("counts", rData.build());
 
-//            engine.eval("counts3 <- read.table(\"/home/fahmi/3032_3_sd6_mog/rscripts/limma_counts.csv\", header = TRUE, sep = \",\")");
-//            engine.eval("counts2 <- data.matrix(counts3)");
-
             engine.eval("d <- DGEList(counts)");
             engine.eval("d <- calcNormFactors(d)");
 
             engine.eval("snames <- colnames(counts)");
 
-
-
-            engine.eval("groups3 <- read.table(\"/home/fahmi/3032_3_sd6_mog/rscripts/limma_groups.csv\", header = TRUE, sep = \",\")");
-            engine.eval("group3 <- interaction(groups3['Groups'])");
-
             engine.put("groups", rGroups.build());
             engine.eval("group2 <- interaction(groups[2,])");
 
-            engine.eval("mm <- model.matrix(~0 + group)");
+            /////////////
+            engine.eval("countsx <- read.table(\"/home/fahmi/3032_3_sd6_mog/rscripts/limma_counts.csv\", header = TRUE, sep = \",\")");
+            engine.eval("counts2x <- countsx[,-1]");
+            engine.eval("rownames(counts2x) <- countsx[,1]");
+            engine.eval("countsx <- data.matrix(counts2x)");
+            engine.eval("d0x <- DGEList(countsx)");
+            engine.eval("d0x <- calcNormFactors(d0x)");
+            engine.eval("snamesx <- colnames(countsx) # Sample names");
+            engine.eval("groupsx <- read.table(\"/home/fahmi/3032_3_sd6_mog/rscripts/limma_groups.csv\", header = TRUE, sep = \",\")");
+            engine.eval("groupx <- interaction(groupsx['Groups'])");
+
+
+            /////////////
+
+            engine.eval("mm <- model.matrix(~0 + group2)");
             engine.eval("y <- voom(d, mm, plot = F)");
 
             engine.eval("fit <- lmFit(y, mm)");
