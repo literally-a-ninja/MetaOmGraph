@@ -206,13 +206,6 @@ public class LimmaGroupPanel extends JPanel  {
         }
     }
 
-    private void initComboBoxes() {
-        JComboBox comboBox = new JComboBox(MetaOmGraph.getActiveProject().getGeneListNames());
-        String[] methods = new String[] { "M-W U test", "Student's t-test", "Welch's t-test", "Permutation test",
-                "Paired t-test", "Wilcoxon Signed Rank Test", "Permutation test (paired samples)" };
-        JComboBox comboBox_1 = new JComboBox(methods);
-    }
-
     /**
      * get selected rows from a table
      *

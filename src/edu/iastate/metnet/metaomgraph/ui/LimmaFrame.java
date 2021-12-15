@@ -162,11 +162,16 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
 
                 //Check if lists are disjoint
                 HashMap<String, String> map = new HashMap<>();
+                ArrayList<String> limmaCounts = new ArrayList<>();
+                ArrayList<Integer> limmaGroups = new ArrayList<>();
+                ArrayList<Integer> limmaCountsInd = new ArrayList<>();
 
                 for (LimmaGroupPanel group : limmaGroupPanels) {
                     for (String entry : group.getAllRows()) {
                         if (map.get(entry) == null) { // if null we've never seen that name
                             map.put(entry, String.valueOf(group.getId()));
+                            limmaCounts.add(entry);
+                            limmaGroups.add(group.getId());
                         } else { // if not null that name exists somewhere else immediately cancel
                             JOptionPane.showMessageDialog(null, "The two groups must be disjoint. Please check the lists",
                             "Please check the lists", JOptionPane.ERROR_MESSAGE);
@@ -175,11 +180,11 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                     }
                 }
 
-                String selectedFeatureList = comboBox.getSelectedItem().toString();
-//                ComputeLimma ob = new ComputeLimma(map, myProject);
+                limmaCountsInd = getIndices(limmaCounts);
 
-                // start calculation
-//                ob.doCalc();
+                String selectedFeatureList = comboBox.getSelectedItem().toString();
+                ComputeLimma ob = new ComputeLimma(selectedFeatureList, map, myProject, limmaCountsInd);
+                ob.calc();
 
                 // save object
                 String id = "";
@@ -194,6 +199,7 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
                             @Override
                             public void run() {
                                 // TODO CALL FUNCTION HERE
+                                // start calculation
                             }
                         });
                         return null;
@@ -676,5 +682,16 @@ public class LimmaFrame extends TaskbarInternalFrame implements ActionListener {
         f.setResizable(false);
 
         f.show();
+    }
+
+    private ArrayList<Integer> getIndices(List<String> listDC) {
+        ArrayList<Integer> res = new ArrayList<>();
+        String[] dataColumnheaders = myProject.getDataColumnHeaders();
+        for (int i = 0; i < dataColumnheaders.length; i++) {
+            if (listDC.contains(dataColumnheaders[i])) {
+                res.add(i);
+            }
+        }
+        return res;
     }
 }
