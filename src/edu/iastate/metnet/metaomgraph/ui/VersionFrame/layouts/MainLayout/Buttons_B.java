@@ -24,7 +24,7 @@ public class Buttons_B extends AbstractLayout {
     @Override
     public AbstractComponent[] components() {
         return new AbstractComponent[]{
-                new Button("Install JDK 17"),
+                new Button("Install JDK 11"),
                 new Button("Exit")
         };
     }
