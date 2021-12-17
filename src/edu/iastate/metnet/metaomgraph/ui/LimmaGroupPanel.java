@@ -20,8 +20,8 @@ public class LimmaGroupPanel extends JPanel  {
     private JButton moveSelected;
     JLabel lblN;
     private Color SELECTIONBCKGRND = MetaOmGraph.getTableSelectionColor();
-    private Color BCKGRNDCOLOR1 = MetaOmGraph.getTableColor1();
-    private Color BCKGRNDCOLOR2 = MetaOmGraph.getTableColor2();
+    private Color BCKGRNDCOLOR1 = MetaOmGraph.getTableColorEven();
+    private Color BCKGRNDCOLOR2 = MetaOmGraph.getTableColorOdd();
     private Color HIGHLIGHTCOLOR = MetaOmGraph.getTableHighlightColor();
     private Color HYPERLINKCOLOR = MetaOmGraph.getTableHyperlinkColor();
     MetaOmProject myProject = MetaOmGraph.getActiveProject();

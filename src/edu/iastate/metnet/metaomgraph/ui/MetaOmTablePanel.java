@@ -1,16 +1,10 @@
 package edu.iastate.metnet.metaomgraph.ui;
 
 import edu.iastate.metnet.metaomgraph.*;
-import edu.iastate.metnet.metaomgraph.SwingWorker;
 import edu.iastate.metnet.metaomgraph.MetaOmProject.RepAveragedData;
+import edu.iastate.metnet.metaomgraph.SwingWorker;
 import edu.iastate.metnet.metaomgraph.Metadata.MetadataQuery;
-import edu.iastate.metnet.metaomgraph.chart.BarChart;
-import edu.iastate.metnet.metaomgraph.chart.BoxPlot;
-import edu.iastate.metnet.metaomgraph.chart.HeatMapChart;
-import edu.iastate.metnet.metaomgraph.chart.HistogramChart;
-import edu.iastate.metnet.metaomgraph.chart.MakeChartWithR;
-import edu.iastate.metnet.metaomgraph.chart.MetaOmChartPanel;
-import edu.iastate.metnet.metaomgraph.chart.ScatterPlotChart;
+import edu.iastate.metnet.metaomgraph.chart.*;
 import edu.iastate.metnet.metaomgraph.logging.ActionProperties;
 import edu.iastate.metnet.metaomgraph.throbber.MetaOmThrobber;
 import edu.iastate.metnet.metaomgraph.throbber.MultiFrameImageThrobber;
@@ -21,21 +15,15 @@ import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.JToolBar.Separator;
 import javax.swing.Timer;
+import javax.swing.JToolBar.Separator;
 import javax.swing.border.Border;
 import javax.swing.event.*;
 import javax.swing.plaf.ColorUIResource;
-
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -45,8 +33,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -6299,8 +6287,8 @@ public class MetaOmTablePanel extends JPanel implements ActionListener, ListSele
                         dataMap.put("Data Transformation", MetaOmGraph.getInstance().getTransform());
                         dataMap.put("XAxis", myProject.getDefaultXAxis());
                         dataMap.put("YAxis", myProject.getDefaultYAxis());
-                                                           ataMap.put("Chart Title, myProject.getDefaultTitle());
-                                                                 dataMap.put("Correlation Column", col_val);
+                        dataMap.put("Chart Title", myProject.getDefaultTitle());
+                        dataMap.put("Correlation Column", col_val);
 
                         result.put("Color 1", myProject.getColor1());
                         result.put("Color 2", myProject.getColor2());
