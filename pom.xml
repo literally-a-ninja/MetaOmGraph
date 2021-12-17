@@ -120,7 +120,6 @@
 	</plugins>
 </build>
 
-<<<<<<< Updated upstream
 	<repositories>
 		<repository>
 			<id>jitpack.io</id>
@@ -136,23 +135,6 @@
 			<url>https://nexus.bedatadriven.com/content/groups/public/</url>
 		</repository>
 	</repositories>
-=======
-<repositories>
-  <repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url></repository>
-  <repository>
-    <id>freehep-maven</id>
-    <name>Maven FreeHEP</name>
-    <url>https://java.freehep.org/maven2</url>
-  </repository>
-  <repository>
-    <id>bedatadriven</id>
-    <name>bedatadriven public repo</name>
-    <url>https://nexus.bedatadriven.com/content/groups/public/</url>
-  </repository>
-</repositories>
->>>>>>> Stashed changes
 
 	<dependencies>
 		<dependency>
