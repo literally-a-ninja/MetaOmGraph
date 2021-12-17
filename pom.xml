@@ -129,11 +129,11 @@
         <name>Maven FreeHEP</name>
         <url>https://java.freehep.org/maven2</url>
     </repository>
-    <repository>
-        <id>bedatadriven</id>
-        <name>bedatadriven public repo</name>
-        <url>https://nexus.bedatadriven.com/content/groups/public/</url>
-    </repository>
+    <!-- <repository> -->
+    <!--     <id>bedatadriven</id> -->
+    <!--     <name>bedatadriven public repo</name> -->
+    <!--     <url>https://nexus.bedatadriven.com/content/groups/public/</url> -->
+    <!-- </repository> -->
     <repository>
         <id>mulesoft</id>
         <name>Mulesoft Repository</name>
